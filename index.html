@@ -626,9 +626,32 @@
         </h2>
         <p class="subtitle">Kies maximaal 2 of 3 behapbare acties voor nu. Oudere voltooide acties verhuizen automatisch naar het archief.</p>
 
-        <div style="display: flex; gap: 8px;">
-          <input type="text" id="task-input" placeholder="Kleine actie voor nu..." style="margin-bottom: 0;">
-          <button class="btn btn-small" onclick="addTask()">Toevoegen</button>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;">
+          <input type="text" id="task-input" placeholder="Kleine actie voor nu..." style="margin-bottom: 0; flex: 1 1 200px;">
+          <select id="task-category-select" style="margin-bottom: 0; flex: 1 1 130px; font-size: 0.85rem;">
+            <option value="Privé">🏠 Privé</option>
+            <option value="Gezin">👨‍👩‍👧‍👦 Gezin</option>
+            <option value="Werk">💼 Werk</option>
+            <option value="Klussen">🔨 Klussen</option>
+            <option value="Vrije tijd">🎨 Vrije tijd</option>
+            <option value="Gezondheid">🍎 Gezondheid</option>
+            <option value="Financieel">💶 Financieel</option>
+          </select>
+          <button class="btn btn-small" style="width: auto;" onclick="addTask()">Toevoegen</button>
+        </div>
+
+        <div class="filter-bar" style="margin-top: 6px; margin-bottom: 8px;">
+          <label style="font-size: 0.78rem; color: var(--text-muted);">Filter op categorie:</label>
+          <select id="tasks-filter-category" onchange="renderTasks()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 4px 8px;">
+            <option value="ALL">📂 Alle categorieën</option>
+            <option value="Privé">🏠 Privé</option>
+            <option value="Gezin">👨‍👩‍👧‍👦 Gezin</option>
+            <option value="Werk">💼 Werk</option>
+            <option value="Klussen">🔨 Klussen</option>
+            <option value="Vrije tijd">🎨 Vrije tijd</option>
+            <option value="Gezondheid">🍎 Gezondheid</option>
+            <option value="Financieel">💶 Financieel</option>
+          </select>
         </div>
 
         <div id="tasks-list" class="item-list"></div>
@@ -665,7 +688,7 @@
       <!-- 💜 5. HET CONTACT-KOMPAS -->
       <div class="card" style="margin-bottom: 18px;">
         <h2>
-          💜 Contact-Kompas
+          💜 Contact-KomPAS
           <button class="btn btn-secondary btn-small" onclick="addContactPrompt()">+ Contact</button>
         </h2>
         <p class="subtitle">Geen schuldgevoel meer bij 'uit het oog, uit het hart'. Stuur eenvoudig een warm berichtje zonder prestatiedruk.</p>
@@ -1169,9 +1192,20 @@
       });
     }
 
-    // --- ZACHT PLANBORD ---
-    function addTask(textInput) {
+    // --- ZACHT PLANBORD LOGICA MET CATEGORIEËN & EDIT ---
+    const taskCatIcons = {
+      'Privé': '🏠',
+      'Gezin': '👨‍👩‍👧‍👦',
+      'Werk': '💼',
+      'Klussen': '🔨',
+      'Vrije tijd': '🎨',
+      'Gezondheid': '🍎',
+      'Financieel': '💶'
+    };
+
+    function addTask(textInput, categoryInput) {
       const input = textInput || document.getElementById('task-input').value;
+      const categorySelect = categoryInput || (document.getElementById('task-category-select') ? document.getElementById('task-category-select').value : 'Privé');
       if (!input.trim()) return;
 
       let tasks = JSON.parse(localStorage.getItem('voldaan_tasks') || '[]');
@@ -1179,7 +1213,8 @@
       
       tasks.push({
         id: Date.now(),
-        text: input,
+        text: input.trim(),
+        category: categorySelect || 'Privé',
         done: false,
         created: nowStr,
         doneAt: null
@@ -1188,6 +1223,19 @@
       localStorage.setItem('voldaan_tasks', JSON.stringify(tasks));
       if (!textInput) document.getElementById('task-input').value = '';
       renderTasks();
+    }
+
+    function editTask(id) {
+      let tasks = JSON.parse(localStorage.getItem('voldaan_tasks') || '[]');
+      const task = tasks.find(t => t.id === id);
+      if (!task) return;
+
+      const newText = prompt("Pas de taak aan:", task.text);
+      if (newText !== null && newText.trim() !== '') {
+        task.text = newText.trim();
+        localStorage.setItem('voldaan_tasks', JSON.stringify(tasks));
+        renderTasks();
+      }
     }
 
     function toggleTask(id) {
@@ -1228,8 +1276,15 @@
       container.innerHTML = '';
       archiveContainer.innerHTML = '';
 
-      const activeTasks = tasks.filter(t => !t.done);
-      const doneTasks = tasks.filter(t => t.done).sort((a,b) => b.id - a.id);
+      const filterCat = document.getElementById('tasks-filter-category') ? document.getElementById('tasks-filter-category').value : 'ALL';
+
+      let filteredTasks = tasks;
+      if (filterCat !== 'ALL') {
+        filteredTasks = tasks.filter(t => (t.category || 'Privé') === filterCat);
+      }
+
+      const activeTasks = filteredTasks.filter(t => !t.done);
+      const doneTasks = filteredTasks.filter(t => t.done).sort((a,b) => b.id - a.id);
 
       const recentDone = doneTasks.slice(0, 1);
       const archivedDone = doneTasks.slice(1);
@@ -1237,18 +1292,21 @@
       const mainBoardTasks = [...activeTasks, ...recentDone];
 
       if (mainBoardTasks.length === 0) {
-        container.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted);">Geen actieve taken op je bord. Neem rust!</span>';
+        container.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted);">Geen actieve taken gevonden in deze categorie. Neem rust!</span>';
       }
 
       mainBoardTasks.forEach((task) => {
+        const cat = task.category || 'Privé';
+        const icon = taskCatIcons[cat] || '🏷️';
         const div = document.createElement('div');
         div.className = `item-card ${task.done ? 'done' : ''}`;
         div.innerHTML = `
           <div>
-            <span style="cursor:pointer;" onclick="toggleTask(${task.id})">${task.done ? '✅' : '⚪'} ${task.text}</span>
+            <span style="cursor:pointer;" onclick="toggleTask(${task.id})">${task.done ? '✅' : '⚪'} <strong style="font-size:0.78rem; opacity:0.85;">[${icon} ${cat}]</strong> ${task.text}</span>
             <span class="time-badge">${task.done ? 'Voltooid: ' + task.doneAt : 'Aangemaakt: ' + task.created}</span>
           </div>
           <div style="display:flex; gap:6px; align-items:center;">
+            ${!task.done ? `<button class="btn btn-secondary btn-small" style="font-size:0.75rem; padding:4px 6px;" onclick="editTask(${task.id})">✏️</button>` : ''}
             ${!task.done ? `<button class="btn btn-secondary btn-small" style="font-size:0.75rem; padding:4px 8px;" onclick="pushTaskToCalendar(${task.id})">📅 Agenda</button>` : ''}
             <button style="background:none; border:none; color:#E53E3E; cursor:pointer;" onclick="removeTask(${task.id})">✕</button>
           </div>
@@ -1260,12 +1318,14 @@
         archiveContainer.innerHTML = '<span style="font-size:0.8rem; color:var(--text-muted);">Nog geen oudere voltooide taken in het archief.</span>';
       } else {
         archivedDone.forEach((task) => {
+          const cat = task.category || 'Privé';
+          const icon = taskCatIcons[cat] || '🏷️';
           const div = document.createElement('div');
           div.className = 'item-card done';
           div.style.fontSize = '0.82rem';
           div.innerHTML = `
             <div>
-              <span>✅ ${task.text}</span>
+              <span>✅ <strong style="font-size:0.75rem; opacity:0.85;">[${icon} ${cat}]</strong> ${task.text}</span>
               <span class="time-badge">Voltooid: ${task.doneAt}</span>
             </div>
             <button style="background:none; border:none; color:#E53E3E; cursor:pointer;" onclick="removeTask(${task.id})">✕</button>
@@ -1326,7 +1386,7 @@
     }
 
     function removeContact(id) {
-      if (confirm("Wil je dit contact verwijderen uit je Contact-Kompas?")) {
+      if (confirm("Wil je dit contact verwijderen uit je Contact-KomPAS?")) {
         let contacts = JSON.parse(localStorage.getItem('voldaan_contacts') || '[]');
         contacts = contacts.filter(c => c.id !== id);
         localStorage.setItem('voldaan_contacts', JSON.stringify(contacts));
@@ -1581,7 +1641,7 @@
     function moveIdeaToPlanbord(id) {
       let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
       const idea = ideas.find(i => i.id === id);
-      if (idea) { addTask(idea.text); alert(`🎯 "${idea.text}" is toegevoegd aan je Zacht Planbord!`); }
+      if (idea) { addTask(idea.text, 'Privé'); alert(`🎯 "${idea.text}" is toegevoegd aan je Zacht Planbord!`); }
       openMenuId = null;
     }
 
