@@ -245,7 +245,7 @@
       font-weight: 600;
     }
 
-    textarea, input[type="text"], input[type="number"], select {
+    textarea, input[type="text"], input[type="number"], input[type="date"], select {
       width: 100%;
       background: var(--input-bg);
       color: var(--text-main);
@@ -257,7 +257,7 @@
       outline: none;
     }
 
-    textarea:focus, input[type="text"]:focus, select:focus {
+    textarea:focus, input[type="text"]:focus, select:focus, input[type="date"]:focus {
       border-color: var(--accent-primary);
     }
 
@@ -512,6 +512,22 @@
       gap: 6px;
       margin-top: 10px;
       flex-wrap: wrap;
+    }
+
+    .progress-bar-bg {
+      background: var(--input-border);
+      border-radius: 12px;
+      height: 14px;
+      width: 100%;
+      overflow: hidden;
+      margin-top: 6px;
+      margin-bottom: 6px;
+    }
+
+    .progress-bar-fill {
+      background: linear-gradient(90deg, #38A169 0%, #319795 100%);
+      height: 100%;
+      transition: width 0.4s ease;
     }
 
     .hidden {
@@ -784,7 +800,57 @@
         <button class="btn btn-secondary btn-small" onclick="openMoneyArchiveModal()">📜 Geld-Archief</button>
       </div>
 
-      <!-- 💶 0. PAYDAY COUNTDOWN RADAR -->
+      <!-- 🌿 0. HET RUIMTE-KOMPAS (FAMILIE-BALANS BAROMETER) -->
+      <div class="card" style="margin-bottom: 18px; border: 2px solid var(--accent-primary);">
+        <h2>
+          🌿 Het Ruimte-Kompas
+          <button class="btn btn-secondary btn-small" onclick="toggleAddRuimteForm()">+ Ruimte-Project</button>
+        </h2>
+        <p class="subtitle">Herstel en breng familie-afspraken rustig in balans op jouw eigen tempo. Vier elke euro die je vrijmaakt!</p>
+
+        <!-- TOTALE BAROMETER -->
+        <div style="background: var(--item-bg); padding: 14px; border-radius: 12px; border: 1px solid var(--input-border); margin-bottom: 14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; font-weight:600;">
+            <span>🌱 Totaal Vrijgemaakt:</span>
+            <span id="ruimte-total-repaid-text" style="color:#38A169; font-size:1.05rem;">€0</span>
+          </div>
+
+          <div class="progress-bar-bg">
+            <div id="ruimte-total-progress-bar" class="progress-bar-fill" style="width: 0%;"></div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.78rem; color:var(--text-muted);">
+            <span>Nog vrij te maken: <strong id="ruimte-total-remaining-text" style="color:var(--text-main);">€0</strong></span>
+            <span>Totaal Doel: <strong id="ruimte-total-original-text">€0</strong></span>
+          </div>
+
+          <div id="ruimte-horizon-text" style="font-size:0.78rem; color:var(--accent-primary); font-weight:600; text-align:center; margin-top:8px;">
+            🔮 Vrijheids-Horizon: Berekend zodra je projecten invoert...
+          </div>
+        </div>
+
+        <!-- FORMULIER NIEUW PROJECT -->
+        <div id="add-ruimte-form" class="hidden" style="background: var(--item-bg); padding: 14px; border-radius: 12px; margin-bottom: 14px; border: 1px solid var(--input-border);">
+          <strong style="display:block; font-size: 0.88rem; margin-bottom: 8px;" id="ruimte-form-title">Nieuw Familie-Project Toevoegen</strong>
+          <input type="hidden" id="ruimte-edit-id" value="">
+          <input type="text" id="ruimte-title-input" placeholder="🤝 Naam (bijv. Ouders - Bijdrage vakantie)">
+          <div style="display:flex; gap:8px;">
+            <input type="number" id="ruimte-amount-input" placeholder="💶 Bedrag (€)">
+            <input type="number" id="ruimte-monthly-input" placeholder="🗓️ Maanddoel (€)">
+          </div>
+          <label style="font-size:0.75rem; color:var(--text-muted); display:block; margin-top:-4px; margin-bottom:4px;">Streefdatum voor volledige vrijheid:</label>
+          <input type="date" id="ruimte-targetdate-input">
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-small" onclick="saveRuimteProject()">Opslaan</button>
+            <button class="btn btn-secondary btn-small" onclick="toggleAddRuimteForm()">Annuleren</button>
+          </div>
+        </div>
+
+        <!-- LIJST MET RUIMTE PROJECTEN -->
+        <div id="ruimte-projects-list" class="item-list"></div>
+      </div>
+
+      <!-- 💶 0B. PAYDAY COUNTDOWN RADAR -->
       <div class="card" style="margin-bottom: 18px; border: 2px solid #38A169; background: linear-gradient(135deg, var(--card-bg) 0%, var(--soft-green) 100%);">
         <h2>
           💶 Payday Radar
@@ -895,6 +961,17 @@
 
   </div>
 
+  <!-- 🗂️ MODAL POP-UP VOOR RUIMTE-PROJECT DETAILS -->
+  <div id="ruimte-details-modal" class="modal-overlay hidden" onclick="closeRuimteDetailsModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2 id="modal-ruimte-title">🤝 Project Details</h2>
+        <button class="btn btn-secondary btn-small" onclick="closeRuimteDetailsModal()">✕ Sluiten</button>
+      </div>
+      <div id="modal-ruimte-content"></div>
+    </div>
+  </div>
+
   <!-- 🗂️ MODAL POP-UP VOOR GELD-ARCHIEF -->
   <div id="money-archive-modal" class="modal-overlay hidden" onclick="closeMoneyArchiveModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
@@ -903,7 +980,7 @@
         <h2>📜 Geld-Kompas Archief</h2>
         <button class="btn btn-secondary btn-small" onclick="closeMoneyArchiveModal()">✕ Sluiten</button>
       </div>
-      <p class="subtitle">Een helder overzicht van al jouw opgebouwde zeges met exacta datum en tijd: bespaarde impuls-aankopen, voldane vaste lasten en gespaarde opvangpotjes!</p>
+      <p class="subtitle">Een helder overzicht van al jouw opgebouwde zeges met exacte datum en tijd: bespaarde impuls-aankopen, voldane vaste lasten en gespaarde opvangpotjes!</p>
 
       <div class="filter-bar">
         <select id="money-archive-filter" onchange="renderMoneyArchive()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 6px;">
@@ -1191,6 +1268,303 @@
         const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
         const formattedDate = paydayInfo.paydayDate.toLocaleDateString('nl-NL', options);
         targetText.innerText = `Eerstvolgende Payday: ${formattedDate} om 08:00 uur`;
+      }
+    }
+
+    // --- 🌿 HET RUIMTE-KOMPAS (FAMILIE-BALANS LOGICA) ---
+    function initDefaultRuimteData() {
+      if (!localStorage.getItem('voldaan_ruimte_projects')) {
+        const defaultProjects = [
+          {
+            id: 1,
+            title: "Ouders - Herstel Afspraak 🤝",
+            totalAmount: 600,
+            repaidAmount: 150,
+            monthlyTarget: 50,
+            targetDate: "2027-06-30",
+            createdDate: getNowDateTimeStr(),
+            history: [
+              { type: 'payment', amount: 150, date: getNowDateTimeStr(), note: 'Eerste zachte stap' }
+            ]
+          }
+        ];
+        localStorage.setItem('voldaan_ruimte_projects', JSON.stringify(defaultProjects));
+      }
+    }
+
+    function toggleAddRuimteForm(editId) {
+      const form = document.getElementById('add-ruimte-form');
+      const isHidden = form.classList.contains('hidden');
+
+      if (editId) {
+        let projects = JSON.parse(localStorage.getItem('voldaan_ruimte_projects') || '[]');
+        const p = projects.find(item => item.id === editId);
+        if (p) {
+          document.getElementById('ruimte-edit-id').value = p.id;
+          document.getElementById('ruimte-title-input').value = p.title;
+          document.getElementById('ruimte-amount-input').value = p.totalAmount;
+          document.getElementById('ruimte-monthly-input').value = p.monthlyTarget;
+          document.getElementById('ruimte-targetdate-input').value = p.targetDate || '';
+          document.getElementById('ruimte-form-title').innerText = "✏️ Familie-Project Bewerken";
+          form.classList.remove('hidden');
+        }
+      } else {
+        document.getElementById('ruimte-edit-id').value = '';
+        document.getElementById('ruimte-title-input').value = '';
+        document.getElementById('ruimte-amount-input').value = '';
+        document.getElementById('ruimte-monthly-input').value = '';
+        document.getElementById('ruimte-targetdate-input').value = '';
+        document.getElementById('ruimte-form-title').innerText = "Nieuw Familie-Project Toevoegen";
+        if (isHidden) form.classList.remove('hidden');
+        else form.classList.add('hidden');
+      }
+    }
+
+    function saveRuimteProject() {
+      const editId = document.getElementById('ruimte-edit-id').value;
+      const title = document.getElementById('ruimte-title-input').value;
+      const amount = parseFloat(document.getElementById('ruimte-amount-input').value) || 0;
+      const monthly = parseFloat(document.getElementById('ruimte-monthly-input').value) || 0;
+      const targetDate = document.getElementById('ruimte-targetdate-input').value;
+
+      if (!title.trim() || amount <= 0) {
+        alert("Voer een geldige naam en totaalbedrag in.");
+        return;
+      }
+
+      let projects = JSON.parse(localStorage.getItem('voldaan_ruimte_projects') || '[]');
+
+      if (editId) {
+        const idx = projects.findIndex(p => p.id === parseInt(editId));
+        if (idx !== -1) {
+          projects[idx].title = title.trim();
+          projects[idx].totalAmount = amount;
+          projects[idx].monthlyTarget = monthly;
+          projects[idx].targetDate = targetDate;
+        }
+      } else {
+        projects.push({
+          id: Date.now(),
+          title: title.trim(),
+          totalAmount: amount,
+          repaidAmount: 0,
+          monthlyTarget: monthly,
+          targetDate: targetDate,
+          createdDate: getNowDateTimeStr(),
+          history: []
+        });
+      }
+
+      localStorage.setItem('voldaan_ruimte_projects', JSON.stringify(projects));
+      toggleAddRuimteForm();
+      renderRuimteKompas();
+    }
+
+    function addRuimteRepayment(id) {
+      const inputEl = document.getElementById(`ruimte-pay-input-${id}`);
+      const val = parseFloat(inputEl.value);
+
+      if (!val || val <= 0) {
+        alert("Voer een geldig bedrag in.");
+        return;
+      }
+
+      let projects = JSON.parse(localStorage.getItem('voldaan_ruimte_projects') || '[]');
+      const p = projects.find(item => item.id === id);
+
+      if (p) {
+        p.repaidAmount = (p.repaidAmount || 0) + val;
+        if (!p.history) p.history = [];
+        const dateStr = getNowDateTimeStr();
+        p.history.unshift({
+          type: 'payment',
+          amount: val,
+          date: dateStr,
+          note: 'Maandelijkse aflossing'
+        });
+
+        localStorage.setItem('voldaan_ruimte_projects', JSON.stringify(projects));
+        triggerConfetti();
+        addMarble(`Vrijgemaakt voor ${p.title} (€${val})`);
+        renderRuimteKompas();
+      }
+    }
+
+    function addRuimtePauseMonth(id) {
+      let projects = JSON.parse(localStorage.getItem('voldaan_ruimte_projects') || '[]');
+      const p = projects.find(item => item.id === id);
+
+      if (p) {
+        if (!p.history) p.history = [];
+        const dateStr = getNowDateTimeStr();
+        p.history.unshift({
+          type: 'pause',
+          amount: 0,
+          date: dateStr,
+          note: '🍃 Zachte adempauze genomen (ruimte voor gezin)'
+        });
+
+        localStorage.setItem('voldaan_ruimte_projects', JSON.stringify(projects));
+        alert("🍃 Zachte adempauze geregistreerd. Soms vraagt het leven om wat speling. Fijn dat je goed voor jezelf en je gezin zorgt!");
+        renderRuimteKompas();
+      }
+    }
+
+    function removeRuimteProject(id) {
+      if (confirm("Wil je dit Familie-Project verwijderen?")) {
+        let projects = JSON.parse(localStorage.getItem('voldaan_ruimte_projects') || '[]');
+        projects = projects.filter(p => p.id !== id);
+        localStorage.setItem('voldaan_ruimte_projects', JSON.stringify(projects));
+        renderRuimteKompas();
+      }
+    }
+
+    function openRuimteDetailsModal(id) {
+      let projects = JSON.parse(localStorage.getItem('voldaan_ruimte_projects') || '[]');
+      const p = projects.find(item => item.id === id);
+      if (!p) return;
+
+      document.getElementById('modal-ruimte-title').innerText = `🤝 ${p.title}`;
+      const content = document.getElementById('modal-ruimte-content');
+
+      const remaining = Math.max(0, p.totalAmount - (p.repaidAmount || 0));
+      const pct = Math.min(100, Math.round(((p.repaidAmount || 0) / p.totalAmount) * 100));
+
+      let expectedMonths = 0;
+      let expectedDateText = "Geen maanddoel opgegeven";
+      if (p.monthlyTarget > 0 && remaining > 0) {
+        expectedMonths = Math.ceil(remaining / p.monthlyTarget);
+        const expDate = new Date();
+        expDate.setMonth(expDate.getMonth() + expectedMonths);
+        expectedDateText = expDate.toLocaleDateString('nl-NL', { month: 'long', year: 'numeric' });
+      } else if (remaining === 0) {
+        expectedDateText = "🎉 Volledig vrijgemaakt & afgerond!";
+      }
+
+      let historyHtml = '';
+      if (p.history && p.history.length > 0) {
+        historyHtml = p.history.map(h => {
+          if (h.type === 'pause') {
+            return `<div class="item-card" style="font-size:0.8rem; background:var(--soft-warm); border-color:var(--warm-border); color:var(--warm-text);">
+              <span>🍃 <strong>Adempauze</strong>: ${h.note}</span>
+              <span class="time-badge">${h.date}</span>
+            </div>`;
+          } else {
+            return `<div class="item-card" style="font-size:0.8rem;">
+              <span>💶 <strong>+€${h.amount}</strong> vrijgemaakt</span>
+              <span class="time-badge">${h.date}</span>
+            </div>`;
+          }
+        }).join('');
+      } else {
+        historyHtml = '<span style="font-size:0.8rem; color:var(--text-muted);">Nog geen aflossingen of pauzes geregistreerd.</span>';
+      }
+
+      content.innerHTML = `
+        <div style="background:var(--item-bg); padding:12px; border-radius:10px; border:1px solid var(--input-border); margin-bottom:14px;">
+          <div style="font-size:0.85rem; margin-bottom:4px;"><strong>Startdatum project:</strong> ${p.createdDate || 'Onbekend'}</div>
+          <div style="font-size:0.85rem; margin-bottom:4px;"><strong>Totale Afspraak:</strong> €${p.totalAmount}</div>
+          <div style="font-size:0.85rem; margin-bottom:4px;"><strong>Reeds Vrijgemaakt:</strong> <span style="color:#38A169; font-weight:600;">€${p.repaidAmount || 0} (${pct}%)</span></div>
+          <div style="font-size:0.85rem; margin-bottom:4px;"><strong>Nog Vrij te maken:</strong> €${remaining}</div>
+          <div style="font-size:0.85rem; margin-bottom:4px;"><strong>Maanddoel inzet:</strong> €${p.monthlyTarget || 0} / maand</div>
+          <div style="font-size:0.85rem; color:var(--accent-primary); font-weight:600; margin-top:8px;">
+            🔮 Verwachte Voltooiing (op huidig tempo): ${expectedDateText}
+          </div>
+        </div>
+
+        <strong style="font-size:0.88rem; display:block; margin-bottom:6px;">📜 Geschiedenis & Transacties:</strong>
+        <div class="item-list" style="max-height:220px; overflow-y:auto;">
+          ${historyHtml}
+        </div>
+      `;
+
+      document.getElementById('ruimte-details-modal').classList.remove('hidden');
+    }
+
+    function closeRuimteDetailsModal() {
+      document.getElementById('ruimte-details-modal').classList.add('hidden');
+    }
+
+    function renderRuimteKompas() {
+      let projects = JSON.parse(localStorage.getItem('voldaan_ruimte_projects') || '[]');
+      const container = document.getElementById('ruimte-projects-list');
+      container.innerHTML = '';
+
+      let totalOriginal = 0;
+      let totalRepaid = 0;
+      let totalMonthlyTarget = 0;
+
+      if (projects.length === 0) {
+        container.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted);">Nog geen Familie-Projecten toegevoegd. Klik op "+ Ruimte-Project" om een positieve start te maken!</span>';
+      }
+
+      projects.forEach(p => {
+        const repaid = p.repaidAmount || 0;
+        const total = p.totalAmount || 0;
+        const remaining = Math.max(0, total - repaid);
+        const pct = total > 0 ? Math.min(100, Math.round((repaid / total) * 100)) : 0;
+
+        totalOriginal += total;
+        totalRepaid += repaid;
+        if (remaining > 0) totalMonthlyTarget += (p.monthlyTarget || 0);
+
+        const card = document.createElement('div');
+        card.className = 'item-card';
+        card.style.flexDirection = 'column';
+        card.style.alignItems = 'stretch';
+        card.style.gap = '8px';
+
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+              <strong style="font-size:0.95rem;">🤝 ${p.title}</strong>
+              <div style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">
+                Vrijgemaakt: <strong style="color:#38A169;">€${repaid}</strong> van €${total} (Nog €${remaining})
+              </div>
+            </div>
+            <div style="display:flex; gap:4px;">
+              <button class="btn btn-secondary btn-small" style="font-size:0.75rem; padding:4px 6px;" onclick="toggleAddRuimteForm(${p.id})">✏️</button>
+              <button style="background:none; border:none; color:#E53E3E; cursor:pointer; font-size:1rem;" onclick="removeRuimteProject(${p.id})">✕</button>
+            </div>
+          </div>
+
+          <!-- GROEIBALK PER PROJECT -->
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" style="width: ${pct}%;"></div>
+          </div>
+
+          <!-- ACTIEBALK PER PROJECT -->
+          <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-top:2px;">
+            <input type="number" id="ruimte-pay-input-${p.id}" placeholder="Bedrag (€)" value="${p.monthlyTarget || ''}" style="margin-bottom:0; width:100px; font-size:0.8rem; padding:4px 8px;">
+            <button class="btn btn-small" style="font-size:0.75rem; padding:6px 10px; background-color:#38A169;" onclick="addRuimteRepayment(${p.id})">💶 Aflossen</button>
+            <button class="btn btn-secondary btn-small" style="font-size:0.75rem; padding:6px 8px;" onclick="addRuimtePauseMonth(${p.id})">🍃 Adempauze</button>
+            <button class="btn btn-secondary btn-small" style="font-size:0.75rem; padding:6px 8px; margin-left:auto;" onclick="openRuimteDetailsModal(${p.id})">🔍 Details</button>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      // Update Totale Barometer
+      const totalRemaining = Math.max(0, totalOriginal - totalRepaid);
+      const totalPct = totalOriginal > 0 ? Math.min(100, Math.round((totalRepaid / totalOriginal) * 100)) : 0;
+
+      document.getElementById('ruimte-total-repaid-text').innerText = `€${totalRepaid} (${totalPct}%)`;
+      document.getElementById('ruimte-total-remaining-text').innerText = `€${totalRemaining}`;
+      document.getElementById('ruimte-total-original-text').innerText = `€${totalOriginal}`;
+      document.getElementById('ruimte-total-progress-bar').style.width = `${totalPct}%`;
+
+      const horizonEl = document.getElementById('ruimte-horizon-text');
+      if (totalRemaining === 0 && totalOriginal > 0) {
+        horizonEl.innerText = "🎉 GEWELDIG! Alle Familie-Projecten zijn volledig vrijgemaakt!";
+      } else if (totalMonthlyTarget > 0 && totalRemaining > 0) {
+        const monthsLeft = Math.ceil(totalRemaining / totalMonthlyTarget);
+        const expDate = new Date();
+        expDate.setMonth(expDate.getMonth() + monthsLeft);
+        const formattedDate = expDate.toLocaleDateString('nl-NL', { month: 'long', year: 'numeric' });
+        horizonEl.innerText = `🔮 Vrijheids-Horizon: Volledig vrijgemaakt rond ${formattedDate} (nog ca. ${monthsLeft} mnd)`;
+      } else {
+        horizonEl.innerText = "🔮 Vul maanddoelen in bij je projecten voor een verwachte Vrijheids-Horizon.";
       }
     }
 
@@ -2211,10 +2585,13 @@
 
     // --- HOOFD RENDER LOGICA VOOR GELD-KOMPAS ---
     function renderMoneyView() {
-      // Update Payday radar
+      // 1. Update Ruimte-KomPAS
+      renderRuimteKompas();
+
+      // 2. Update Payday radar
       updatePaydayCountdown();
 
-      // 1. IMPULS WACHTKAMER
+      // 3. IMPULS WACHTKAMER
       let impulseItems = JSON.parse(localStorage.getItem('voldaan_impulse_items') || '[]');
       const impulseSort = document.getElementById('impulse-sort').value;
       const impulseContainer = document.getElementById('impulse-list');
@@ -2246,7 +2623,7 @@
         });
       }
 
-      // 2. VASTE LASTEN
+      // 4. VASTE LASTEN
       let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
       const billsFilter = document.getElementById('bills-filter').value;
       const billsContainer = document.getElementById('fixed-bills-list');
@@ -2276,7 +2653,7 @@
         });
       }
 
-      // 3. TOEKOMST ANKERS
+      // 5. TOEKOMST ANKERS
       let anchors = JSON.parse(localStorage.getItem('voldaan_future_anchors') || '[]');
       const anchorsFilter = document.getElementById('anchors-filter').value;
       const anchorsContainer = document.getElementById('future-anchors-list');
@@ -2319,6 +2696,7 @@
     initDefaultCompassGoals();
     initDefaultMoneyData();
     initDefaultContacts();
+    initDefaultRuimteData();
     updateCategoryDropdowns();
     renderTip();
     renderMoneyTip();
