@@ -27,8 +27,36 @@
       --soft-green: #F0FFF4;
       --green-border: #C6F6D5;
       --green-text: #22543D;
+      --input-bg: #FFFFFF;
+      --input-border: #E2E8F0;
+      --item-bg: #F7FAFC;
       --radius: 16px;
       --shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    }
+
+    body.dark-theme {
+      --bg-color: #1A202C;
+      --card-bg: #2D3748;
+      --text-main: #EDF2F7;
+      --text-muted: #A0AEC0;
+      --accent-primary: #7F9CF5;
+      --accent-hover: #667EEA;
+      --soft-teal: #234E52;
+      --teal-border: #2C7A7B;
+      --teal-text: #E6FFFA;
+      --soft-warm: #7B341E;
+      --warm-border: #9C4221;
+      --warm-text: #FFFAF0;
+      --soft-purple: #44337A;
+      --purple-border: #553C9A;
+      --purple-text: #FAF5FF;
+      --soft-green: #22543D;
+      --green-border: #2F855A;
+      --green-text: #F0FFF4;
+      --input-bg: #1A202C;
+      --input-border: #4A5568;
+      --item-bg: #1A202C;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
     }
 
     * {
@@ -45,6 +73,17 @@
       justify-content: center;
       min-height: 100vh;
       padding: 16px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 9999;
     }
 
     .container {
@@ -57,7 +96,9 @@
     }
 
     header {
-      text-align: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-top: 6px;
       margin-bottom: 6px;
     }
@@ -70,9 +111,20 @@
     }
 
     header p {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: var(--text-muted);
       margin-top: 2px;
+    }
+
+    .theme-toggle-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--input-border);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      box-shadow: var(--shadow);
     }
 
     .card {
@@ -81,6 +133,7 @@
       padding: 20px;
       box-shadow: var(--shadow);
       border: 1px solid rgba(0,0,0,0.03);
+      transition: background-color 0.3s ease;
     }
 
     .card h2 {
@@ -118,12 +171,8 @@
     }
 
     .btn-secondary {
-      background-color: #EDF2F7;
+      background-color: var(--input-border);
       color: var(--text-main);
-    }
-
-    .btn-secondary:hover {
-      background-color: #E2E8F0;
     }
 
     .btn-small {
@@ -141,8 +190,9 @@
     }
 
     .energy-btn {
-      background: #F7FAFC;
-      border: 2px solid #EDF2F7;
+      background: var(--item-bg);
+      border: 2px solid var(--input-border);
+      color: var(--text-main);
       border-radius: 12px;
       padding: 12px;
       font-size: 0.88rem;
@@ -153,13 +203,15 @@
 
     .energy-btn.selected {
       border-color: var(--accent-primary);
-      background-color: #EBF8FF;
+      background-color: rgba(90, 103, 216, 0.15);
       font-weight: 600;
     }
 
     textarea, input[type="text"] {
       width: 100%;
-      border: 1px solid #E2E8F0;
+      background: var(--input-bg);
+      color: var(--text-main);
+      border: 1px solid var(--input-border);
       border-radius: 10px;
       padding: 12px;
       font-size: 0.9rem;
@@ -180,14 +232,14 @@
     }
 
     .item-card {
-      background: #F7FAFC;
+      background: var(--item-bg);
       padding: 12px;
       border-radius: 10px;
       font-size: 0.9rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border: 1px solid #EDF2F7;
+      border: 1px solid var(--input-border);
     }
 
     .item-card.done {
@@ -205,10 +257,10 @@
     }
 
     .stat-box {
-      background: #F7FAFC;
+      background: var(--item-bg);
       padding: 12px 8px;
       border-radius: 12px;
-      border: 1px solid #EDF2F7;
+      border: 1px solid var(--input-border);
     }
 
     .stat-number {
@@ -254,7 +306,7 @@
     .btn-group {
       display: flex;
       gap: 6px;
-      margin-top: 8px;
+      margin-top: 10px;
       flex-wrap: wrap;
     }
 
@@ -265,11 +317,16 @@
 </head>
 <body>
 
+  <canvas id="confetti-canvas"></canvas>
+
   <div class="container">
     
     <header>
-      <h1>Voldaan</h1>
-      <p>Geen druk. Geen schuldgevoel. Jouw tempo.</p>
+      <div>
+        <h1>Voldaan</h1>
+        <p>Geen druk. Geen schuldgevoel. Jouw tempo.</p>
+      </div>
+      <button class="theme-toggle-btn" onclick="toggleTheme()" id="theme-btn">🌙 Nacht</button>
     </header>
 
     <!-- 💡 BREIN & FOCUS HACK VAN DE DAG -->
@@ -298,7 +355,7 @@
       </div>
     </div>
 
-    <!-- 🌙 2. AVOND PACT MET AFRIFT & HISTORIE -->
+    <!-- 🌙 2. AVOND PACT MET WHATSAPP SHARE & HISTORIE -->
     <div class="card">
       <h2>
         🌙 Het Avond-Pact
@@ -308,13 +365,14 @@
 
       <!-- ACTIEF PACT WEERGAVE -->
       <div id="pact-display" class="hidden">
-        <div style="background: #F7FAFC; padding: 14px; border-radius: 10px; border-left: 4px solid var(--accent-primary);">
+        <div style="background: var(--item-bg); padding: 14px; border-radius: 10px; border-left: 4px solid var(--accent-primary); border: 1px solid var(--input-border);">
           <strong style="display:block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">JOUW AFSPRAAK:</strong>
           <span id="current-pact-text" style="font-size: 1rem; font-weight: 500;"></span>
         </div>
         
         <div class="btn-group">
-          <button class="btn btn-small" style="background-color: #38A169;" onclick="completePact()">✅ Voltooid</button>
+          <button class="btn btn-small" style="background-color: #38A169; color: white;" onclick="completePact()">✅ Voltooid</button>
+          <button class="btn btn-secondary btn-small" onclick="sharePactWhatsApp()" style="background-color: #25D366; color: white;">📲 Deel met Buddy</button>
           <button class="btn btn-secondary btn-small" onclick="renegotiatePact()">✨ Maak kleiner</button>
           <button class="btn btn-secondary btn-small" onclick="editPact()">✏️ Bewerken</button>
           <button class="btn btn-secondary btn-small" style="color: #E53E3E;" onclick="deletePact()">🗑️ Wis</button>
@@ -328,7 +386,7 @@
       </div>
 
       <!-- PACTEN ARCHIEF (HISTORIE) -->
-      <div id="pact-history-box" class="hidden" style="margin-top: 14px; background: #F7FAFC; padding: 12px; border-radius: 10px;">
+      <div id="pact-history-box" class="hidden" style="margin-top: 14px; background: var(--item-bg); padding: 12px; border-radius: 10px; border: 1px solid var(--input-border);">
         <strong style="font-size: 0.85rem;">📜 Jouw Pacten Historie</strong>
         <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">Afspraken die je met jezelf bent nagekomen:</p>
         <div id="pact-history-list" class="item-list"></div>
@@ -382,7 +440,7 @@
         </div>
       </div>
 
-      <!-- DYNAMISCH ZACHT INZICHT (CORRELATIE) -->
+      <!-- DYNAMISCH ZACHT INZICHT -->
       <div class="insight-card" id="insight-box">
         <strong>💡 Zacht Inzicht:</strong>
         <span id="insight-text">Je bouwt stap voor stap aan je eigen ritme. Er is geen haast!</span>
@@ -392,13 +450,71 @@
     <!-- 💜 6. BUDDY PULSE -->
     <div class="buddy-pulse">
       <strong style="font-size: 0.9rem;">💜 Zachte Buddy-Pulse</strong>
-      <p style="font-size: 0.82rem; margin-top: 4px; opacity: 0.9;">Er zijn nu 38 anderen ook rustig op hun eigen tempo bezig.</p>
-      <button class="btn" style="margin-top: 10px; background-color: var(--purple-text); font-size: 0.82rem; padding: 8px 14px;" onclick="alert('❤️ Signaal verzonden! Je hebt anoniem een schouderklopje gestuurd naar een lotgenoot.')">Stuur een anoniem schouderklopje</button>
+      <p style="font-size: 0.82rem; margin-top: 4px; opacity: 0.9;">Er zijn nu 42 anderen ook rustig op hun eigen tempo bezig.</p>
+      <button class="btn" style="margin-top: 10px; background-color: var(--purple-text); color: white; font-size: 0.82rem; padding: 8px 14px;" onclick="triggerConfetti(); alert('❤️ Signaal verzonden! Je hebt anoniem een schouderklopje gestuurd naar een lotgenoot.');">Stuur een anoniem schouderklopje</button>
     </div>
 
   </div>
 
   <script>
+    // --- CONFETTI ANIMATIE ---
+    function triggerConfetti() {
+      const canvas = document.getElementById('confetti-canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      let particles = [];
+      const colors = ['#5A67D8', '#B2F5EA', '#E9D8FD', '#FEEBC8', '#38A169', '#319795'];
+
+      for (let i = 0; i < 60; i++) {
+        particles.push({
+          x: window.innerWidth / 2,
+          y: window.innerHeight / 2,
+          vx: (Math.random() - 0.5) * 12,
+          vy: (Math.random() - 0.5) * 12 - 4,
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          life: 100
+        });
+      }
+
+      function render() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let active = false;
+        particles.forEach(p => {
+          if (p.life > 0) {
+            active = true;
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.25; // zwaartekracht
+            p.life -= 2;
+            ctx.fillStyle = p.color;
+            ctx.fillRect(p.x, p.y, p.size, p.size);
+          }
+        });
+        if (active) requestAnimationFrame(render);
+        else ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+      render();
+    }
+
+    // --- THEMA SCHAKELER (DONKERE MODUS) ---
+    function toggleTheme() {
+      document.body.classList.toggle('dark-theme');
+      const isDark = document.body.classList.contains('dark-theme');
+      localStorage.setItem('voldaan_theme', isDark ? 'dark' : 'light');
+      document.getElementById('theme-btn').innerText = isDark ? '☀️ Dag' : '🌙 Nacht';
+    }
+
+    function initTheme() {
+      const savedTheme = localStorage.getItem('voldaan_theme');
+      if (savedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+        document.getElementById('theme-btn').innerText = '☀️ Dag';
+      }
+    }
+
     // --- BREIN HACKS BIBLIOTHEEK ---
     const brainTips = [
       "De 2-Minuten Regel: Kost een taak minder dan 2 minuten? Doe het meteen of laat het bewust los. Geen twijfelruimte laten.",
@@ -438,6 +554,7 @@
       localStorage.setItem('voldaan_last_energy', selectedEnergyState);
       updateStats();
       updateInsight();
+      triggerConfetti();
       alert(`Je dag is rustig gestart in de stand: '${selectedEnergyState}'. Neem alle tijd!`);
     }
 
@@ -466,7 +583,7 @@
       document.getElementById('insight-text').innerText = text;
     }
 
-    // --- AVOND PACT BEHEER ---
+    // --- AVOND PACT BEHEER & WHATSAPP SHARE ---
     function savePact() {
       const input = document.getElementById('pact-input').value;
       if (!input.trim()) return;
@@ -488,6 +605,13 @@
       }
     }
 
+    function sharePactWhatsApp() {
+      const pactText = localStorage.getItem('voldaan_pact');
+      if (!pactText) return;
+      const msg = encodeURIComponent(`Mijn zachte afspraak met mezelf voor morgen is: "${pactText}". Zachte aanmoediging is altijd welkom! ☕ (gemaakt via Voldaan)`);
+      window.open(`https://wa.me/?text=${msg}`, '_blank');
+    }
+
     function completePact() {
       const pactText = localStorage.getItem('voldaan_pact');
       if (!pactText) return;
@@ -505,7 +629,7 @@
       renderPactHistory();
       updateStats();
       updateInsight();
-      alert('🎉 Super! Je afspraak met jezelf is voltooid en toegevoegd aan je archief.');
+      triggerConfetti();
     }
 
     function renegotiatePact() {
@@ -577,6 +701,7 @@
       if (tasks[index].done) {
         let doneCount = parseInt(localStorage.getItem('voldaan_stat_tasks') || '0') + 1;
         localStorage.setItem('voldaan_stat_tasks', doneCount);
+        triggerConfetti();
       }
       
       localStorage.setItem('voldaan_tasks', JSON.stringify(tasks));
@@ -654,6 +779,7 @@
     }
 
     // --- INIT ---
+    initTheme();
     renderTip();
     renderPact();
     renderTasks();
