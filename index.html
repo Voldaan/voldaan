@@ -255,10 +255,10 @@
       margin-top: 2px;
     }
 
-    /* POST-IT STIJLEN */
+    /* POST-IT STIJLEN FÜR IDEEËNKLUIS */
     .postit-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
       gap: 14px;
       margin-top: 14px;
     }
@@ -360,6 +360,42 @@
 
     .postit-menu button:hover {
       background-color: var(--input-border);
+    }
+
+    /* MODAL OVERLAY STIJLEN */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      z-index: 10000;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 16px;
+      overflow-y: auto;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      color: var(--text-main);
+      width: 100%;
+      max-width: 680px;
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      margin-top: 20px;
+      margin-bottom: 40px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
     }
 
     .stats-grid {
@@ -477,7 +513,7 @@
       </div>
     </div>
 
-    <!-- 🌙 2. AVOND PACT MET WHATSAPP SHARE & AGENDA KOPPELING -->
+    <!-- 🌙 2. AVOND PACT -->
     <div class="card">
       <h2>
         🌙 Het Avond-Pact
@@ -485,7 +521,6 @@
       </h2>
       <p class="subtitle">Zet één piepkleine micro-stap klaar voor morgen. Zo hoef je 's ochtends niet na te denken.</p>
 
-      <!-- ACTIEF PACT WEERGAVE -->
       <div id="pact-display" class="hidden">
         <div style="background: var(--item-bg); padding: 14px; border-radius: 10px; border-left: 4px solid var(--accent-primary); border: 1px solid var(--input-border);">
           <strong style="display:block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">JOUW AFSPRAAK:</strong>
@@ -502,13 +537,11 @@
         </div>
       </div>
 
-      <!-- PACT FORMULIER -->
       <div id="pact-form">
         <input type="text" id="pact-input" placeholder="Bijv: Alleen mijn laptop opendoen & water pakken">
         <button class="btn" onclick="savePact()">Leg vast voor morgen</button>
       </div>
 
-      <!-- PACTEN ARCHIEF -->
       <div id="pact-history-box" class="hidden" style="margin-top: 14px; background: var(--item-bg); padding: 12px; border-radius: 10px; border: 1px solid var(--input-border);">
         <strong style="font-size: 0.85rem;">📜 Jouw Pacten Historie</strong>
         <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">Afspraken die je met jezelf bent nagekomen:</p>
@@ -529,10 +562,8 @@
         <button class="btn btn-small" onclick="addTask()">Toevoegen</button>
       </div>
 
-      <!-- ACTIEVE EN RECENTE TAKEN -->
       <div id="tasks-list" class="item-list"></div>
 
-      <!-- TAKEN ARCHIEF -->
       <div id="task-archive-box" class="hidden" style="margin-top: 14px; background: var(--item-bg); padding: 12px; border-radius: 10px; border: 1px solid var(--input-border);">
         <strong style="font-size: 0.85rem;">📜 Voltooide Taken Archief</strong>
         <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">Eerder afgevinkte acties:</p>
@@ -540,18 +571,17 @@
       </div>
     </div>
 
-    <!-- 💡 4. DE IDEEËNKLUIS (POST-ITS) -->
+    <!-- 📌 4. IDEEËNKLUIS (HOOFDDASHBOARD: MAX 3 LAATSTE POST-ITS) -->
     <div class="card">
       <h2>
         📌 Ideeënkluis
         <button class="btn btn-secondary btn-small" onclick="grabRandomIdea()">🎲 Grabbelton</button>
       </h2>
-      <p class="subtitle">Schrijf je gedachten als Post-its van je af. Organiseer ze per categorie of stuur ze door naar je Planbord.</p>
+      <p class="subtitle">Snel een gedachte lossen? Typ 'm hierin. Bekijk je 3 nieuwste ideeën of open de volledige kluis.</p>
 
-      <!-- INVOER HIER -->
       <textarea id="idea-input" rows="2" placeholder="Typ een willekeurig idee of wilde gedachte..."></textarea>
       
-      <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+      <div style="display: flex; gap: 8px; margin-bottom: 10px;">
         <select id="idea-category-select" style="margin-bottom: 0; flex: 1;">
           <option value="Algemeen">📂 Categorie: Algemeen</option>
           <option value="Creatief">🎨 Creatief</option>
@@ -563,23 +593,13 @@
 
       <button class="btn btn-secondary" onclick="addIdea()">Prik op het Bord 📌</button>
 
-      <!-- FILTER & SORTEER BALK -->
-      <div class="filter-bar">
-        <select id="filter-category" onchange="renderIdeas()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 6px;">
-          <option value="ALL">🔍 Alle categorieën</option>
-        </select>
+      <!-- LAATSTE 3 POST-ITS RENDER GRID -->
+      <div id="main-ideas-postit-grid" class="postit-grid"></div>
 
-        <select id="sort-ideas" onchange="renderIdeas()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 6px;">
-          <option value="NEWEST">⏱️ Nieuwste eerst</option>
-          <option value="OLDEST">⏳ Oudste eerst</option>
-          <option value="SHUFFLE">🎲 Alles door elkaar</option>
-        </select>
-
-        <button class="btn btn-secondary btn-small" onclick="toggleIdeaDates()" id="toggle-dates-btn">🕒 Datum: Aan</button>
-      </div>
-
-      <!-- POST-IT BORD -->
-      <div id="ideas-postit-grid" class="postit-grid"></div>
+      <!-- KNOP NAAR VOLLEDIGE IDEEËNKLUIS POP-UP -->
+      <button class="btn btn-secondary" style="margin-top: 14px; font-size:0.9rem;" onclick="openIdeasModal()" id="open-ideas-modal-btn">
+        📂 Bekijk alle ideeën (0)
+      </button>
     </div>
 
     <!-- 📊 5. ZACHTE INZICHTEN & CORRELATIES -->
@@ -602,7 +622,6 @@
         </div>
       </div>
 
-      <!-- DYNAMISCH ZACHT INZICHT -->
       <div class="insight-card" id="insight-box">
         <strong>💡 Zacht Inzicht:</strong>
         <span id="insight-text">Je bouwt stap voor stap aan je eigen ritme. Er is geen haast!</span>
@@ -612,10 +631,41 @@
     <!-- 💜 6. BUDDY PULSE -->
     <div class="buddy-pulse">
       <strong style="font-size: 0.9rem;">💜 Zachte Buddy-Pulse</strong>
-      <p style="font-size: 0.82rem; margin-top: 4px; opacity: 0.9;">Er zijn nu 45 anderen ook rustig op hun eigen tempo bezig.</p>
+      <p style="font-size: 0.82rem; margin-top: 4px; opacity: 0.9;">Er zijn nu 48 anderen ook rustig op hun eigen tempo bezig.</p>
       <button class="btn" style="margin-top: 10px; background-color: var(--purple-text); color: white; font-size: 0.82rem; padding: 8px 14px;" onclick="triggerConfetti(); alert('❤️ Signaal verzonden! Je hebt anoniem een schouderklopje gestuurd naar een lotgenoot.');">Stuur een anoniem schouderklopje</button>
     </div>
 
+  </div>
+
+  <!-- 🗂️ MODAL POP-UP VOOR ALLE IDEEËN -->
+  <div id="ideas-modal" class="modal-overlay hidden" onclick="closeIdeasModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      
+      <div class="modal-header">
+        <h2>📌 Volledige Ideeënkluis</h2>
+        <button class="btn btn-secondary btn-small" onclick="closeIdeasModal()">✕ Sluiten</button>
+      </div>
+      <p class="subtitle">Een rustig overzicht van al jouw losse Post-its en creatieve invallen.</p>
+
+      <!-- FILTER & SORTEER BALK IN MODAL -->
+      <div class="filter-bar">
+        <select id="modal-filter-category" onchange="renderIdeas()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 6px;">
+          <option value="ALL">📂 Alles</option>
+        </select>
+
+        <select id="modal-sort-ideas" onchange="renderIdeas()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 6px;">
+          <option value="NEWEST">⏱️ Nieuwste eerst</option>
+          <option value="OLDEST">⏳ Oudste eerst</option>
+          <option value="SHUFFLE">🎲 Alles door elkaar</option>
+        </select>
+
+        <button class="btn btn-secondary btn-small" onclick="toggleIdeaDates()" id="modal-toggle-dates-btn">🕒 Datum: Aan</button>
+      </div>
+
+      <!-- VOLLEDIGE GRID VAN ALLE POST-ITS -->
+      <div id="modal-ideas-postit-grid" class="postit-grid"></div>
+
+    </div>
   </div>
 
   <script>
@@ -661,27 +711,21 @@
       render();
     }
 
-    // --- AGENDA EXPORT FUNCTIE (GOOGLE & ICS) ---
+    // --- AGENDA EXPORT ---
     function exportToCalendar(title, description) {
-      const choice = confirm("Wil je deze herinnering openen in Google Calendar?\n\n(Klik 'Annuleren' om direct een .ics kalenderbestand voor Apple/Outlook te downloaden)");
-      
+      const choice = confirm("Wil je deze herinnering openen in Google Calendar?\n\n(Klik 'Annuleren' om direct een .ics bestand te downloaden voor Apple/Outlook)");
       const now = new Date();
-      // Zet herinnering standaard op morgenochtend 09:00 uur
       const tomorrow = new Date(now);
       tomorrow.setDate(tomorrow.getDate() + 1);
       tomorrow.setHours(9, 0, 0, 0);
-
       const endTime = new Date(tomorrow);
       endTime.setMinutes(endTime.getMinutes() + 15);
-
       const formatICSDate = (d) => d.toISOString().replace(/-|:|\.\d+/g, '');
 
       if (choice) {
-        // Google Calendar direct
         const gUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&details=${encodeURIComponent(description)}&dates=${formatICSDate(tomorrow)}/${formatICSDate(endTime)}`;
         window.open(gUrl, '_blank');
       } else {
-        // .ics bestand genereren voor Apple / Outlook / Mobiel
         const icsData = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:${title}\nDESCRIPTION:${description}\nDTSTART:${formatICSDate(tomorrow)}\nDTEND:${formatICSDate(endTime)}\nEND:VEVENT\nEND:VCALENDAR`;
         const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
         const link = document.createElement('a');
@@ -696,15 +740,13 @@
     function pushPactToCalendar() {
       const pactText = localStorage.getItem('voldaan_pact');
       if (!pactText) return;
-      exportToCalendar(`🌙 Avond-pact: ${pactText}`, `Mijn zachte micro-stap van de dag: "${pactText}". Geen druk, alleen een zacht steuntje in de rug!`);
+      exportToCalendar(`🌙 Avond-pact: ${pactText}`, `Mijn zachte micro-stap van de dag: "${pactText}". Geen druk!`);
     }
 
     function pushTaskToCalendar(taskId) {
       let tasks = JSON.parse(localStorage.getItem('voldaan_tasks') || '[]');
       const task = tasks.find(t => t.id === taskId);
-      if (task) {
-        exportToCalendar(`🎯 Zacht Plan: ${task.text}`, `Mijn kleine focus-actie: "${task.text}". Neem alle tijd!`);
-      }
+      if (task) exportToCalendar(`🎯 Zacht Plan: ${task.text}`, `Mijn kleine focus-actie: "${task.text}".`);
     }
 
     // --- THEMA SCHAKELER ---
@@ -716,8 +758,7 @@
     }
 
     function initTheme() {
-      const savedTheme = localStorage.getItem('voldaan_theme');
-      if (savedTheme === 'dark') {
+      if (localStorage.getItem('voldaan_theme') === 'dark') {
         document.body.classList.add('dark-theme');
         document.getElementById('theme-btn').innerText = '☀️ Dag';
       }
@@ -959,7 +1000,7 @@
       }
     }
 
-    // --- IDEEËNKLUIS (POST-ITS) ---
+    // --- IDEEËNKLUIS (DASHBOARD MAX 3 + MODAL OVERLAY) ---
     let openMenuId = null;
 
     function getCategories() {
@@ -981,14 +1022,14 @@
     function updateCategoryDropdowns() {
       const cats = getCategories();
       const addSelect = document.getElementById('idea-category-select');
-      const filterSelect = document.getElementById('filter-category');
+      const modalFilterSelect = document.getElementById('modal-filter-category');
 
       addSelect.innerHTML = '';
-      filterSelect.innerHTML = '<option value="ALL">🔍 Alle categorieën</option>';
+      modalFilterSelect.innerHTML = '<option value="ALL">📂 Alles</option>';
 
       cats.forEach(c => {
         addSelect.innerHTML += `<option value="${c}">${c}</option>`;
-        filterSelect.innerHTML += `<option value="${c}">${c}</option>`;
+        modalFilterSelect.innerHTML += `<option value="${c}">${c}</option>`;
       });
     }
 
@@ -1015,7 +1056,7 @@
     function toggleIdeaDates() {
       let show = localStorage.getItem('voldaan_show_idea_dates') !== 'false';
       localStorage.setItem('voldaan_show_idea_dates', !show);
-      document.getElementById('toggle-dates-btn').innerText = !show ? '🕒 Datum: Aan' : '🕒 Datum: Uit';
+      document.getElementById('modal-toggle-dates-btn').innerText = !show ? '🕒 Datum: Aan' : '🕒 Datum: Uit';
       renderIdeas();
     }
 
@@ -1068,56 +1109,88 @@
       renderIdeas();
     }
 
+    function openIdeasModal() {
+      document.getElementById('ideas-modal').classList.remove('hidden');
+      renderIdeas();
+    }
+
+    function closeIdeasModal() {
+      document.getElementById('ideas-modal').classList.add('hidden');
+    }
+
+    function createPostitElement(idea, showDates) {
+      const postit = document.createElement('div');
+      postit.className = 'postit';
+      const isMenuOpen = openMenuId === idea.id;
+
+      postit.innerHTML = `
+        <div class="postit-pin">📌</div>
+        <div class="postit-content">${idea.text}</div>
+        <div class="postit-footer">
+          <span>🏷️ ${idea.category} ${showDates ? '<br>🕒 ' + idea.created : ''}</span>
+          <button class="postit-menu-btn" onclick="togglePostitMenu(${idea.id}, event)">⋮</button>
+        </div>
+        ${isMenuOpen ? `
+          <div class="postit-menu" onclick="event.stopPropagation()">
+            <button onclick="moveIdeaToPlanbord(${idea.id})">🎯 Naar Planbord</button>
+            <button onclick="moveIdeaToPact(${idea.id})">🌙 Als Avond-pact</button>
+            <button onclick="changeIdeaCategory(${idea.id})">🏷️ Categorie wijzigen</button>
+            <button onclick="removeIdea(${idea.id})" style="color:#E53E3E;">🗑️ Verwijderen</button>
+          </div>
+        ` : ''}
+      `;
+      return postit;
+    }
+
     function renderIdeas() {
-      let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
-      const filterCat = document.getElementById('filter-category').value;
-      const sortVal = document.getElementById('sort-ideas').value;
+      let allIdeas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
       const showDates = localStorage.getItem('voldaan_show_idea_dates') !== 'false';
+      
+      // Update knop-tekst met totaal aantal ideeën
+      document.getElementById('open-ideas-modal-btn').innerText = `📂 Bekijk alle ideeën (${allIdeas.length})`;
+
+      // 1. RENDER HOOFDDASHBOARD (LAATSTE 3 IDEEËN - ALLE CATEGORIEËN)
+      const mainGrid = document.getElementById('main-ideas-postit-grid');
+      mainGrid.innerHTML = '';
+
+      const recent3 = [...allIdeas].sort((a,b) => b.id - a.id).slice(0, 3);
+
+      if (recent3.length === 0) {
+        mainGrid.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted); grid-column: 1/-1;">Nog geen Post-its in je Ideeënkluis. Prik er hierboven een op!</span>';
+      } else {
+        recent3.forEach((idea) => {
+          mainGrid.appendChild(createPostitElement(idea, showDates));
+        });
+      }
+
+      // 2. RENDER POP-UP MODAL (VOLLEDIGE IDEEËNKLUIS MET FILTERS)
+      const filterCat = document.getElementById('modal-filter-category').value;
+      const sortVal = document.getElementById('modal-sort-ideas').value;
+
+      let modalIdeas = [...allIdeas];
 
       if (filterCat !== 'ALL') {
-        ideas = ideas.filter(i => i.category === filterCat);
+        modalIdeas = modalIdeas.filter(i => i.category === filterCat);
       }
 
       if (sortVal === 'NEWEST') {
-        ideas.sort((a,b) => b.id - a.id);
+        modalIdeas.sort((a,b) => b.id - a.id);
       } else if (sortVal === 'OLDEST') {
-        ideas.sort((a,b) => a.id - b.id);
+        modalIdeas.sort((a,b) => a.id - b.id);
       } else if (sortVal === 'SHUFFLE') {
-        ideas.sort(() => Math.random() - 0.5);
+        modalIdeas.sort(() => Math.random() - 0.5);
       }
 
-      const grid = document.getElementById('ideas-postit-grid');
-      grid.innerHTML = '';
+      const modalGrid = document.getElementById('modal-ideas-postit-grid');
+      modalGrid.innerHTML = '';
 
-      if (ideas.length === 0) {
-        grid.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted); grid-column: 1/-1;">Geen Post-its gevonden in deze categorie.</span>';
-        return;
+      if (modalIdeas.length === 0) {
+        modalGrid.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted); grid-column: 1/-1;">Geen Post-its gevonden in deze categorie.</span>';
+      } else {
+        modalIdeas.forEach((idea) => {
+          modalGrid.appendChild(createPostitElement(idea, showDates));
+        });
       }
-
-      ideas.forEach((idea) => {
-        const postit = document.createElement('div');
-        postit.className = 'postit';
-
-        const isMenuOpen = openMenuId === idea.id;
-
-        postit.innerHTML = `
-          <div class="postit-pin">📌</div>
-          <div class="postit-content">${idea.text}</div>
-          <div class="postit-footer">
-            <span>🏷️ ${idea.category} ${showDates ? '<br>🕒 ' + idea.created : ''}</span>
-            <button class="postit-menu-btn" onclick="togglePostitMenu(${idea.id}, event)">⋮</button>
-          </div>
-          ${isMenuOpen ? `
-            <div class="postit-menu" onclick="event.stopPropagation()">
-              <button onclick="moveIdeaToPlanbord(${idea.id})">🎯 Naar Planbord</button>
-              <button onclick="moveIdeaToPact(${idea.id})">🌙 Als Avond-pact</button>
-              <button onclick="changeIdeaCategory(${idea.id})">🏷️ Categorie wijzigen</button>
-              <button onclick="removeIdea(${idea.id})" style="color:#E53E3E;">🗑️ Verwijderen</button>
-            </div>
-          ` : ''}
-        `;
-        grid.appendChild(postit);
-      });
     }
 
     function grabRandomIdea() {
