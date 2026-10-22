@@ -615,7 +615,7 @@
       <!-- 🧭 4. HET ZACHTE KOMPAS -->
       <div class="card" style="margin-bottom: 18px;">
         <h2>
-          🧭 Het Zachte Kompas
+          🧭 Het Zachte KomPAS
           <button class="btn btn-secondary btn-small" onclick="toggleAddGoalForm()">+ Nieuw Doel</button>
         </h2>
         <p class="subtitle">Langetermijn voornemens met een ingebouwd veiligheidsnet. Vier elke stap, ook de micro-versie op zware dagen!</p>
@@ -802,7 +802,7 @@
         <h2>📜 Geld-Kompas Archief</h2>
         <button class="btn btn-secondary btn-small" onclick="closeMoneyArchiveModal()">✕ Sluiten</button>
       </div>
-      <p class="subtitle">Een helder overzicht van al jouw opgebouwde zeges: bespaarde impuls-aankopen, voldane vaste lasten en gespaarde opvangpotjes!</p>
+      <p class="subtitle">Een helder overzicht van al jouw opgebouwde zeges met exacte datum en tijd: bespaarde impuls-aankopen, voldane vaste lasten en gespaarde opvangpotjes!</p>
 
       <div class="filter-bar">
         <select id="money-archive-filter" onchange="renderMoneyArchive()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 6px;">
@@ -819,6 +819,17 @@
   </div>
 
   <script>
+    // --- HELPER MET DATUM EN TIJD ---
+    function getNowDateTimeStr() {
+      return new Date().toLocaleDateString('nl-NL', { 
+        day: 'numeric', 
+        month: 'short', 
+        year: 'numeric',
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+    }
+
     // --- TABBLADEN NAVIGATION (SPA) ---
     function switchView(viewName) {
       document.getElementById('view-today').classList.add('hidden');
@@ -1011,7 +1022,7 @@
       const pactText = localStorage.getItem('voldaan_pact');
       if (!pactText) return;
       let history = JSON.parse(localStorage.getItem('voldaan_pact_history') || '[]');
-      const dateStr = new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+      const dateStr = getNowDateTimeStr();
       history.unshift({ text: pactText, date: dateStr, status: '✅ Voltooid' });
       localStorage.setItem('voldaan_pact_history', JSON.stringify(history));
       let pactsCount = parseInt(localStorage.getItem('voldaan_stat_pacts') || '0') + 1;
@@ -1069,7 +1080,7 @@
       if (!input.trim()) return;
 
       let tasks = JSON.parse(localStorage.getItem('voldaan_tasks') || '[]');
-      const nowStr = new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+      const nowStr = getNowDateTimeStr();
       
       tasks.push({
         id: Date.now(),
@@ -1090,7 +1101,7 @@
       if (idx !== -1) {
         tasks[idx].done = !tasks[idx].done;
         if (tasks[idx].done) {
-          tasks[idx].doneAt = new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+          tasks[idx].doneAt = getNowDateTimeStr();
           let doneCount = parseInt(localStorage.getItem('voldaan_stat_tasks') || '0') + 1;
           localStorage.setItem('voldaan_stat_tasks', doneCount);
           triggerConfetti();
@@ -1362,7 +1373,7 @@
       if (!input.value.trim()) return;
 
       let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
-      const dateStr = new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+      const dateStr = getNowDateTimeStr();
 
       ideas.push({ id: Date.now(), text: input.value, category: catSelect.value || 'Algemeen', created: dateStr });
       localStorage.setItem('voldaan_ideas', JSON.stringify(ideas));
@@ -1493,19 +1504,20 @@
       alert(`🎲 GRABBELTON POST-IT:\n\n"${randomIdea.text}" (${randomIdea.category})\n\nWil je hier vandaag iets mee?`);
     }
 
-    // --- GELD-KOMPAS LOGICA ---
+    // --- GELD-KOMPAS LOGICA MET DATUM & TIJD ---
     function initDefaultMoneyData() {
+      const nowStr = getNowDateTimeStr();
       if (!localStorage.getItem('voldaan_fixed_bills')) {
         const defaultBills = [
-          { id: 1, name: "Huur / Hypotheek & Vaste Lasten", paid: false, rawAmount: 0 },
-          { id: 2, name: "Zorgverzekering", paid: false, rawAmount: 0 }
+          { id: 1, name: "Huur / Hypotheek & Vaste Lasten", paid: false, rawAmount: 0, created: nowStr, paidAt: null },
+          { id: 2, name: "Zorgverzekering", paid: false, rawAmount: 0, created: nowStr, paidAt: null }
         ];
         localStorage.setItem('voldaan_fixed_bills', JSON.stringify(defaultBills));
       }
       if (!localStorage.getItem('voldaan_future_anchors')) {
         const defaultAnchors = [
-          { id: 1, name: "Auto-APK / Onderhoud", amount: 200, rawAmount: 200, targetMonth: "Mei", saved: false },
-          { id: 2, name: "Feestdagen / Cadeaus", amount: 150, rawAmount: 150, targetMonth: "December", saved: false }
+          { id: 1, name: "Auto-APK / Onderhoud", amount: 200, rawAmount: 200, targetMonth: "Mei", saved: false, created: nowStr, savedAt: null },
+          { id: 2, name: "Feestdagen / Cadeaus", amount: 150, rawAmount: 150, targetMonth: "December", saved: false, created: nowStr, savedAt: null }
         ];
         localStorage.setItem('voldaan_future_anchors', JSON.stringify(defaultAnchors));
       }
@@ -1513,8 +1525,7 @@
 
     function addToMoneyArchive(item) {
       let archive = JSON.parse(localStorage.getItem('voldaan_money_archive') || '[]');
-      const dateStr = new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
-      item.archivedDate = dateStr;
+      item.archivedDate = getNowDateTimeStr();
       archive.unshift(item);
       localStorage.setItem('voldaan_money_archive', JSON.stringify(archive));
     }
@@ -1552,7 +1563,7 @@
         div.innerHTML = `
           <div>
             <strong>${typeLabel}: ${item.name}</strong> ${item.price ? `<span style="color:var(--accent-primary); font-weight:600;">(${item.price})</span>` : ''}
-            <span class="time-badge">Gearchiveerd op ${item.archivedDate} ${item.note ? '• ' + item.note : ''}</span>
+            <span class="time-badge">🕒 Gearchiveerd: ${item.archivedDate} ${item.note ? '• ' + item.note : ''}</span>
           </div>
           <div style="display:flex; gap:6px;">
             <button class="btn btn-secondary btn-small" style="font-size:0.75rem;" onclick="restoreArchiveItem(${item.id})">↩️ Herstellen</button>
@@ -1584,11 +1595,11 @@
         localStorage.setItem('voldaan_impulse_items', JSON.stringify(items));
       } else if (item.type === 'bill') {
         let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
-        bills.push({ id: item.id, name: item.name, paid: false, rawAmount: 0 });
+        bills.push({ id: item.id, name: item.name, paid: false, rawAmount: 0, created: item.archivedDate, paidAt: null });
         localStorage.setItem('voldaan_fixed_bills', JSON.stringify(bills));
       } else if (item.type === 'anchor') {
         let anchors = JSON.parse(localStorage.getItem('voldaan_future_anchors') || '[]');
-        anchors.push({ id: item.id, name: item.name, amount: item.price ? item.price.replace('€','') : '0', targetMonth: 'Bewerken', saved: false });
+        anchors.push({ id: item.id, name: item.name, amount: item.price ? item.price.replace('€','') : '0', targetMonth: 'Bewerken', saved: false, created: item.archivedDate, savedAt: null });
         localStorage.setItem('voldaan_future_anchors', JSON.stringify(anchors));
       }
 
@@ -1608,7 +1619,7 @@
         name: name.trim(),
         price: price ? `€${price}` : '',
         rawAmount: price ? parseFloat(price) : 0,
-        date: new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })
+        date: getNowDateTimeStr()
       });
 
       localStorage.setItem('voldaan_impulse_items', JSON.stringify(items));
@@ -1671,7 +1682,14 @@
       const name = prompt("Naam van de vaste last / betaling:");
       if (name && name.trim()) {
         let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
-        bills.push({ id: Date.now(), name: name.trim(), paid: false, rawAmount: 0 });
+        bills.push({ 
+          id: Date.now(), 
+          name: name.trim(), 
+          paid: false, 
+          rawAmount: 0,
+          created: getNowDateTimeStr(),
+          paidAt: null
+        });
         localStorage.setItem('voldaan_fixed_bills', JSON.stringify(bills));
         renderMoneyView();
       }
@@ -1695,6 +1713,7 @@
       const idx = bills.findIndex(b => b.id === id);
       if (idx !== -1) {
         bills[idx].paid = !bills[idx].paid;
+        bills[idx].paidAt = bills[idx].paid ? getNowDateTimeStr() : null;
         if (bills[idx].paid) triggerConfetti();
         localStorage.setItem('voldaan_fixed_bills', JSON.stringify(bills));
         renderMoneyView();
@@ -1714,7 +1733,7 @@
         type: 'bill',
         name: bill.name,
         price: '',
-        note: bill.paid ? '✅ Voldaan en gearchiveerd' : 'Gearchiveerd'
+        note: bill.paid ? `✅ Betaald op ${bill.paidAt || 'onbekend'}` : 'Gearchiveerd'
       });
 
       renderMoneyView();
@@ -1735,7 +1754,15 @@
       const month = prompt("Welke maand/periode? (bijv. April):");
 
       let anchors = JSON.parse(localStorage.getItem('voldaan_future_anchors') || '[]');
-      anchors.push({ id: Date.now(), name: name.trim(), amount: amount || '0', targetMonth: month || 'Z.A.P.', saved: false });
+      anchors.push({ 
+        id: Date.now(), 
+        name: name.trim(), 
+        amount: amount || '0', 
+        targetMonth: month || 'Z.A.P.', 
+        saved: false,
+        created: getNowDateTimeStr(),
+        savedAt: null
+      });
       localStorage.setItem('voldaan_future_anchors', JSON.stringify(anchors));
       renderMoneyView();
     }
@@ -1763,6 +1790,7 @@
       const idx = anchors.findIndex(a => a.id === id);
       if (idx !== -1) {
         anchors[idx].saved = !anchors[idx].saved;
+        anchors[idx].savedAt = anchors[idx].saved ? getNowDateTimeStr() : null;
         if (anchors[idx].saved) triggerConfetti();
         localStorage.setItem('voldaan_future_anchors', JSON.stringify(anchors));
         renderMoneyView();
@@ -1782,7 +1810,7 @@
         type: 'anchor',
         name: anchor.name,
         price: `€${anchor.amount}`,
-        note: `Doel bereikt for ${anchor.targetMonth}!`
+        note: anchor.saved ? `Behaald op ${anchor.savedAt || 'onbekend'}` : `Doel for ${anchor.targetMonth}`
       });
 
       renderMoneyView();
@@ -1816,7 +1844,7 @@
           div.innerHTML = `
             <div>
               <strong>${item.name}</strong> ${item.price ? `<span style="color:var(--accent-primary); font-weight:600;">(${item.price})</span>` : ''}
-              <span class="time-badge">Geparkeerd op ${item.date} — Neem 24u bedenktijd</span>
+              <span class="time-badge">🕒 Geparkeerd op ${item.date} — Neem 24u bedenktijd</span>
             </div>
             <div style="display:flex; gap:6px; align-items:center;">
               <button class="btn btn-small" style="background-color:#38A169; color:white; font-size:0.75rem;" onclick="archiveImpulseItem(${item.id}, true)">🍃 Laten schieten</button>
@@ -1845,7 +1873,10 @@
           const div = document.createElement('div');
           div.className = `item-card ${bill.paid ? 'done' : ''}`;
           div.innerHTML = `
-            <span style="cursor:pointer;" onclick="toggleFixedBill(${bill.id})">${bill.paid ? '✅' : '⚪'} ${bill.name}</span>
+            <div>
+              <span style="cursor:pointer;" onclick="toggleFixedBill(${bill.id})">${bill.paid ? '✅' : '⚪'} ${bill.name}</span>
+              <span class="time-badge">${bill.paid ? '✅ Betaald op: ' + (bill.paidAt || 'vandaag') : '🕒 Aangemaakt: ' + (bill.created || 'zojuist')}</span>
+            </div>
             <div style="display:flex; gap:6px; align-items:center;">
               <button class="btn btn-secondary btn-small" style="font-size:0.75rem; padding:4px 6px;" onclick="editFixedBill(${bill.id})">✏️</button>
               <button class="btn btn-secondary btn-small" style="font-size:0.75rem; padding:4px 6px;" onclick="archiveFixedBill(${bill.id})">📦</button>
@@ -1874,7 +1905,7 @@
           div.innerHTML = `
             <div style="cursor:pointer;" onclick="toggleFutureAnchor(${anchor.id})">
               <span>${anchor.saved ? '✅' : '🔮'} <strong>${anchor.name}</strong></span>
-              <span class="time-badge">Doel: €${anchor.amount} (${anchor.targetMonth})</span>
+              <span class="time-badge">Doel: €${anchor.amount} (${anchor.targetMonth}) ${anchor.saved ? '• ✅ Behaald: ' + anchor.savedAt : '• 🕒 Aangemaakt: ' + (anchor.created || 'zojuist')}</span>
             </div>
             <div style="display:flex; gap:6px; align-items:center;">
               <button class="btn btn-secondary btn-small" style="font-size:0.75rem; padding:4px 6px;" onclick="editFutureAnchor(${anchor.id})">✏️</button>
