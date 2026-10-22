@@ -552,19 +552,6 @@
         <p id="tip-text" style="font-size: 0.92rem; line-height: 1.4;"></p>
       </div>
 
-      <!-- 🏺 DE TROTS-KLUIS (DIGITAL MARBLE JAR) -->
-      <div class="card" style="margin-bottom: 18px; border: 2px solid var(--accent-primary);">
-        <h2>
-          🏺 De Trots-Kluis
-          <span id="marble-count-badge" style="font-size:0.82rem; background:var(--accent-primary); color:white; padding:3px 10px; border-radius:12px; font-weight:600;">0 Knikkers</span>
-        </h2>
-        <p class="subtitle">Elke kleine overwinning vult jouw virtuele glazen pot. Zie in één oogopslag wat je allemaal wél hebt bereikt!</p>
-
-        <div id="marble-jar-visual" style="background:var(--item-bg); border:2px dashed var(--input-border); border-radius:16px; padding:16px 12px; min-height:85px; display:flex; flex-wrap:wrap-reverse; gap:6px; align-items:flex-start; justify-content:center; max-height: 180px; overflow-y: auto;">
-          <!-- Knikkers worden dynamisch ingeladen -->
-        </div>
-      </div>
-
       <!-- ☀️ 1. TIJDLOZE STARTKNOP -->
       <div class="card" id="start-card" style="margin-bottom: 18px;">
         <h2>☀️ Mijn Dag Begint Nu</h2>
@@ -618,6 +605,19 @@
         </div>
       </div>
 
+      <!-- 🏺 DE TROTS-KLUIS (DIGITAL MARBLE JAR) -->
+      <div class="card" style="margin-bottom: 18px; border: 2px solid var(--accent-primary);">
+        <h2>
+          🏺 De Trots-Kluis
+          <span id="marble-count-badge" style="font-size:0.82rem; background:var(--accent-primary); color:white; padding:3px 10px; border-radius:12px; font-weight:600;">0 Knikkers</span>
+        </h2>
+        <p class="subtitle">Elke kleine overwinning vult jouw virtuele glazen pot. Zie in één oogopslag wat je allemaal wél hebt bereikt!</p>
+
+        <div id="marble-jar-visual" style="background:var(--item-bg); border:2px dashed var(--input-border); border-radius:16px; padding:16px 12px; min-height:85px; display:flex; flex-wrap:wrap-reverse; gap:6px; align-items:flex-start; justify-content:center; max-height: 180px; overflow-y: auto;">
+          <!-- Knikkers worden dynamisch ingeladen -->
+        </div>
+      </div>
+
       <!-- 🎯 3. HET ZACHTE PLANBORD -->
       <div class="card" style="margin-bottom: 18px;">
         <h2>
@@ -640,21 +640,10 @@
         </div>
       </div>
 
-      <!-- 💜 4. HET CONTACT-KOMPAS -->
+      <!-- 🧭 4. HET ZACHTE KOMPAS -->
       <div class="card" style="margin-bottom: 18px;">
         <h2>
-          💜 Contact-Kompas
-          <button class="btn btn-secondary btn-small" onclick="addContactPrompt()">+ Contact</button>
-        </h2>
-        <p class="subtitle">Geen schuldgevoel meer bij 'uit het oog, uit het hart'. Stuur eenvoudig een warm berichtje zonder prestatiedruk.</p>
-
-        <div id="contacts-list" class="item-list"></div>
-      </div>
-
-      <!-- 🧭 5. HET ZACHTE KOMPAS -->
-      <div class="card" style="margin-bottom: 18px;">
-        <h2>
-          🧭 Het Zachte Kompas
+          🧭 Het Zachte KomPAS
           <button class="btn btn-secondary btn-small" onclick="toggleAddGoalForm()">+ Nieuw Doel</button>
         </h2>
         <p class="subtitle">Langetermijn voornemens met een ingebouwd veiligheidsnet. Vier elke stap, ook de micro-versie op zware dagen!</p>
@@ -671,6 +660,17 @@
         </div>
 
         <div id="compass-goals-list" class="item-list"></div>
+      </div>
+
+      <!-- 💜 5. HET CONTACT-KOMPAS -->
+      <div class="card" style="margin-bottom: 18px;">
+        <h2>
+          💜 Contact-Kompas
+          <button class="btn btn-secondary btn-small" onclick="addContactPrompt()">+ Contact</button>
+        </h2>
+        <p class="subtitle">Geen schuldgevoel meer bij 'uit het oog, uit het hart'. Stuur eenvoudig een warm berichtje zonder prestatiedruk.</p>
+
+        <div id="contacts-list" class="item-list"></div>
       </div>
 
       <!-- 📊 6. ZACHTE INZICHTEN -->
@@ -1041,7 +1041,7 @@
       "<strong>Nul Schuldgevoel bij Uitglijders:</strong> Een miskoop of onnodige uitgave maakt je geen 'slecht mens'. Zie het als leergeld zonder oordeel en ga rustig verder.",
       "<strong>De 24-Uur Afkoeltijd:</strong> Drempels opwerpen helpt tegen impulsiviteit. Vul winkelmandjes gerust, maar sluit het tabblad en kijk pas morgen met een frisse blik terug.",
       "<strong>Kijk naar wat wél gelukt is:</strong> Eén vaste last betaald of één impuls laten schieten is al een enorme overwinning. Financiële rust ontstaat door kleine stappen.",
-      "<strong>De 'Geld is Energie' Check:</strong> Vraag jezelf af: hoeveel uur fysieke of mentale energie kostte het verdienen van dit bedrag, en is het product die energie waard?",
+      "<strong>De 'Geld is Energie' Check:</strong> Vraag jezelf af: hoeveel uur fysieke en mentale energie kostte het verdienen van dit bedrag, en is het product die energie waard?",
       "<strong>Automatisering geeft Rust:</strong> Zet vaste lasten en sparen direct na het ontvangen van je inkomsten automatisch door. Wat overblijft op je rekening is écht je vrije leefgeld."
     ];
 
