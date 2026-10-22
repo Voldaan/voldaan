@@ -231,6 +231,17 @@
       border-radius: 14px;
     }
 
+    .insight-card {
+      background-color: var(--soft-teal);
+      border: 1px solid var(--teal-border);
+      color: var(--teal-text);
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      margin-top: 12px;
+      line-height: 1.4;
+    }
+
     .buddy-pulse {
       background-color: var(--soft-purple);
       border: 1px solid var(--purple-border);
@@ -238,6 +249,13 @@
       padding: 16px;
       border-radius: 14px;
       text-align: center;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+      flex-wrap: wrap;
     }
 
     .hidden {
@@ -254,10 +272,10 @@
       <p>Geen druk. Geen schuldgevoel. Jouw tempo.</p>
     </header>
 
-    <!-- 💡 ADHD TIP VAN DE DAG -->
+    <!-- 💡 BREIN & FOCUS HACK VAN DE DAG -->
     <div class="tip-box">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-        <strong style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">💡 ADHD Hack van de dag</strong>
+        <strong style="font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.5px;">💡 Brein & Focus Hack</strong>
         <button class="btn btn-secondary btn-small" onclick="nextTip()">Andere tip 🔄</button>
       </div>
       <p id="tip-text" style="font-size: 0.92rem; line-height: 1.4;"></p>
@@ -280,34 +298,47 @@
       </div>
     </div>
 
-    <!-- 🌙 2. AVOND PACT -->
+    <!-- 🌙 2. AVOND PACT MET AFRIFT & HISTORIE -->
     <div class="card">
-      <h2>🌙 Het Avond-Pact</h2>
+      <h2>
+        🌙 Het Avond-Pact
+        <button class="btn btn-secondary btn-small" onclick="togglePactHistory()">📜 Archief</button>
+      </h2>
       <p class="subtitle">Zet één piepkleine micro-stap klaar voor morgen. Zo hoef je 's ochtends niet na te denken.</p>
 
+      <!-- ACTIEF PACT WEERGAVE -->
       <div id="pact-display" class="hidden">
         <div style="background: #F7FAFC; padding: 14px; border-radius: 10px; border-left: 4px solid var(--accent-primary);">
-          <strong style="display:block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">JOUW AFSPRAAK VOOR VANDAAG:</strong>
+          <strong style="display:block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">JOUW AFSPRAAK:</strong>
           <span id="current-pact-text" style="font-size: 1rem; font-weight: 500;"></span>
         </div>
         
-        <div style="background-color: var(--soft-warm); border: 1px solid var(--warm-border); padding: 12px; border-radius: 10px; margin-top: 10px;">
-          <strong style="font-size: 0.85rem; color: var(--warm-text);">Voelt dit nu te zwaar?</strong>
-          <p style="font-size: 0.8rem; color: var(--warm-text); margin-top: 2px; margin-bottom: 8px;">Geen probleem. Halveer de stap direct zonder schuldgevoel.</p>
-          <button class="btn btn-secondary btn-small" onclick="renegotiatePact()">✨ Maak 'm de helft kleiner</button>
+        <div class="btn-group">
+          <button class="btn btn-small" style="background-color: #38A169;" onclick="completePact()">✅ Voltooid</button>
+          <button class="btn btn-secondary btn-small" onclick="renegotiatePact()">✨ Maak kleiner</button>
+          <button class="btn btn-secondary btn-small" onclick="editPact()">✏️ Bewerken</button>
+          <button class="btn btn-secondary btn-small" style="color: #E53E3E;" onclick="deletePact()">🗑️ Wis</button>
         </div>
       </div>
 
+      <!-- PACT FORMULIER -->
       <div id="pact-form">
         <input type="text" id="pact-input" placeholder="Bijv: Alleen mijn laptop opendoen & water pakken">
         <button class="btn" onclick="savePact()">Leg vast voor morgen</button>
       </div>
+
+      <!-- PACTEN ARCHIEF (HISTORIE) -->
+      <div id="pact-history-box" class="hidden" style="margin-top: 14px; background: #F7FAFC; padding: 12px; border-radius: 10px;">
+        <strong style="font-size: 0.85rem;">📜 Jouw Pacten Historie</strong>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">Afspraken die je met jezelf bent nagekomen:</p>
+        <div id="pact-history-list" class="item-list"></div>
+      </div>
     </div>
 
-    <!-- 🎯 3. HET ZACHTE PLANBORD (MAX 3 FOCUSPUNTEN) -->
+    <!-- 🎯 3. HET ZACHTE PLANBORD -->
     <div class="card">
       <h2>🎯 Zacht Planbord</h2>
-      <p class="subtitle">Kies maximaal 2 of 3 behapbare acties voor nu. Geen deadlines, geen rode meldingen.</p>
+      <p class="subtitle">Kies maximaal 2 of 3 behapbare acties voor nu. Geen deadlines, geen druk.</p>
 
       <div style="display: flex; gap: 8px;">
         <input type="text" id="task-input" placeholder="Kleine actie voor nu..." style="margin-bottom: 0;">
@@ -323,7 +354,7 @@
         🗃️ Ideeënkluis
         <button class="btn btn-secondary btn-small" onclick="grabRandomIdea()">🎲 Grabbelton</button>
       </h2>
-      <p class="subtitle">ADHD-breinen zitten vol ideeën. Schrijf ze van je af zodat je ze niet vergeet, maar ook niet meteen hoeft uit te voeren.</p>
+      <p class="subtitle">Vol met gedachten? Schrijf ze van je af zodat je ze niet vergeet, maar ook niet direct hoeft uit te voeren.</p>
 
       <textarea id="idea-input" rows="2" placeholder="Typ een willekeurig idee of wilde gedachte..."></textarea>
       <button class="btn btn-secondary" onclick="addIdea()">Veilig opslaan in kluis</button>
@@ -331,7 +362,7 @@
       <div id="ideas-list" class="item-list"></div>
     </div>
 
-    <!-- 📊 5. ZACHTE INZICHTEN (GEEN STREAKS) -->
+    <!-- 📊 5. ZACHTE INZICHTEN & CORRELATIES -->
     <div class="card">
       <h2>📊 Jouw Reis In Cijfers</h2>
       <p class="subtitle">Geen reeksen of gemiste dagen. Alleen de dingen die je wél hebt gedaan.</p>
@@ -343,49 +374,55 @@
         </div>
         <div class="stat-box">
           <div class="stat-number" id="stat-pacts">0</div>
-          <div class="stat-label">Pacten Gemaakt</div>
+          <div class="stat-label">Pacten Nagekomen</div>
         </div>
         <div class="stat-box">
           <div class="stat-number" id="stat-tasks">0</div>
           <div class="stat-label">Gelukt! 🎉</div>
         </div>
       </div>
+
+      <!-- DYNAMISCH ZACHT INZICHT (CORRELATIE) -->
+      <div class="insight-card" id="insight-box">
+        <strong>💡 Zacht Inzicht:</strong>
+        <span id="insight-text">Je bouwt stap voor stap aan je eigen ritme. Er is geen haast!</span>
+      </div>
     </div>
 
     <!-- 💜 6. BUDDY PULSE -->
     <div class="buddy-pulse">
       <strong style="font-size: 0.9rem;">💜 Zachte Buddy-Pulse</strong>
-      <p style="font-size: 0.82rem; margin-top: 4px; opacity: 0.9;">Er zijn nu 31 anderen ook rustig op hun eigen tempo bezig.</p>
+      <p style="font-size: 0.82rem; margin-top: 4px; opacity: 0.9;">Er zijn nu 38 anderen ook rustig op hun eigen tempo bezig.</p>
       <button class="btn" style="margin-top: 10px; background-color: var(--purple-text); font-size: 0.82rem; padding: 8px 14px;" onclick="alert('❤️ Signaal verzonden! Je hebt anoniem een schouderklopje gestuurd naar een lotgenoot.')">Stuur een anoniem schouderklopje</button>
     </div>
 
   </div>
 
   <script>
-    // --- ADHD TIPS BIBLIOTHEEK ---
-    const adhdTips = [
+    // --- BREIN HACKS BIBLIOTHEEK ---
+    const brainTips = [
       "De 2-Minuten Regel: Kost een taak minder dan 2 minuten? Doe het meteen of laat het bewust los. Geen twijfelruimte laten.",
       "Body Doubling: Werken in het bijzijn van iemand anders (fysiek of online) verlaagt de drempel om te starten enorm.",
-      "Verlaag de wrijving: Wil je morgen gitaar spelen of sporten? Zet de gitaar midden in de kamer of leg je kleren al klaar.",
-      "Dopamine-stapelen: Koppel een saaie taak (was opvouwen) aan iets leuks (jouw favoriete podcast of aflevering).",
-      "Slecht beginnen is beter dan niet beginnen: Geef jezelf toestemming om de eerste 5 minuten een verschrikkelijk slechte poging te doen.",
-      "Maak het visueel: Als iets uit het zicht is, bestaat het niet meer voor je brein. Gebruik transparante dozen of open opbergplekken.",
-      "Gebruik een eierwekker: Zien hoeveel tijd er 'verstrijkt' (fysiek) werkt beter voor een ADHD-brein dan een digitale klok.",
+      "Verlaag de wrijving: Wil je morgen iets creatiefs doen of sporten? Zet de spullen alvast in het zicht.",
+      "Dopamine-stapelen: Koppel een saaie taak (zoals opruimen) aan iets fijns (zoals je favoriete podcast).",
+      "Slecht beginnen is prima: Geef jezelf toestemming om de eerste 5 minuten een hele slechte poging te doen.",
+      "Maak het visueel: Als iets uit het zicht is, verdwijnt het uit je werkgeheugen. Houd belangrijke spullen in het zicht.",
+      "Gebruik een eierwekker: Zien hoeveel tijd er 'verstrijkt' (fysiek) werkt rustgevender dan een digitale klok.",
       "Nee zeggen is ja zeggen tegen rust: Elke 'ja' tegen een ander is een onbewuste 'nee' tegen jouw eigen energie."
     ];
 
     let currentTipIndex = 0;
 
     function renderTip() {
-      document.getElementById('tip-text').innerText = adhdTips[currentTipIndex];
+      document.getElementById('tip-text').innerText = brainTips[currentTipIndex];
     }
 
     function nextTip() {
-      currentTipIndex = (currentTipIndex + 1) % adhdTips.length;
+      currentTipIndex = (currentTipIndex + 1) % brainTips.length;
       renderTip();
     }
 
-    // --- TIJDLOZE START & STATS ---
+    // --- TIJDLOZE START & CORRELATIES ---
     let selectedEnergyState = '';
 
     function selectEnergy(el, energy) {
@@ -398,7 +435,9 @@
     function startDay() {
       let starts = parseInt(localStorage.getItem('voldaan_stat_starts') || '0') + 1;
       localStorage.setItem('voldaan_stat_starts', starts);
+      localStorage.setItem('voldaan_last_energy', selectedEnergyState);
       updateStats();
+      updateInsight();
       alert(`Je dag is rustig gestart in de stand: '${selectedEnergyState}'. Neem alle tijd!`);
     }
 
@@ -408,18 +447,33 @@
       document.getElementById('stat-tasks').innerText = localStorage.getItem('voldaan_stat_tasks') || '0';
     }
 
-    // --- AVOND PACT ---
+    function updateInsight() {
+      const starts = parseInt(localStorage.getItem('voldaan_stat_starts') || '0');
+      const pacts = parseInt(localStorage.getItem('voldaan_stat_pacts') || '0');
+      const tasks = parseInt(localStorage.getItem('voldaan_stat_tasks') || '0');
+      const lastEnergy = localStorage.getItem('voldaan_last_energy');
+
+      let text = "Je bouwt stap voor stap aan je eigen ritme. Er is geen haast!";
+
+      if (pacts > 0 && starts > 0) {
+        text = `Je hebt al ${pacts}x een Avond-pact afgerond! Zachte voorbereiding geeft je brein merkbaar meer rust.`;
+      } else if (lastEnergy === 'Wazig / Moe' && tasks > 0) {
+        text = `Zelfs op opstartdagen waarop je je 'Wazig' voelde, heb je toch acties afgerond. Dat is echte veerkracht!`;
+      } else if (tasks >= 3) {
+        text = `Je hebt al ${tasks} kleine acties afgevinkt zonder prestatiedruk. Lekker bezig!`;
+      }
+
+      document.getElementById('insight-text').innerText = text;
+    }
+
+    // --- AVOND PACT BEHEER ---
     function savePact() {
       const input = document.getElementById('pact-input').value;
       if (!input.trim()) return;
       
       localStorage.setItem('voldaan_pact', input);
-      let pacts = parseInt(localStorage.getItem('voldaan_stat_pacts') || '0') + 1;
-      localStorage.setItem('voldaan_stat_pacts', pacts);
-      
       document.getElementById('pact-input').value = '';
       renderPact();
-      updateStats();
     }
 
     function renderPact() {
@@ -428,13 +482,80 @@
         document.getElementById('current-pact-text').innerText = savedPact;
         document.getElementById('pact-display').classList.remove('hidden');
         document.getElementById('pact-form').classList.add('hidden');
+      } else {
+        document.getElementById('pact-display').classList.add('hidden');
+        document.getElementById('pact-form').classList.remove('hidden');
       }
+    }
+
+    function completePact() {
+      const pactText = localStorage.getItem('voldaan_pact');
+      if (!pactText) return;
+
+      let history = JSON.parse(localStorage.getItem('voldaan_pact_history') || '[]');
+      const dateStr = new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
+      history.unshift({ text: pactText, date: dateStr, status: '✅ Voltooid' });
+      localStorage.setItem('voldaan_pact_history', JSON.stringify(history));
+
+      let pactsCount = parseInt(localStorage.getItem('voldaan_stat_pacts') || '0') + 1;
+      localStorage.setItem('voldaan_stat_pacts', pactsCount);
+
+      localStorage.removeItem('voldaan_pact');
+      renderPact();
+      renderPactHistory();
+      updateStats();
+      updateInsight();
+      alert('🎉 Super! Je afspraak met jezelf is voltooid en toegevoegd aan je archief.');
     }
 
     function renegotiatePact() {
       const smaller = "Alleen 1 glas water drinken en rustig ademhalen";
       localStorage.setItem('voldaan_pact', smaller);
       renderPact();
+    }
+
+    function editPact() {
+      const current = localStorage.getItem('voldaan_pact');
+      const updated = prompt("Pas je Avond-pact aan:", current);
+      if (updated && updated.trim()) {
+        localStorage.setItem('voldaan_pact', updated);
+        renderPact();
+      }
+    }
+
+    function deletePact() {
+      if (confirm("Wil je dit Avond-pact verwijderen?")) {
+        localStorage.removeItem('voldaan_pact');
+        renderPact();
+      }
+    }
+
+    function togglePactHistory() {
+      const box = document.getElementById('pact-history-box');
+      box.classList.toggle('hidden');
+      renderPactHistory();
+    }
+
+    function renderPactHistory() {
+      let history = JSON.parse(localStorage.getItem('voldaan_pact_history') || '[]');
+      const container = document.getElementById('pact-history-list');
+      container.innerHTML = '';
+
+      if (history.length === 0) {
+        container.innerHTML = '<span style="font-size:0.8rem; color:var(--text-muted);">Nog geen gearchiveerde pacten.</span>';
+        return;
+      }
+
+      history.forEach((item) => {
+        const div = document.createElement('div');
+        div.className = 'item-card';
+        div.style.fontSize = '0.82rem';
+        div.innerHTML = `
+          <span>${item.status} <strong>${item.text}</strong></span>
+          <span style="color:var(--text-muted); font-size:0.75rem;">${item.date}</span>
+        `;
+        container.appendChild(div);
+      });
     }
 
     // --- ZACHT PLANBORD ---
@@ -461,6 +582,7 @@
       localStorage.setItem('voldaan_tasks', JSON.stringify(tasks));
       renderTasks();
       updateStats();
+      updateInsight();
     }
 
     function removeTask(index) {
@@ -524,7 +646,7 @@
     function grabRandomIdea() {
       let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
       if (ideas.length === 0) {
-        alert("Je Ideeënkluis is nog leeg! Voeg eerst een paar gedachten of ideeën toe.");
+        alert("Je Ideeënkluis is nog leeg! Voeg eerst een paar gedachten toe.");
         return;
       }
       const randomIdea = ideas[Math.floor(Math.random() * ideas.length)];
@@ -537,6 +659,7 @@
     renderTasks();
     renderIdeas();
     updateStats();
+    updateInsight();
   </script>
 </body>
 </html>
