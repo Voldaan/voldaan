@@ -522,7 +522,7 @@
     <nav class="nav-tabs">
       <button class="tab-btn active" onclick="switchView('today')" id="tab-today">🏠 Vandaag</button>
       <button class="tab-btn" onclick="switchView('ideas')" id="tab-ideas">📌 Ideeënkluis</button>
-      <button class="tab-btn" onclick="switchView('money')" id="tab-money">💶 Geld-Kompas</button>
+      <button class="tab-btn" onclick="switchView('money')" id="tab-money">💶 Geld-KomPAS</button>
     </nav>
 
     <!-- ==================== PAGINA 1: VANDAAG (HOOFDDASHBOARD) ==================== -->
@@ -719,7 +719,16 @@
         <button class="btn btn-secondary btn-small" onclick="openMoneyArchiveModal()">📜 Geld-Archief</button>
       </div>
 
-      <!-- 🛑 1. IMPULS-WACHTKAMER -->
+      <!-- 💡 1. DYNAMISCHE ZACHTE GELD INZICHTEN MET VERVERSKNOP -->
+      <div class="tip-box" style="margin-bottom: 18px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <strong style="font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.5px;">💡 Zacht Geld Inzicht</strong>
+          <button class="btn btn-secondary btn-small" onclick="nextMoneyTip()">Andere tip 🔄</button>
+        </div>
+        <p id="money-tip-text" style="font-size: 0.88rem; line-height: 1.4;"></p>
+      </div>
+
+      <!-- 🛑 2. IMPULS-WACHTKAMER -->
       <div class="card" style="margin-bottom: 18px;">
         <h2>🛑 Impuls-Wachtkamer</h2>
         <p class="subtitle">Zie je iets leuks online of in een winkel? Koop het niet meteen, maar zet het 24 uur in de wachtkamer. Zo geef je je brein rust en overzie je de aankoop.</p>
@@ -742,7 +751,7 @@
         <div id="impulse-list" class="item-list"></div>
       </div>
 
-      <!-- 🛡️ 2. VASTE LASTEN CHECK -->
+      <!-- 🛡️ 3. VASTE LASTEN CHECK -->
       <div class="card" style="margin-bottom: 18px;">
         <h2>
           🛡️ Vaste Lasten Check
@@ -762,7 +771,7 @@
         <div id="fixed-bills-list" class="item-list"></div>
       </div>
 
-      <!-- 🔮 3. TOEKOMST-ANKERS -->
+      <!-- 🔮 4. TOEKOMST-ANKERS -->
       <div class="card" style="margin-bottom: 18px;">
         <h2>
           🔮 Toekomst-Ankers
@@ -780,14 +789,6 @@
         </div>
 
         <div id="future-anchors-list" class="item-list"></div>
-      </div>
-
-      <!-- 💡 4. GELD & DOPAMINE HACKS -->
-      <div class="tip-box">
-        <strong style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; display:block; margin-bottom:6px;">💡 Zachte Geld Inzichten</strong>
-        <p style="font-size: 0.88rem; line-height: 1.4;">
-          <strong>De Dopamine-Vraag:</strong> Koop je dit product voor je eigen toekomst, of zoek je op dit specifieke moment ontspanning of afleiding? Soms helpt een kop thee of een wandeling even goed!
-        </p>
       </div>
 
     </div>
@@ -955,6 +956,26 @@
     let currentTipIndex = 0;
     function renderTip() { document.getElementById('tip-text').innerText = brainTips[currentTipIndex]; }
     function nextTip() { currentTipIndex = (currentTipIndex + 1) % brainTips.length; renderTip(); }
+
+    // --- GELD INZICHTEN (ZACHTE GELD HACKS) ---
+    const moneyTips = [
+      "<strong>De Dopamine-Vraag:</strong> Koop je dit product voor je eigen toekomst, of zoek je op dit specifieke moment ontspanning of afleiding? Soms helpt een kop thee of een wandeling even goed!",
+      "<strong>De 1-Euro-Per-Keer Regel:</strong> Vraag jezelf af: 'Als ik de prijs deel door het aantal keren dat ik dit ga gebruiken, voelt dat bedrag dan logisch en eerlijk?'",
+      "<strong>Nul Schuldgevoel bij Uitglijders:</strong> Een miskoop of onnodige uitgave maakt je geen 'slecht mens'. Zie het als leergeld zonder oordeel en ga rustig verder.",
+      "<strong>De 24-Uur Afkoeltijd:</strong> Drempels opwerpen helpt tegen impulsiviteit. Vul winkelmandjes gerust, maar sluit het tabblad en kijk pas morgen met een frisse blik terug.",
+      "<strong>Kijk naar wat wél gelukt is:</strong> Eén vaste last betaald of één impuls laten schieten is al een enorme overwinning. Financiële rust ontstaat door kleine stappen.",
+      "<strong>De 'Geld is Energie' Check:</strong> Vraag jezelf af: hoeveel uur fysieke of mentale energie kostte het verdienen van dit bedrag, en is het product die energie waard?",
+      "<strong>Automatisering geeft Rust:</strong> Zet vaste lasten en sparen direct na het ontvangen van je inkomsten automatisch door. Wat overblijft op je rekening is écht je vrije leefgeld."
+    ];
+
+    let currentMoneyTipIndex = 0;
+    function renderMoneyTip() {
+      document.getElementById('money-tip-text').innerHTML = moneyTips[currentMoneyTipIndex];
+    }
+    function nextMoneyTip() {
+      currentMoneyTipIndex = (currentMoneyTipIndex + 1) % moneyTips.length;
+      renderMoneyTip();
+    }
 
     // --- START & STATS ---
     let selectedEnergyState = '';
@@ -1931,6 +1952,7 @@
     initDefaultMoneyData();
     updateCategoryDropdowns();
     renderTip();
+    renderMoneyTip();
     renderPact();
     renderTasks();
     renderCompassGoals();
