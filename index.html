@@ -784,6 +784,41 @@
         <button class="btn btn-secondary btn-small" onclick="openMoneyArchiveModal()">📜 Geld-Archief</button>
       </div>
 
+      <!-- 💶 0. PAYDAY COUNTDOWN RADAR -->
+      <div class="card" style="margin-bottom: 18px; border: 2px solid #38A169; background: linear-gradient(135deg, var(--card-bg) 0%, var(--soft-green) 100%);">
+        <h2>
+          💶 Payday Radar
+          <span style="font-size: 0.75rem; background: #38A169; color: white; padding: 3px 8px; border-radius: 10px;">Elke 23e (08:00)</span>
+        </h2>
+        <p class="subtitle" id="payday-target-date-text">Laden van Payday datum...</p>
+
+        <!-- AFTELLER BOX -->
+        <div id="payday-countdown-box" class="stats-grid" style="margin-top: 10px;">
+          <div class="stat-box">
+            <div class="stat-number" id="pd-days" style="color: #38A169;">00</div>
+            <div class="stat-label">Dagen</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number" id="pd-hours" style="color: #38A169;">00</div>
+            <div class="stat-label">Uren</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number" id="pd-mins" style="color: #38A169;">00</div>
+            <div class="stat-label">Minuten</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number" id="pd-secs" style="color: #38A169;">00</div>
+            <div class="stat-label">Secs</div>
+          </div>
+        </div>
+
+        <!-- HOERA PAYDAY MELDING (VERBORGEN TOT PAYDAY) -->
+        <div id="payday-celebration-box" class="hidden" style="background: var(--soft-green); border: 1px solid var(--green-border); color: var(--green-text); padding: 14px; border-radius: 12px; margin-top: 10px; text-align: center;">
+          <strong style="font-size: 1.1rem; display: block; margin-bottom: 4px;">🎉 HET IS PAYDAY! 💶</strong>
+          <p style="font-size: 0.88rem; line-height: 1.4;">Jouw salaris/inkomen is binnen! Een mooi moment om je vaste lasten af te vinken of wat geld naar je opvangpotjes te sturen. Geniet van je verdiende rust!</p>
+        </div>
+      </div>
+
       <!-- 💡 1. DYNAMISCHE ZACHTE GELD INZICHTEN MET VERVERSKNOP -->
       <div class="tip-box" style="margin-bottom: 18px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
@@ -868,7 +903,7 @@
         <h2>📜 Geld-Kompas Archief</h2>
         <button class="btn btn-secondary btn-small" onclick="closeMoneyArchiveModal()">✕ Sluiten</button>
       </div>
-      <p class="subtitle">Een helder overzicht van al jouw opgebouwde zeges met exacte datum en tijd: bespaarde impuls-aankopen, voldane vaste lasten en gespaarde opvangpotjes!</p>
+      <p class="subtitle">Een helder overzicht van al jouw opgebouwde zeges met exacta datum en tijd: bespaarde impuls-aankopen, voldane vaste lasten en gespaarde opvangpotjes!</p>
 
       <div class="filter-bar">
         <select id="money-archive-filter" onchange="renderMoneyArchive()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 6px;">
@@ -1074,6 +1109,90 @@
     let currentMoneyTipIndex = 0;
     function renderMoneyTip() { document.getElementById('money-tip-text').innerHTML = moneyTips[currentMoneyTipIndex]; }
     function nextMoneyTip() { currentMoneyTipIndex = (currentMoneyTipIndex + 1) % moneyTips.length; renderMoneyTip(); }
+
+    // --- 💶 PAYDAY BEREKENING LOGICA ---
+    function getPaydayDate(year, month) {
+      let d = new Date(year, month, 23, 8, 0, 0, 0);
+      let dayOfWeek = d.getDay(); // 0 = Zondag, 6 = Zaterdag
+      if (dayOfWeek === 6) {
+        d.setDate(22); // Zaterdag -> Vrijdag 22e
+      } else if (dayOfWeek === 0) {
+        d.setDate(21); // Zondag -> Vrijdag 21e
+      }
+      return d;
+    }
+
+    function calculatePaydayInfo() {
+      const now = new Date();
+      let year = now.getFullYear();
+      let month = now.getMonth();
+
+      let paydayThisMonth = getPaydayDate(year, month);
+      
+      const isPaydayToday = (
+        now.getFullYear() === paydayThisMonth.getFullYear() &&
+        now.getMonth() === paydayThisMonth.getMonth() &&
+        now.getDate() === paydayThisMonth.getDate()
+      );
+
+      // Als het vandaag Payday is en het is 08:00 geweest
+      if (isPaydayToday && now >= paydayThisMonth) {
+        return { isPaydayNow: true, paydayDate: paydayThisMonth };
+      }
+
+      // Als Payday deze maand al voorbij is (of eerder vandaag voor 08:00)
+      let targetPayday = paydayThisMonth;
+      if (now >= paydayThisMonth && !isPaydayToday) {
+        if (month === 11) {
+          targetPayday = getPaydayDate(year + 1, 0);
+        } else {
+          targetPayday = getPaydayDate(year, month + 1);
+        }
+      }
+
+      return { isPaydayNow: false, paydayDate: targetPayday };
+    }
+
+    function updatePaydayCountdown() {
+      const paydayInfo = calculatePaydayInfo();
+      const countdownBox = document.getElementById('payday-countdown-box');
+      const celebrationBox = document.getElementById('payday-celebration-box');
+      const targetText = document.getElementById('payday-target-date-text');
+
+      if (!countdownBox || !celebrationBox || !targetText) return;
+
+      if (paydayInfo.isPaydayNow) {
+        countdownBox.classList.add('hidden');
+        celebrationBox.classList.remove('hidden');
+        targetText.innerText = "🎉 Vandaag is jouw Payday!";
+      } else {
+        celebrationBox.classList.add('hidden');
+        countdownBox.classList.remove('hidden');
+
+        const now = new Date().getTime();
+        const targetTime = paydayInfo.paydayDate.getTime();
+        const diff = targetTime - now;
+
+        if (diff <= 0) {
+          updatePaydayCountdown();
+          return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        document.getElementById('pd-days').innerText = String(days).padStart(2, '0');
+        document.getElementById('pd-hours').innerText = String(hours).padStart(2, '0');
+        document.getElementById('pd-mins').innerText = String(minutes).padStart(2, '0');
+        document.getElementById('pd-secs').innerText = String(seconds).padStart(2, '0');
+
+        const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+        const formattedDate = paydayInfo.paydayDate.toLocaleDateString('nl-NL', options);
+        targetText.innerText = `Eerstvolgende Payday: ${formattedDate} om 08:00 uur`;
+      }
+    }
 
     // --- START & STATS ---
     let selectedEnergyState = '';
@@ -2092,6 +2211,9 @@
 
     // --- HOOFD RENDER LOGICA VOOR GELD-KOMPAS ---
     function renderMoneyView() {
+      // Update Payday radar
+      updatePaydayCountdown();
+
       // 1. IMPULS WACHTKAMER
       let impulseItems = JSON.parse(localStorage.getItem('voldaan_impulse_items') || '[]');
       const impulseSort = document.getElementById('impulse-sort').value;
@@ -2208,6 +2330,10 @@
     renderIdeas();
     updateStats();
     updateInsight();
+    
+    // Payday timer elke seconde updaten
+    updatePaydayCountdown();
+    setInterval(updatePaydayCountdown, 1000);
   </script>
 </body>
 </html>
