@@ -640,7 +640,7 @@
           📌 Ideeënkluis
           <button class="btn btn-secondary btn-small" onclick="grabRandomIdea()">🎲 Grabbelton</button>
         </h2>
-        <p class="subtitle">Schrijf je gedachten als Post-its van je af. Elke categorie heeft een eigen kleur. Pas de categorie later eenvoudig aan met een tik!</p>
+        <p class="subtitle">Schrijf je gedachten als Post-its van je af. Elke categorie heeft een eigen kleur. Pas tekst en categorieën eenvoudig aan via de drie puntjes (...)!</p>
 
         <textarea id="idea-input" rows="2" placeholder="Typ een willekeurig idee of wilde gedachte..."></textarea>
         
@@ -829,7 +829,7 @@
       const isDark = document.body.classList.contains('dark-theme');
       localStorage.setItem('voldaan_theme', isDark ? 'dark' : 'light');
       document.getElementById('theme-btn').innerText = isDark ? '☀️ Dag' : '🌙 Nacht';
-      renderIdeas(); // update post-it kleuren voor donker/licht thema
+      renderIdeas();
     }
 
     function initTheme() {
@@ -1304,6 +1304,20 @@
       openMenuId = null;
     }
 
+    function editIdeaText(id) {
+      let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
+      const idea = ideas.find(i => i.id === id);
+      if (idea) {
+        const newText = prompt("Pas je idee aan:", idea.text);
+        if (newText !== null && newText.trim() !== "") {
+          idea.text = newText.trim();
+          localStorage.setItem('voldaan_ideas', JSON.stringify(ideas));
+          renderIdeas();
+        }
+      }
+      openMenuId = null;
+    }
+
     function updatePostitCategory(id, newCategory) {
       let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
       const idx = ideas.findIndex(i => i.id === id);
@@ -1342,6 +1356,7 @@
           <div class="postit-menu" onclick="event.stopPropagation()">
             <button onclick="moveIdeaToPlanbord(${idea.id})">🎯 Naar Planbord</button>
             <button onclick="moveIdeaToPact(${idea.id})">🌙 Als Avond-pact</button>
+            <button onclick="editIdeaText(${idea.id})">✏️ Tekst bewerken</button>
             <div style="padding: 4px 8px;">
               <label style="font-size:0.72rem; color:var(--text-muted); display:block; margin-bottom:2px;">🏷️ Wijzig Categorie:</label>
               <select onchange="updatePostitCategory(${idea.id}, this.value)" style="font-size:0.8rem; padding:4px; margin-bottom:0; width:100%;">
