@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voldaan — Rust & Structuur op Jouw Tempo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #F8F6F0;
+      --card-bg: #FFFFFF;
+      --text-main: #2D3748;
+      --text-muted: #718096;
+      --accent-soft: #E2E8F0;
+      --accent-primary: #5A67D8;
+      --accent-hover: #4C51BF;
+      --soft-teal: #E6FFFA;
+      --teal-border: #B2F5EA;
+      --teal-text: #234E52;
+      --soft-warm: #FFFAF0;
+      --warm-border: #FEEBC8;
+      --warm-text: #7B341E;
+      --soft-purple: #FAF5FF;
+      --purple-border: #E9D8FD;
+      --purple-text: #553C9A;
+      --radius: 16px;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 520px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding-bottom: 40px;
+    }
+
+    header {
+      text-align: center;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--accent-primary);
+      letter-spacing: -0.5px;
+    }
+
+    header p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(0,0,0,0.03);
+    }
+
+    .card h2 {
+      font-size: 1.15rem;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .subtitle {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    .btn {
+      background-color: var(--accent-primary);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 20px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background-color: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background-color: #EDF2F7;
+      color: var(--text-main);
+    }
+
+    .btn-secondary:hover {
+      background-color: #E2E8F0;
+    }
+
+    .energy-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .energy-btn {
+      background: #F7FAFC;
+      border: 2px solid #EDF2F7;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .energy-btn.selected {
+      border-color: var(--accent-primary);
+      background-color: #EBF8FF;
+      font-weight: 600;
+    }
+
+    textarea, input[type="text"] {
+      width: 100%;
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+      resize: vertical;
+      outline: none;
+    }
+
+    textarea:focus, input[type="text"]:focus {
+      border-color: var(--accent-primary);
+    }
+
+    .tag-container {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .badge {
+      background-color: #EDF2F7;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .idea-item {
+      background: #F7FAFC;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .idea-item button {
+      background: none;
+      border: none;
+      color: #E53E3E;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .renegotiate-box {
+      background-color: var(--soft-warm);
+      border: 1px solid var(--warm-border);
+      color: var(--warm-text);
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 12px;
+      font-size: 0.88rem;
+    }
+
+    .buddy-pulse {
+      background-color: var(--soft-purple);
+      border: 1px solid var(--purple-border);
+      color: var(--purple-text);
+      padding: 16px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <header>
+      <h1>Voldaan</h1>
+      <p>Geen druk. Geen schuldgevoel. Jouw tempo.</p>
+    </header>
+
+    <!-- 1. TIJDLOZE STARTKNOP -->
+    <div class="card" id="start-card">
+      <h2>☀️ Mijn Dag Begint Nu</h2>
+      <p class="subtitle">Het maakt niet uit hoe laat het is. Waar staat je brein op dit moment naar?</p>
+      
+      <div class="energy-grid">
+        <button class="energy-btn" onclick="selectEnergy(this, 'Wazig / Opstartend')">🌫️ Wazig / Moe</button>
+        <button class="energy-btn" onclick="selectEnergy(this, 'Vol Gedachten')">⚡ Chaotisch / Vol</button>
+        <button class="energy-btn" onclick="selectEnergy(this, 'Rustig')">☕ Rustig / Oké</button>
+        <button class="energy-btn" onclick="selectEnergy(this, 'Gemotiveerd')">🚀 Gefocust</button>
+      </div>
+
+      <div id="start-action" class="hidden" style="margin-top: 16px;">
+        <button class="btn" onclick="startDay()">Landen in mijn dag</button>
+      </div>
+    </div>
+
+    <!-- 2. AVOND PACT -->
+    <div class="card">
+      <h2>🌙 Het Avond-Pact</h2>
+      <p class="subtitle">Zet één piepkleine micro-stap klaar voor morgen. Zo hoef je 's ochtends niet na te denken.</p>
+
+      <div id="pact-display" class="hidden">
+        <div style="background: #F7FAFC; padding: 14px; border-radius: 10px; border-left: 4px solid var(--accent-primary);">
+          <strong style="display:block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px;">JOUW AFSPRAAK VOOR VANDAAG/MORGEN:</strong>
+          <span id="current-pact-text" style="font-size: 1.05rem;"></span>
+        </div>
+        
+        <div class="renegotiate-box" style="margin-top: 12px;">
+          <strong>Voelt dit nu te zwaar?</strong>
+          <p style="margin-top: 4px; margin-bottom: 8px;">Geen probleem. Gebruik de heronderhandel-knop om de stap direct te halveren.</p>
+          <button class="btn btn-secondary" style="padding: 8px 12px; font-size: 0.85rem; width: auto;" onclick="renegotiatePact()">✨ Maak 'm de helft kleiner</button>
+        </div>
+      </div>
+
+      <div id="pact-form">
+        <input type="text" id="pact-input" placeholder="Bijv: Alleen mijn laptop opendoen & water pakken">
+        <button class="btn" onclick="savePact()">Leg vast voor morgen</button>
+      </div>
+    </div>
+
+    <!-- 3. GEVOELS-ANKER -->
+    <div class="card" style="background-color: var(--soft-teal); border-color: var(--teal-border);">
+      <h2 style="color: var(--teal-text);">⚓ Gevoels-Anker</h2>
+      <p class="subtitle" style="color: var(--teal-text); opacity: 0.9;">
+        Onthoud: gisteren gaven 5 minuten rustige muziek bij de koffie een heel fijn gevoel. Geen verplichting voor nu, wel een zacht geheugensteuntje.
+      </p>
+    </div>
+
+    <!-- 4. WILDE IDEEËNBUS -->
+    <div class="card">
+      <h2>💡 Wilde Ideeënbus</h2>
+      <p class="subtitle">Schiet er een willekeurige gedachte, plan of creatief idee door je hoofd? Schrijf het hier van je af om je hoofd leeg te maken.</p>
+
+      <textarea id="idea-input" rows="2" placeholder="Typ je losse gedachte of idee..."></textarea>
+      <button class="btn btn-secondary" onclick="addIdea()">Dump in Ideeënbus</button>
+
+      <div id="ideas-list" style="margin-top: 16px;"></div>
+    </div>
+
+    <!-- 5. BUDDY PULSE -->
+    <div class="buddy-pulse">
+      <p style="font-size: 0.9rem; font-weight: 500;">💜 <strong>Zachte Buddy-Pulse</strong></p>
+      <p style="font-size: 0.85rem; margin-top: 4px; opacity: 0.9;">Er zijn op dit moment 24 anderen ook bezig met rustig opstarten.</p>
+      <button class="btn" style="margin-top: 10px; background-color: var(--purple-text); font-size: 0.85rem; padding: 8px 14px;" onclick="alert('❤️ Signaal verzonden! Je hebt anoniem een schouderklopje gestuurd naar een lotgenoot.')">Stuur een anoniem schouderklopje</button>
+    </div>
+
+  </div>
+
+  <script>
+    let selectedEnergyState = '';
+
+    function selectEnergy(el, energy) {
+      document.querySelectorAll('.energy-btn').forEach(btn => btn.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedEnergyState = energy;
+      document.getElementById('start-action').classList.remove('hidden');
+    }
+
+    function startDay() {
+      alert(`Je dag is gestart in de stand: ${selectedEnergyState}. Neem alle tijd!`);
+    }
+
+    function savePact() {
+      const input = document.getElementById('pact-input').value;
+      if (!input.trim()) return;
+      
+      localStorage.setItem('voldaan_pact', input);
+      renderPact();
+    }
+
+    function renderPact() {
+      const savedPact = localStorage.getItem('voldaan_pact');
+      if (savedPact) {
+        document.getElementById('current-pact-text').innerText = savedPact;
+        document.getElementById('pact-display').classList.remove('hidden');
+        document.getElementById('pact-form').classList.add('hidden');
+      }
+    }
+
+    function renegotiatePact() {
+      const current = localStorage.getItem('voldaan_pact');
+      const smaller = "Alleen 1 glas water drinken en diep ademhalen";
+      localStorage.setItem('voldaan_pact', smaller);
+      renderPact();
+    }
+
+    function addIdea() {
+      const input = document.getElementById('idea-input');
+      if (!input.value.trim()) return;
+
+      let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
+      ideas.push(input.value);
+      localStorage.setItem('voldaan_ideas', JSON.stringify(ideas));
+      input.value = '';
+      renderIdeas();
+    }
+
+    function renderIdeas() {
+      let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
+      const container = document.getElementById('ideas-list');
+      container.innerHTML = '';
+
+      ideas.forEach((idea, index) => {
+        const div = document.createElement('div');
+        div.className = 'idea-item';
+        div.innerHTML = `<span>${idea}</span><button onclick="removeIdea(${index})">Wis</button>`;
+        container.appendChild(div);
+      });
+    }
+
+    function removeIdea(index) {
+      let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
+      ideas.splice(index, 1);
+      localStorage.setItem('voldaan_ideas', JSON.stringify(ideas));
+      renderIdeas();
+    }
+
+    // Init
+    renderPact();
+    renderIdeas();
+  </script>
+</body>
+</html>
