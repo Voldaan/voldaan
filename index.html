@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Voldaan — Rust & Structuur op Jouw Tempo</title>
   
-  <!-- Het app-icoon & Manifest koppeling -->
+  <!-- App-icoon & Manifest -->
   <link rel="icon" type="image/jpeg" href="icon.jpg?v=2">
   <link rel="apple-touch-icon" href="icon.jpg?v=2">
   <link rel="manifest" href="manifest.json?v=2">
@@ -106,7 +106,7 @@
       justify-content: space-between;
       align-items: center;
       margin-top: 6px;
-      margin-bottom: 6px;
+      margin-bottom: 2px;
     }
 
     header h1 {
@@ -120,6 +120,38 @@
       font-size: 0.85rem;
       color: var(--text-muted);
       margin-top: 2px;
+    }
+
+    /* TOP-NAVIGATIE TABBALK */
+    .nav-tabs {
+      display: flex;
+      background: var(--card-bg);
+      padding: 6px;
+      border-radius: 14px;
+      border: 1px solid var(--input-border);
+      box-shadow: var(--shadow);
+      gap: 4px;
+      margin-bottom: 6px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px 6px;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.88rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .tab-btn.active {
+      background-color: var(--accent-primary);
+      color: white;
+      box-shadow: 0 2px 8px rgba(90, 103, 216, 0.25);
     }
 
     .theme-toggle-btn {
@@ -213,7 +245,7 @@
       font-weight: 600;
     }
 
-    textarea, input[type="text"], select {
+    textarea, input[type="text"], input[type="number"], select {
       width: 100%;
       background: var(--input-bg);
       color: var(--text-main);
@@ -368,42 +400,6 @@
       background-color: var(--input-border);
     }
 
-    /* MODAL OVERLAY STIJLEN */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0,0,0,0.6);
-      backdrop-filter: blur(4px);
-      z-index: 10000;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 16px;
-      overflow-y: auto;
-    }
-
-    .modal-content {
-      background: var(--card-bg);
-      color: var(--text-main);
-      width: 100%;
-      max-width: 680px;
-      border-radius: var(--radius);
-      padding: 22px;
-      box-shadow: var(--shadow);
-      margin-top: 20px;
-      margin-bottom: 40px;
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -493,208 +489,267 @@
       <button class="theme-toggle-btn" onclick="toggleTheme()" id="theme-btn">🌙 Nacht</button>
     </header>
 
-    <!-- 💡 BREIN & FOCUS HACK VAN DE DAG -->
-    <div class="tip-box">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-        <strong style="font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.5px;">💡 Brein & Focus Hack</strong>
-        <button class="btn btn-secondary btn-small" onclick="nextTip()">Andere tip 🔄</button>
-      </div>
-      <p id="tip-text" style="font-size: 0.92rem; line-height: 1.4;"></p>
-    </div>
+    <!-- 🧭 NAVIGATIE BALK VOOR PAGINA'S -->
+    <nav class="nav-tabs">
+      <button class="tab-btn active" onclick="switchView('today')" id="tab-today">🏠 Vandaag</button>
+      <button class="tab-btn" onclick="switchView('ideas')" id="tab-ideas">📌 Ideeënkluis</button>
+      <button class="tab-btn" onclick="switchView('money')" id="tab-money">💶 Geld-Kompas</button>
+    </nav>
 
-    <!-- ☀️ 1. TIJDLOZE STARTKNOP -->
-    <div class="card" id="start-card">
-      <h2>☀️ Mijn Dag Begint Nu</h2>
-      <p class="subtitle">Het maakt niet uit hoe laat het is. Waar staat je brein op dit moment naar?</p>
+    <!-- ==================== PAGINA 1: VANDAAG (HOOFDDASHBOARD) ==================== -->
+    <div id="view-today">
       
-      <div class="energy-grid">
-        <button class="energy-btn" onclick="selectEnergy(this, 'Wazig / Moe')">🌫️ Wazig / Moe</button>
-        <button class="energy-btn" onclick="selectEnergy(this, 'Chaotisch')">⚡ Chaotisch / Vol</button>
-        <button class="energy-btn" onclick="selectEnergy(this, 'Oké')">☕ Rustig / Oké</button>
-        <button class="energy-btn" onclick="selectEnergy(this, 'Gefocust')">🚀 Gefocust</button>
-      </div>
-
-      <div id="start-action" class="hidden" style="margin-top: 14px;">
-        <button class="btn" onclick="startDay()">Landen in mijn dag</button>
-      </div>
-    </div>
-
-    <!-- 🌙 2. AVOND PACT -->
-    <div class="card">
-      <h2>
-        🌙 Het Avond-Pact
-        <button class="btn btn-secondary btn-small" onclick="togglePactHistory()">📜 Archief</button>
-      </h2>
-      <p class="subtitle">Zet één piepkleine micro-stap klaar voor morgen. Zo hoef je 's ochtends niet na te denken.</p>
-
-      <div id="pact-display" class="hidden">
-        <div style="background: var(--item-bg); padding: 14px; border-radius: 10px; border-left: 4px solid var(--accent-primary); border: 1px solid var(--input-border);">
-          <strong style="display:block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">JOUW AFSPRAAK:</strong>
-          <span id="current-pact-text" style="font-size: 1rem; font-weight: 500;"></span>
+      <!-- 💡 BREIN & FOCUS HACK -->
+      <div class="tip-box" style="margin-bottom: 18px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <strong style="font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.5px;">💡 Brein & Focus Hack</strong>
+          <button class="btn btn-secondary btn-small" onclick="nextTip()">Andere tip 🔄</button>
         </div>
+        <p id="tip-text" style="font-size: 0.92rem; line-height: 1.4;"></p>
+      </div>
+
+      <!-- ☀️ 1. TIJDLOZE STARTKNOP -->
+      <div class="card" id="start-card" style="margin-bottom: 18px;">
+        <h2>☀️ Mijn Dag Begint Nu</h2>
+        <p class="subtitle">Het maakt niet uit hoe laat het is. Waar staat je brein op dit moment naar?</p>
         
-        <div class="btn-group">
-          <button class="btn btn-small" style="background-color: #38A169; color: white;" onclick="completePact()">✅ Voltooid</button>
-          <button class="btn btn-secondary btn-small" onclick="pushPactToCalendar()" style="background-color: #3182CE; color: white;">📅 Zet in Agenda</button>
-          <button class="btn btn-secondary btn-small" onclick="sharePactWhatsApp()" style="background-color: #25D366; color: white;">📲 Deel met Buddy</button>
-          <button class="btn btn-secondary btn-small" onclick="renegotiatePact()">✨ Maak kleiner</button>
-          <button class="btn btn-secondary btn-small" onclick="editPact()">✏️ Bewerken</button>
-          <button class="btn btn-secondary btn-small" style="color: #E53E3E;" onclick="deletePact()">🗑️ Wis</button>
+        <div class="energy-grid">
+          <button class="energy-btn" onclick="selectEnergy(this, 'Wazig / Moe')">🌫️ Wazig / Moe</button>
+          <button class="energy-btn" onclick="selectEnergy(this, 'Chaotisch')">⚡ Chaotisch / Vol</button>
+          <button class="energy-btn" onclick="selectEnergy(this, 'Oké')">☕ Rustig / Oké</button>
+          <button class="energy-btn" onclick="selectEnergy(this, 'Gefocust')">🚀 Gefocust</button>
+        </div>
+
+        <div id="start-action" class="hidden" style="margin-top: 14px;">
+          <button class="btn" onclick="startDay()">Landen in mijn dag</button>
         </div>
       </div>
 
-      <div id="pact-form">
-        <input type="text" id="pact-input" placeholder="Bijv: Alleen mijn laptop opendoen & water pakken">
-        <button class="btn" onclick="savePact()">Leg vast voor morgen</button>
-      </div>
+      <!-- 🌙 2. AVOND PACT -->
+      <div class="card" style="margin-bottom: 18px;">
+        <h2>
+          🌙 Het Avond-Pact
+          <button class="btn btn-secondary btn-small" onclick="togglePactHistory()">📜 Archief</button>
+        </h2>
+        <p class="subtitle">Zet één piepkleine micro-stap klaar voor morgen. Zo hoef je 's ochtends niet na te denken.</p>
 
-      <div id="pact-history-box" class="hidden" style="margin-top: 14px; background: var(--item-bg); padding: 12px; border-radius: 10px; border: 1px solid var(--input-border);">
-        <strong style="font-size: 0.85rem;">📜 Jouw Pacten Historie</strong>
-        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">Afspraken die je met jezelf bent nagekomen:</p>
-        <div id="pact-history-list" class="item-list"></div>
-      </div>
-    </div>
+        <div id="pact-display" class="hidden">
+          <div style="background: var(--item-bg); padding: 14px; border-radius: 10px; border-left: 4px solid var(--accent-primary); border: 1px solid var(--input-border);">
+            <strong style="display:block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">JOUW AFSPRAAK:</strong>
+            <span id="current-pact-text" style="font-size: 1rem; font-weight: 500;"></span>
+          </div>
+          
+          <div class="btn-group">
+            <button class="btn btn-small" style="background-color: #38A169; color: white;" onclick="completePact()">✅ Voltooid</button>
+            <button class="btn btn-secondary btn-small" onclick="pushPactToCalendar()" style="background-color: #3182CE; color: white;">📅 Zet in Agenda</button>
+            <button class="btn btn-secondary btn-small" onclick="sharePactWhatsApp()" style="background-color: #25D366; color: white;">📲 Deel met Buddy</button>
+            <button class="btn btn-secondary btn-small" onclick="renegotiatePact()">✨ Maak kleiner</button>
+            <button class="btn btn-secondary btn-small" onclick="editPact()">✏️ Bewerken</button>
+            <button class="btn btn-secondary btn-small" style="color: #E53E3E;" onclick="deletePact()">🗑️ Wis</button>
+          </div>
+        </div>
 
-    <!-- 🎯 3. HET ZACHTE PLANBORD -->
-    <div class="card">
-      <h2>
-        🎯 Zacht Planbord
-        <button class="btn btn-secondary btn-small" onclick="toggleTaskArchive()">📜 Taken Archief</button>
-      </h2>
-      <p class="subtitle">Kies maximaal 2 of 3 behapbare acties voor nu. Oudere voltooide acties verhuizen automatisch naar het archief.</p>
+        <div id="pact-form">
+          <input type="text" id="pact-input" placeholder="Bijv: Alleen mijn laptop opendoen & water pakken">
+          <button class="btn" onclick="savePact()">Leg vast voor morgen</button>
+        </div>
 
-      <div style="display: flex; gap: 8px;">
-        <input type="text" id="task-input" placeholder="Kleine actie voor nu..." style="margin-bottom: 0;">
-        <button class="btn btn-small" onclick="addTask()">Toevoegen</button>
-      </div>
-
-      <div id="tasks-list" class="item-list"></div>
-
-      <div id="task-archive-box" class="hidden" style="margin-top: 14px; background: var(--item-bg); padding: 12px; border-radius: 10px; border: 1px solid var(--input-border);">
-        <strong style="font-size: 0.85rem;">📜 Voltooide Taken Archief</strong>
-        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">Eerder afgevinkte acties:</p>
-        <div id="task-archive-list" class="item-list"></div>
-      </div>
-    </div>
-
-    <!-- 🧭 4. HET ZACHTE KOMPAS (LANGETERMIJN DOELEN & VALKUILEN) -->
-    <div class="card">
-      <h2>
-        🧭 Het Zachte Kompas
-        <button class="btn btn-secondary btn-small" onclick="toggleAddGoalForm()">+ Nieuw Doel</button>
-      </h2>
-      <p class="subtitle">Langetermijn voornemens met een ingebouwd veiligheidsnet. Vier elke stap, ook de micro-versie op zware dagen!</p>
-
-      <!-- FORMULIER VOOR NIEUW DOEL -->
-      <div id="add-goal-form" class="hidden" style="background: var(--item-bg); padding: 14px; border-radius: 12px; margin-bottom: 14px; border: 1px solid var(--input-border);">
-        <strong style="display:block; font-size: 0.88rem; margin-bottom: 8px;">Nieuw Doel Toevoegen</strong>
-        <input type="text" id="goal-title-input" placeholder="🎯 Wat wil je opbouwen? (bijv. 10 min gitaar spelen)">
-        <input type="text" id="goal-pitfall-input" placeholder="🕳️ Bekende valkuil? (bijv. Te moe 's avonds)">
-        <input type="text" id="goal-shield-input" placeholder="🛡️ Zacht Schild op zware dagen? (bijv. 1 akkoord aanslaan)">
-        <div style="display:flex; gap:8px;">
-          <button class="btn btn-small" onclick="saveNewGoal()">Opslaan</button>
-          <button class="btn btn-secondary btn-small" onclick="toggleAddGoalForm()">Annuleren</button>
+        <div id="pact-history-box" class="hidden" style="margin-top: 14px; background: var(--item-bg); padding: 12px; border-radius: 10px; border: 1px solid var(--input-border);">
+          <strong style="font-size: 0.85rem;">📜 Jouw Pacten Historie</strong>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">Afspraken die je met jezelf bent nagekomen:</p>
+          <div id="pact-history-list" class="item-list"></div>
         </div>
       </div>
 
-      <!-- DOELEN LIJST -->
-      <div id="compass-goals-list" class="item-list"></div>
+      <!-- 🎯 3. HET ZACHTE PLANBORD -->
+      <div class="card" style="margin-bottom: 18px;">
+        <h2>
+          🎯 Zacht Planbord
+          <button class="btn btn-secondary btn-small" onclick="toggleTaskArchive()">📜 Taken Archief</button>
+        </h2>
+        <p class="subtitle">Kies maximaal 2 of 3 behapbare acties voor nu. Oudere voltooide acties verhuizen automatisch naar het archief.</p>
+
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="task-input" placeholder="Kleine actie voor nu..." style="margin-bottom: 0;">
+          <button class="btn btn-small" onclick="addTask()">Toevoegen</button>
+        </div>
+
+        <div id="tasks-list" class="item-list"></div>
+
+        <div id="task-archive-box" class="hidden" style="margin-top: 14px; background: var(--item-bg); padding: 12px; border-radius: 10px; border: 1px solid var(--input-border);">
+          <strong style="font-size: 0.85rem;">📜 Voltooide Taken Archief</strong>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">Eerder afgevinkte acties:</p>
+          <div id="task-archive-list" class="item-list"></div>
+        </div>
+      </div>
+
+      <!-- 🧭 4. HET ZACHTE KOMPAS -->
+      <div class="card" style="margin-bottom: 18px;">
+        <h2>
+          🧭 Het Zachte Kompas
+          <button class="btn btn-secondary btn-small" onclick="toggleAddGoalForm()">+ Nieuw Doel</button>
+        </h2>
+        <p class="subtitle">Langetermijn voornemens met een ingebouwd veiligheidsnet. Vier elke stap, ook de micro-versie op zware dagen!</p>
+
+        <div id="add-goal-form" class="hidden" style="background: var(--item-bg); padding: 14px; border-radius: 12px; margin-bottom: 14px; border: 1px solid var(--input-border);">
+          <strong style="display:block; font-size: 0.88rem; margin-bottom: 8px;">Nieuw Doel Toevoegen</strong>
+          <input type="text" id="goal-title-input" placeholder="🎯 Wat wil je opbouwen? (bijv. 10 min gitaar spelen)">
+          <input type="text" id="goal-pitfall-input" placeholder="🕳️ Bekende valkuil? (bijv. Te moe 's avonds)">
+          <input type="text" id="goal-shield-input" placeholder="🛡️ Zacht Schild op zware dagen? (bijv. 1 akkoord aanslaan)">
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-small" onclick="saveNewGoal()">Opslaan</button>
+            <button class="btn btn-secondary btn-small" onclick="toggleAddGoalForm()">Annuleren</button>
+          </div>
+        </div>
+
+        <div id="compass-goals-list" class="item-list"></div>
+      </div>
+
+      <!-- 📊 5. ZACHTE INZICHTEN -->
+      <div class="card" style="margin-bottom: 18px;">
+        <h2>📊 Jouw Reis In Cijfers</h2>
+        <p class="subtitle">Geen reeksen of gemiste dagen. Alleen de dingen die je wél hebt gedaan.</p>
+        
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="stat-number" id="stat-starts">0</div>
+            <div class="stat-label">Zachte Starts</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number" id="stat-pacts">0</div>
+            <div class="stat-label">Pacten Nagekomen</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number" id="stat-tasks">0</div>
+            <div class="stat-label">Gelukt! 🎉</div>
+          </div>
+        </div>
+
+        <div class="insight-card" id="insight-box">
+          <strong>💡 Zacht Inzicht:</strong>
+          <span id="insight-text">Je bouwt stap voor stap aan je eigen ritme. Er is geen haast!</span>
+        </div>
+      </div>
+
+      <!-- 💜 6. BUDDY PULSE -->
+      <div class="buddy-pulse">
+        <strong style="font-size: 0.9rem;">💜 Zachte Buddy-Pulse</strong>
+        <p style="font-size: 0.82rem; margin-top: 4px; opacity: 0.9;">Er zijn nu 54 anderen ook rustig op hun eigen tempo bezig.</p>
+        <button class="btn" style="margin-top: 10px; background-color: var(--purple-text); color: white; font-size: 0.82rem; padding: 8px 14px;" onclick="triggerConfetti(); alert('❤️ Signaal verzonden! Je hebt anoniem een schouderklopje gestuurd naar een lotgenoot.');">Stuur een anoniem schouderklopje</button>
+      </div>
+
     </div>
 
-    <!-- 📌 5. IDEEËNKLUIS -->
-    <div class="card">
-      <h2>
-        📌 Ideeënkluis
-        <button class="btn btn-secondary btn-small" onclick="grabRandomIdea()">🎲 Grabbelton</button>
-      </h2>
-      <p class="subtitle">Snel een gedachte lossen? Typ 'm hierin. Bekijk je 3 nieuwste ideeën of open de volledige kluis.</p>
+    <!-- ==================== PAGINA 2: IDEEËNKLUIS ==================== -->
+    <div id="view-ideas" class="hidden">
+      <div class="card">
+        <h2>
+          📌 Ideeënkluis
+          <button class="btn btn-secondary btn-small" onclick="grabRandomIdea()">🎲 Grabbelton</button>
+        </h2>
+        <p class="subtitle">Schrijf je gedachten als Post-its van je af. Zo blijven ze bewaard zonder dat je er nu direct iets mee hoeft.</p>
 
-      <textarea id="idea-input" rows="2" placeholder="Typ een willekeurig idee of wilde gedachte..."></textarea>
+        <textarea id="idea-input" rows="2" placeholder="Typ een willekeurig idee of wilde gedachte..."></textarea>
+        
+        <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+          <select id="idea-category-select" style="margin-bottom: 0; flex: 1;">
+            <option value="Algemeen">📂 Categorie: Algemeen</option>
+            <option value="Creatief">🎨 Creatief</option>
+            <option value="Werk / Studie">💼 Werk / Studie</option>
+            <option value="Privé / Thuis">🏠 Privé / Thuis</option>
+          </select>
+          <button class="btn btn-secondary btn-small" onclick="addNewCategoryPrompt()">+ Cat</button>
+        </div>
+
+        <button class="btn btn-secondary" onclick="addIdea()">Prik op het Bord 📌</button>
+
+        <div class="filter-bar" style="margin-top: 16px;">
+          <select id="ideas-filter-category" onchange="renderIdeas()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 6px;">
+            <option value="ALL">📂 Alle categorieën</option>
+          </select>
+
+          <select id="ideas-sort-select" onchange="renderIdeas()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 6px;">
+            <option value="NEWEST">⏱️ Nieuwste eerst</option>
+            <option value="OLDEST">⏳ Oudste eerst</option>
+            <option value="SHUFFLE">🎲 Alles door elkaar</option>
+          </select>
+
+          <button class="btn btn-secondary btn-small" onclick="toggleIdeaDates()" id="toggle-dates-btn">🕒 Datum: Aan</button>
+        </div>
+
+        <div id="main-ideas-postit-grid" class="postit-grid"></div>
+      </div>
+    </div>
+
+    <!-- ==================== PAGINA 3: GELD-KOMPAS ==================== -->
+    <div id="view-money" class="hidden">
       
-      <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-        <select id="idea-category-select" style="margin-bottom: 0; flex: 1;">
-          <option value="Algemeen">📂 Categorie: Algemeen</option>
-          <option value="Creatief">🎨 Creatief</option>
-          <option value="Werk / Studie">💼 Werk / Studie</option>
-          <option value="Privé / Thuis">🏠 Privé / Thuis</option>
-        </select>
-        <button class="btn btn-secondary btn-small" onclick="addNewCategoryPrompt()">+ Cat</button>
-      </div>
+      <!-- 🛑 1. IMPULS-WACHTKAMER -->
+      <div class="card" style="margin-bottom: 18px;">
+        <h2>🛑 Impuls-Wachtkamer</h2>
+        <p class="subtitle">Zie je iets leuks online of in een winkel? Koop het niet meteen, maar zet het 24 uur in de wachtkamer. Zo geef je je brein rust en overzie je de aankoop.</p>
 
-      <button class="btn btn-secondary" onclick="addIdea()">Prik op het Bord 📌</button>
-
-      <div id="main-ideas-postit-grid" class="postit-grid"></div>
-
-      <button class="btn btn-secondary" style="margin-top: 14px; font-size:0.9rem;" onclick="openIdeasModal()" id="open-ideas-modal-btn">
-        📂 Bekijk alle ideeën (0)
-      </button>
-    </div>
-
-    <!-- 📊 6. ZACHTE INZICHTEN & CORRELATIES -->
-    <div class="card">
-      <h2>📊 Jouw Reis In Cijfers</h2>
-      <p class="subtitle">Geen reeksen of gemiste dagen. Alleen de dingen die je wél hebt gedaan.</p>
-      
-      <div class="stats-grid">
-        <div class="stat-box">
-          <div class="stat-number" id="stat-starts">0</div>
-          <div class="stat-label">Zachte Starts</div>
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="impulse-name" placeholder="Wat wil je kopen?" style="margin-bottom:0; flex:2;">
+          <input type="number" id="impulse-price" placeholder="Prijs (€)" style="margin-bottom:0; flex:1;">
+          <button class="btn btn-small" onclick="addImpulseItem()">Parkeren</button>
         </div>
-        <div class="stat-box">
-          <div class="stat-number" id="stat-pacts">0</div>
-          <div class="stat-label">Pacten Nagekomen</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-number" id="stat-tasks">0</div>
-          <div class="stat-label">Gelukt! 🎉</div>
-        </div>
+
+        <div id="impulse-list" class="item-list"></div>
       </div>
 
-      <div class="insight-card" id="insight-box">
-        <strong>💡 Zacht Inzicht:</strong>
-        <span id="insight-text">Je bouwt stap voor stap aan je eigen ritme. Er is geen haast!</span>
+      <!-- 🛡️ 2. VASTE LASTEN CHECK -->
+      <div class="card" style="margin-bottom: 18px;">
+        <h2>
+          🛡️ Vaste Lasten Check
+          <button class="btn btn-secondary btn-small" onclick="addFixedBillPrompt()">+ Toevoegen</button>
+        </h2>
+        <p class="subtitle">Houd in één oogopslag de belangrijkste verplichtingen van de maand bij. Zodra ze betaald zijn, weet je dat de basis veilig staat.</p>
+
+        <div id="fixed-bills-list" class="item-list"></div>
       </div>
+
+      <!-- 🔮 3. TOEKOMST-ANKERS -->
+      <div class="card" style="margin-bottom: 18px;">
+        <h2>
+          🔮 Toekomst-Ankers
+          <button class="btn btn-secondary btn-small" onclick="addFutureAnchorPrompt()">+ Potje</button>
+        </h2>
+        <p class="subtitle">Geen verrassingen voor jaarlijkse of kwartaalrekeningen. Bouw rustig een veiligheidsbuffer op.</p>
+
+        <div id="future-anchors-list" class="item-list"></div>
+      </div>
+
+      <!-- 💡 4. GELD & DOPAMINE HACKS -->
+      <div class="tip-box">
+        <strong style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; display:block; margin-bottom:6px;">💡 Zachte Geld Inzichten</strong>
+        <p style="font-size: 0.88rem; line-height: 1.4;">
+          <strong>De Dopamine-Vraag:</strong> Koop je dit product voor je eigen toekomst, of zoek je op dit specifieke moment ontspanning of afleiding? Soms helpt een kop thee of een wandeling even goed!
+        </p>
+      </div>
+
     </div>
 
-    <!-- 💜 7. BUDDY PULSE -->
-    <div class="buddy-pulse">
-      <strong style="font-size: 0.9rem;">💜 Zachte Buddy-Pulse</strong>
-      <p style="font-size: 0.82rem; margin-top: 4px; opacity: 0.9;">Er zijn nu 52 anderen ook rustig op hun eigen tempo bezig.</p>
-      <button class="btn" style="margin-top: 10px; background-color: var(--purple-text); color: white; font-size: 0.82rem; padding: 8px 14px;" onclick="triggerConfetti(); alert('❤️ Signaal verzonden! Je hebt anoniem een schouderklopje gestuurd naar een lotgenoot.');">Stuur een anoniem schouderklopje</button>
-    </div>
-
-  </div>
-
-  <!-- 🗂️ MODAL POP-UP VOOR ALLE IDEEËN -->
-  <div id="ideas-modal" class="modal-overlay hidden" onclick="closeIdeasModal()">
-    <div class="modal-content" onclick="event.stopPropagation()">
-      
-      <div class="modal-header">
-        <h2>📌 Volledige Ideeënkluis</h2>
-        <button class="btn btn-secondary btn-small" onclick="closeIdeasModal()">✕ Sluiten</button>
-      </div>
-      <p class="subtitle">Een rustig overzicht van al jouw losse Post-its en creatieve invallen.</p>
-
-      <div class="filter-bar">
-        <select id="modal-filter-category" onchange="renderIdeas()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 6px;">
-          <option value="ALL">📂 Alles</option>
-        </select>
-
-        <select id="modal-sort-ideas" onchange="renderIdeas()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 6px;">
-          <option value="NEWEST">⏱️ Nieuwste eerst</option>
-          <option value="OLDEST">⏳ Oudste eerst</option>
-          <option value="SHUFFLE">🎲 Alles door elkaar</option>
-        </select>
-
-        <button class="btn btn-secondary btn-small" onclick="toggleIdeaDates()" id="modal-toggle-dates-btn">🕒 Datum: Aan</button>
-      </div>
-
-      <div id="modal-ideas-postit-grid" class="postit-grid"></div>
-
-    </div>
   </div>
 
   <script>
+    // --- TABBLADEN NAVIGATION (SPA) ---
+    function switchView(viewName) {
+      document.getElementById('view-today').classList.add('hidden');
+      document.getElementById('view-ideas').classList.add('hidden');
+      document.getElementById('view-money').classList.add('hidden');
+
+      document.getElementById('tab-today').classList.remove('active');
+      document.getElementById('tab-ideas').classList.remove('active');
+      document.getElementById('tab-money').classList.remove('active');
+
+      document.getElementById(`view-${viewName}`).classList.remove('hidden');
+      document.getElementById(`tab-${viewName}`).classList.add('active');
+
+      if (viewName === 'ideas') renderIdeas();
+      if (viewName === 'money') renderMoneyView();
+    }
+
     // --- CONFETTI ANIMATIE ---
     function triggerConfetti() {
       const canvas = document.getElementById('confetti-canvas');
@@ -1026,27 +1081,12 @@
       }
     }
 
-    // --- HET ZACHTE KOMPAS (LANGETERMIJN DOELEN & SCHILD) ---
+    // --- HET ZACHTE KOMPAS ---
     function initDefaultCompassGoals() {
-      const existing = localStorage.getItem('voldaan_compass_goals');
-      if (!existing) {
+      if (!localStorage.getItem('voldaan_compass_goals')) {
         const defaultGoals = [
-          {
-            id: 1,
-            title: "10 minuten gitaar spelen 🎸",
-            pitfall: "Geen puf 's avonds & gitaar staat in de hoek",
-            shield: "Gitaar op schoot nemen & 1 akkoord aanslaan",
-            lastLoggedDate: null,
-            lastStatus: null
-          },
-          {
-            id: 2,
-            title: "10.000 passen zetten 🚶",
-            pitfall: "Drukke werkdag of slecht weer",
-            shield: "3 minuten frisse neus halen tot de hoek van de straat",
-            lastLoggedDate: null,
-            lastStatus: null
-          }
+          { id: 1, title: "10 minuten gitaar spelen 🎸", pitfall: "Geen puf 's avonds", shield: "Gitaar op schoot & 1 akkoord aanslaan", lastLoggedDate: null, lastStatus: null },
+          { id: 2, title: "10.000 passen zetten 🚶", pitfall: "Drukke dag of regen", shield: "3 minuten frisse neus halen tot de hoek", lastLoggedDate: null, lastStatus: null }
         ];
         localStorage.setItem('voldaan_compass_goals', JSON.stringify(defaultGoals));
       }
@@ -1064,14 +1104,7 @@
       if (!title.trim()) return;
 
       let goals = JSON.parse(localStorage.getItem('voldaan_compass_goals') || '[]');
-      goals.push({
-        id: Date.now(),
-        title: title,
-        pitfall: pitfall,
-        shield: shield,
-        lastLoggedDate: null,
-        lastStatus: null
-      });
+      goals.push({ id: Date.now(), title, pitfall, shield, lastLoggedDate: null, lastStatus: null });
 
       localStorage.setItem('voldaan_compass_goals', JSON.stringify(goals));
       document.getElementById('goal-title-input').value = '';
@@ -1085,8 +1118,7 @@
       let goals = JSON.parse(localStorage.getItem('voldaan_compass_goals') || '[]');
       const idx = goals.findIndex(g => g.id === goalId);
       if (idx !== -1) {
-        const todayStr = new Date().toLocaleDateString('nl-NL');
-        goals[idx].lastLoggedDate = todayStr;
+        goals[idx].lastLoggedDate = new Date().toLocaleDateString('nl-NL');
         goals[idx].lastStatus = status;
         localStorage.setItem('voldaan_compass_goals', JSON.stringify(goals));
 
@@ -1143,10 +1175,8 @@
 
         let statusHtml = '';
         if (isToday) {
-          let label = '';
-          if (goal.lastStatus === 'full') label = '✅ Volledig gelukt vandaag! 🎉';
-          else if (goal.lastStatus === 'shield') label = '🛡️ Zacht Schild ingezet! Trots op je! 💜';
-          else if (goal.lastStatus === 'rest') label = '🍃 Rustdag genomen.';
+          let label = goal.lastStatus === 'full' ? '✅ Volledig gelukt vandaag! 🎉' :
+                      goal.lastStatus === 'shield' ? '🛡️ Zacht Schild ingezet! Trots op je! 💜' : '🍃 Rustdag genomen.';
 
           statusHtml = `
             <div style="display:flex; justify-content:space-between; align-items:center; background:var(--input-bg); padding:8px 10px; border-radius:8px; border:1px solid var(--input-border);">
@@ -1201,14 +1231,14 @@
     function updateCategoryDropdowns() {
       const cats = getCategories();
       const addSelect = document.getElementById('idea-category-select');
-      const modalFilterSelect = document.getElementById('modal-filter-category');
+      const filterSelect = document.getElementById('ideas-filter-category');
 
       addSelect.innerHTML = '';
-      modalFilterSelect.innerHTML = '<option value="ALL">📂 Alles</option>';
+      filterSelect.innerHTML = '<option value="ALL">📂 Alle categorieën</option>';
 
       cats.forEach(c => {
         addSelect.innerHTML += `<option value="${c}">${c}</option>`;
-        modalFilterSelect.innerHTML += `<option value="${c}">${c}</option>`;
+        filterSelect.innerHTML += `<option value="${c}">${c}</option>`;
       });
     }
 
@@ -1220,13 +1250,7 @@
       let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
       const dateStr = new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 
-      ideas.push({
-        id: Date.now(),
-        text: input.value,
-        category: catSelect.value || 'Algemeen',
-        created: dateStr
-      });
-
+      ideas.push({ id: Date.now(), text: input.value, category: catSelect.value || 'Algemeen', created: dateStr });
       localStorage.setItem('voldaan_ideas', JSON.stringify(ideas));
       input.value = '';
       renderIdeas();
@@ -1235,7 +1259,7 @@
     function toggleIdeaDates() {
       let show = localStorage.getItem('voldaan_show_idea_dates') !== 'false';
       localStorage.setItem('voldaan_show_idea_dates', !show);
-      document.getElementById('modal-toggle-dates-btn').innerText = !show ? '🕒 Datum: Aan' : '🕒 Datum: Uit';
+      document.getElementById('toggle-dates-btn').innerText = !show ? '🕒 Datum: Aan' : '🕒 Datum: Uit';
       renderIdeas();
     }
 
@@ -1248,21 +1272,14 @@
     function moveIdeaToPlanbord(id) {
       let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
       const idea = ideas.find(i => i.id === id);
-      if (idea) {
-        addTask(idea.text);
-        alert(`🎯 "${idea.text}" is toegevoegd aan je Zacht Planbord!`);
-      }
+      if (idea) { addTask(idea.text); alert(`🎯 "${idea.text}" is toegevoegd aan je Zacht Planbord!`); }
       openMenuId = null;
     }
 
     function moveIdeaToPact(id) {
       let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
       const idea = ideas.find(i => i.id === id);
-      if (idea) {
-        localStorage.setItem('voldaan_pact', idea.text);
-        renderPact();
-        alert(`🌙 "${idea.text}" is ingesteld als jouw Avond-pact voor morgen!`);
-      }
+      if (idea) { localStorage.setItem('voldaan_pact', idea.text); renderPact(); alert(`🌙 "${idea.text}" is ingesteld als Avond-pact!`); }
       openMenuId = null;
     }
 
@@ -1286,15 +1303,6 @@
       ideas = ideas.filter(i => i.id !== id);
       localStorage.setItem('voldaan_ideas', JSON.stringify(ideas));
       renderIdeas();
-    }
-
-    function openIdeasModal() {
-      document.getElementById('ideas-modal').classList.remove('hidden');
-      renderIdeas();
-    }
-
-    function closeIdeasModal() {
-      document.getElementById('ideas-modal').classList.add('hidden');
     }
 
     function createPostitElement(idea, showDates) {
@@ -1324,59 +1332,197 @@
     function renderIdeas() {
       let allIdeas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
       const showDates = localStorage.getItem('voldaan_show_idea_dates') !== 'false';
-      
-      document.getElementById('open-ideas-modal-btn').innerText = `📂 Bekijk alle ideeën (${allIdeas.length})`;
-
-      const mainGrid = document.getElementById('main-ideas-postit-grid');
-      mainGrid.innerHTML = '';
-
-      const recent3 = [...allIdeas].sort((a,b) => b.id - a.id).slice(0, 3);
-
-      if (recent3.length === 0) {
-        mainGrid.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted); grid-column: 1/-1;">Nog geen Post-its in je Ideeënkluis. Prik er hierboven een op!</span>';
-      } else {
-        recent3.forEach((idea) => {
-          mainGrid.appendChild(createPostitElement(idea, showDates));
-        });
-      }
-
-      const filterCat = document.getElementById('modal-filter-category').value;
-      const sortVal = document.getElementById('modal-sort-ideas').value;
+      const filterCat = document.getElementById('ideas-filter-category').value;
+      const sortVal = document.getElementById('ideas-sort-select').value;
 
       let modalIdeas = [...allIdeas];
+      if (filterCat !== 'ALL') modalIdeas = modalIdeas.filter(i => i.category === filterCat);
 
-      if (filterCat !== 'ALL') {
-        modalIdeas = modalIdeas.filter(i => i.category === filterCat);
-      }
+      if (sortVal === 'NEWEST') modalIdeas.sort((a,b) => b.id - a.id);
+      else if (sortVal === 'OLDEST') modalIdeas.sort((a,b) => a.id - b.id);
+      else if (sortVal === 'SHUFFLE') modalIdeas.sort(() => Math.random() - 0.5);
 
-      if (sortVal === 'NEWEST') {
-        modalIdeas.sort((a,b) => b.id - a.id);
-      } else if (sortVal === 'OLDEST') {
-        modalIdeas.sort((a,b) => a.id - b.id);
-      } else if (sortVal === 'SHUFFLE') {
-        modalIdeas.sort(() => Math.random() - 0.5);
-      }
-
-      const modalGrid = document.getElementById('modal-ideas-postit-grid');
-      modalGrid.innerHTML = '';
+      const grid = document.getElementById('main-ideas-postit-grid');
+      grid.innerHTML = '';
 
       if (modalIdeas.length === 0) {
-        modalGrid.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted); grid-column: 1/-1;">Geen Post-its gevonden in deze categorie.</span>';
+        grid.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted); grid-column: 1/-1;">Geen Post-its gevonden. Prik er hierboven een op!</span>';
       } else {
-        modalIdeas.forEach((idea) => {
-          modalGrid.appendChild(createPostitElement(idea, showDates));
-        });
+        modalIdeas.forEach(idea => grid.appendChild(createPostitElement(idea, showDates)));
       }
     }
 
     function grabRandomIdea() {
       let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
-      if (ideas.length === 0) {
-        alert("Je Ideeënkluis is nog leeg! Prik eerst een paar gedachten op de muur.");
-        return;
-      }
+      if (ideas.length === 0) { alert("Je Ideeënkluis is leeg!"); return; }
       const randomIdea = ideas[Math.floor(Math.random() * ideas.length)];
-      alert(`🎲 GRABBELTON POST-IT:\n\n"${randomIdea.text}" (${randomIdea.category})\n\nWil je hier vandaag iets mee op je Planbord?`);
+      alert(`🎲 GRABBELTON POST-IT:\n\n"${randomIdea.text}" (${randomIdea.category})\n\nWil je hier vandaag iets mee?`);
+    }
+
+    // --- GELD-KOMPAS LOGICA ---
+    function initDefaultMoneyData() {
+      if (!localStorage.getItem('voldaan_fixed_bills')) {
+        const defaultBills = [
+          { id: 1, name: "Huur / Hypotheek & Vaste Lasten", paid: false },
+          { id: 2, name: "Zorgverzekering", paid: false }
+        ];
+        localStorage.setItem('voldaan_fixed_bills', JSON.stringify(defaultBills));
+      }
+      if (!localStorage.getItem('voldaan_future_anchors')) {
+        const defaultAnchors = [
+          { id: 1, name: "Auto-APK / Onderhoud", amount: 200, targetMonth: "Mei", saved: false },
+          { id: 2, name: "Feestdagen / Cadeaus", amount: 150, targetMonth: "December", saved: false }
+        ];
+        localStorage.setItem('voldaan_future_anchors', JSON.stringify(defaultAnchors));
+      }
+    }
+
+    function addImpulseItem() {
+      const name = document.getElementById('impulse-name').value;
+      const price = document.getElementById('impulse-price').value;
+      if (!name.trim()) return;
+
+      let items = JSON.parse(localStorage.getItem('voldaan_impulse_items') || '[]');
+      items.unshift({
+        id: Date.now(),
+        name: name,
+        price: price ? `€${price}` : '',
+        date: new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })
+      });
+
+      localStorage.setItem('voldaan_impulse_items', JSON.stringify(items));
+      document.getElementById('impulse-name').value = '';
+      document.getElementById('impulse-price').value = '';
+      renderMoneyView();
+    }
+
+    function removeImpulseItem(id, wasSaved) {
+      let items = JSON.parse(localStorage.getItem('voldaan_impulse_items') || '[]');
+      items = items.filter(i => i.id !== id);
+      localStorage.setItem('voldaan_impulse_items', JSON.stringify(items));
+      if (wasSaved) {
+        triggerConfetti();
+        alert("🎉 Geweldig gedaan! Je hebt een impuls-aankoop laten schieten en geld bespaard.");
+      }
+      renderMoneyView();
+    }
+
+    function addFixedBillPrompt() {
+      const name = prompt("Naam van de vaste last / betaling:");
+      if (name && name.trim()) {
+        let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
+        bills.push({ id: Date.now(), name: name.trim(), paid: false });
+        localStorage.setItem('voldaan_fixed_bills', JSON.stringify(bills));
+        renderMoneyView();
+      }
+    }
+
+    function toggleFixedBill(id) {
+      let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
+      const idx = bills.findIndex(b => b.id === id);
+      if (idx !== -1) {
+        bills[idx].paid = !bills[idx].paid;
+        if (bills[idx].paid) triggerConfetti();
+        localStorage.setItem('voldaan_fixed_bills', JSON.stringify(bills));
+        renderMoneyView();
+      }
+    }
+
+    function removeFixedBill(id) {
+      let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
+      bills = bills.filter(b => b.id !== id);
+      localStorage.setItem('voldaan_fixed_bills', JSON.stringify(bills));
+      renderMoneyView();
+    }
+
+    function addFutureAnchorPrompt() {
+      const name = prompt("Naam van het opvangpotje (bijv. Gemeentebelasting):");
+      if (!name) return;
+      const amount = prompt("Streefbedrag in € (bijv. 150):");
+      const month = prompt("Welke maand/periode? (bijv. April):");
+
+      let anchors = JSON.parse(localStorage.getItem('voldaan_future_anchors') || '[]');
+      anchors.push({ id: Date.now(), name, amount, targetMonth: month, saved: false });
+      localStorage.setItem('voldaan_future_anchors', JSON.stringify(anchors));
+      renderMoneyView();
+    }
+
+    function toggleFutureAnchor(id) {
+      let anchors = JSON.parse(localStorage.getItem('voldaan_future_anchors') || '[]');
+      const idx = anchors.findIndex(a => a.id === id);
+      if (idx !== -1) {
+        anchors[idx].saved = !anchors[idx].saved;
+        if (anchors[idx].saved) triggerConfetti();
+        localStorage.setItem('voldaan_future_anchors', JSON.stringify(anchors));
+        renderMoneyView();
+      }
+    }
+
+    function removeFutureAnchor(id) {
+      let anchors = JSON.parse(localStorage.getItem('voldaan_future_anchors') || '[]');
+      anchors = anchors.filter(a => a.id !== id);
+      localStorage.setItem('voldaan_future_anchors', JSON.stringify(anchors));
+      renderMoneyView();
+    }
+
+    function renderMoneyView() {
+      // 1. IMPULS WACHTKAMER
+      let impulseItems = JSON.parse(localStorage.getItem('voldaan_impulse_items') || '[]');
+      const impulseContainer = document.getElementById('impulse-list');
+      impulseContainer.innerHTML = '';
+
+      if (impulseItems.length === 0) {
+        impulseContainer.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted);">De wachtkamer is leeg. Rust in je hoofd!</span>';
+      } else {
+        impulseItems.forEach(item => {
+          const div = document.createElement('div');
+          div.className = 'item-card';
+          div.innerHTML = `
+            <div>
+              <strong>${item.name}</strong> ${item.price ? `<span style="color:var(--accent-primary); font-weight:600;">(${item.price})</span>` : ''}
+              <span class="time-badge">Geparkeerd op ${item.date} — Neem 24u bedenktijd</span>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <button class="btn btn-small" style="background-color:#38A169; color:white; font-size:0.75rem;" onclick="removeImpulseItem(${item.id}, true)">🍃 Laten schieten</button>
+              <button style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.8rem;" onclick="removeImpulseItem(${item.id}, false)">✕</button>
+            </div>
+          `;
+          impulseContainer.appendChild(div);
+        });
+      }
+
+      // 2. VASTE LASTEN
+      let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
+      const billsContainer = document.getElementById('fixed-bills-list');
+      billsContainer.innerHTML = '';
+
+      bills.forEach(bill => {
+        const div = document.createElement('div');
+        div.className = `item-card ${bill.paid ? 'done' : ''}`;
+        div.innerHTML = `
+          <span style="cursor:pointer;" onclick="toggleFixedBill(${bill.id})">${bill.paid ? '✅' : '⚪'} ${bill.name}</span>
+          <button style="background:none; border:none; color:#E53E3E; cursor:pointer;" onclick="removeFixedBill(${bill.id})">✕</button>
+        `;
+        billsContainer.appendChild(div);
+      });
+
+      // 3. TOEKOMST ANKERS
+      let anchors = JSON.parse(localStorage.getItem('voldaan_future_anchors') || '[]');
+      const anchorsContainer = document.getElementById('future-anchors-list');
+      anchorsContainer.innerHTML = '';
+
+      anchors.forEach(anchor => {
+        const div = document.createElement('div');
+        div.className = `item-card ${anchor.saved ? 'done' : ''}`;
+        div.innerHTML = `
+          <div style="cursor:pointer;" onclick="toggleFutureAnchor(${anchor.id})">
+            <span>${anchor.saved ? '✅' : '🔮'} <strong>${anchor.name}</strong></span>
+            <span class="time-badge">Doel: €${anchor.amount} (${anchor.targetMonth})</span>
+          </div>
+          <button style="background:none; border:none; color:#E53E3E; cursor:pointer;" onclick="removeFutureAnchor(${anchor.id})">✕</button>
+        `;
+        anchorsContainer.appendChild(div);
+      });
     }
 
     window.addEventListener('click', () => {
@@ -1389,6 +1535,7 @@
     // --- INIT ---
     initTheme();
     initDefaultCompassGoals();
+    initDefaultMoneyData();
     updateCategoryDropdowns();
     renderTip();
     renderPact();
