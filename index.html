@@ -13,7 +13,6 @@
       --card-bg: #FFFFFF;
       --text-main: #2D3748;
       --text-muted: #718096;
-      --accent-soft: #E2E8F0;
       --accent-primary: #5A67D8;
       --accent-hover: #4C51BF;
       --soft-teal: #E6FFFA;
@@ -25,6 +24,9 @@
       --soft-purple: #FAF5FF;
       --purple-border: #E9D8FD;
       --purple-text: #553C9A;
+      --soft-green: #F0FFF4;
+      --green-border: #C6F6D5;
+      --green-text: #22543D;
       --radius: 16px;
       --shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
     }
@@ -42,7 +44,7 @@
       display: flex;
       justify-content: center;
       min-height: 100vh;
-      padding: 20px;
+      padding: 16px;
     }
 
     .container {
@@ -50,14 +52,14 @@
       max-width: 520px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 18px;
       padding-bottom: 40px;
     }
 
     header {
       text-align: center;
-      margin-top: 10px;
-      margin-bottom: 10px;
+      margin-top: 6px;
+      margin-bottom: 6px;
     }
 
     header h1 {
@@ -68,31 +70,32 @@
     }
 
     header p {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       color: var(--text-muted);
-      margin-top: 4px;
+      margin-top: 2px;
     }
 
     .card {
       background: var(--card-bg);
       border-radius: var(--radius);
-      padding: 22px;
+      padding: 20px;
       box-shadow: var(--shadow);
       border: 1px solid rgba(0,0,0,0.03);
     }
 
     .card h2 {
-      font-size: 1.15rem;
-      margin-bottom: 8px;
+      font-size: 1.1rem;
+      margin-bottom: 6px;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 8px;
     }
 
     .subtitle {
-      font-size: 0.88rem;
+      font-size: 0.85rem;
       color: var(--text-muted);
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       line-height: 1.4;
     }
 
@@ -101,8 +104,8 @@
       color: white;
       border: none;
       border-radius: 12px;
-      padding: 14px 20px;
-      font-size: 1rem;
+      padding: 12px 18px;
+      font-size: 0.95rem;
       font-weight: 600;
       cursor: pointer;
       width: 100%;
@@ -123,11 +126,18 @@
       background-color: #E2E8F0;
     }
 
+    .btn-small {
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      width: auto;
+      border-radius: 8px;
+    }
+
     .energy-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 10px;
-      margin-top: 12px;
+      margin-top: 10px;
     }
 
     .energy-btn {
@@ -135,7 +145,7 @@
       border: 2px solid #EDF2F7;
       border-radius: 12px;
       padding: 12px;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       cursor: pointer;
       text-align: center;
       transition: all 0.2s;
@@ -152,8 +162,8 @@
       border: 1px solid #E2E8F0;
       border-radius: 10px;
       padding: 12px;
-      font-size: 0.95rem;
-      margin-bottom: 12px;
+      font-size: 0.9rem;
+      margin-bottom: 10px;
       resize: vertical;
       outline: none;
     }
@@ -162,48 +172,63 @@
       border-color: var(--accent-primary);
     }
 
-    .tag-container {
+    .item-list {
       display: flex;
+      flex-direction: column;
       gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
+      margin-top: 10px;
     }
 
-    .badge {
-      background-color: #EDF2F7;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    .idea-item {
+    .item-card {
       background: #F7FAFC;
       padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 8px;
+      border-radius: 10px;
       font-size: 0.9rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      border: 1px solid #EDF2F7;
     }
 
-    .idea-item button {
-      background: none;
-      border: none;
-      color: #E53E3E;
-      cursor: pointer;
-      font-size: 0.8rem;
+    .item-card.done {
+      background: var(--soft-green);
+      border-color: var(--green-border);
+      color: var(--green-text);
+      text-decoration: line-through;
     }
 
-    .renegotiate-box {
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      text-align: center;
+    }
+
+    .stat-box {
+      background: #F7FAFC;
+      padding: 12px 8px;
+      border-radius: 12px;
+      border: 1px solid #EDF2F7;
+    }
+
+    .stat-number {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent-primary);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .tip-box {
       background-color: var(--soft-warm);
       border: 1px solid var(--warm-border);
       color: var(--warm-text);
-      padding: 12px;
-      border-radius: 10px;
-      margin-top: 12px;
-      font-size: 0.88rem;
+      padding: 16px;
+      border-radius: 14px;
     }
 
     .buddy-pulse {
@@ -211,7 +236,7 @@
       border: 1px solid var(--purple-border);
       color: var(--purple-text);
       padding: 16px;
-      border-radius: 12px;
+      border-radius: 14px;
       text-align: center;
     }
 
@@ -229,38 +254,47 @@
       <p>Geen druk. Geen schuldgevoel. Jouw tempo.</p>
     </header>
 
-    <!-- 1. TIJDLOZE STARTKNOP -->
+    <!-- 💡 ADHD TIP VAN DE DAG -->
+    <div class="tip-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <strong style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">💡 ADHD Hack van de dag</strong>
+        <button class="btn btn-secondary btn-small" onclick="nextTip()">Andere tip 🔄</button>
+      </div>
+      <p id="tip-text" style="font-size: 0.92rem; line-height: 1.4;"></p>
+    </div>
+
+    <!-- ☀️ 1. TIJDLOZE STARTKNOP -->
     <div class="card" id="start-card">
       <h2>☀️ Mijn Dag Begint Nu</h2>
       <p class="subtitle">Het maakt niet uit hoe laat het is. Waar staat je brein op dit moment naar?</p>
       
       <div class="energy-grid">
-        <button class="energy-btn" onclick="selectEnergy(this, 'Wazig / Opstartend')">🌫️ Wazig / Moe</button>
-        <button class="energy-btn" onclick="selectEnergy(this, 'Vol Gedachten')">⚡ Chaotisch / Vol</button>
-        <button class="energy-btn" onclick="selectEnergy(this, 'Rustig')">☕ Rustig / Oké</button>
-        <button class="energy-btn" onclick="selectEnergy(this, 'Gemotiveerd')">🚀 Gefocust</button>
+        <button class="energy-btn" onclick="selectEnergy(this, 'Wazig / Moe')">🌫️ Wazig / Moe</button>
+        <button class="energy-btn" onclick="selectEnergy(this, 'Chaotisch')">⚡ Chaotisch / Vol</button>
+        <button class="energy-btn" onclick="selectEnergy(this, 'Oké')">☕ Rustig / Oké</button>
+        <button class="energy-btn" onclick="selectEnergy(this, 'Gefocust')">🚀 Gefocust</button>
       </div>
 
-      <div id="start-action" class="hidden" style="margin-top: 16px;">
+      <div id="start-action" class="hidden" style="margin-top: 14px;">
         <button class="btn" onclick="startDay()">Landen in mijn dag</button>
       </div>
     </div>
 
-    <!-- 2. AVOND PACT -->
+    <!-- 🌙 2. AVOND PACT -->
     <div class="card">
       <h2>🌙 Het Avond-Pact</h2>
       <p class="subtitle">Zet één piepkleine micro-stap klaar voor morgen. Zo hoef je 's ochtends niet na te denken.</p>
 
       <div id="pact-display" class="hidden">
         <div style="background: #F7FAFC; padding: 14px; border-radius: 10px; border-left: 4px solid var(--accent-primary);">
-          <strong style="display:block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px;">JOUW AFSPRAAK VOOR VANDAAG/MORGEN:</strong>
-          <span id="current-pact-text" style="font-size: 1.05rem;"></span>
+          <strong style="display:block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">JOUW AFSPRAAK VOOR VANDAAG:</strong>
+          <span id="current-pact-text" style="font-size: 1rem; font-weight: 500;"></span>
         </div>
         
-        <div class="renegotiate-box" style="margin-top: 12px;">
-          <strong>Voelt dit nu te zwaar?</strong>
-          <p style="margin-top: 4px; margin-bottom: 8px;">Geen probleem. Gebruik de heronderhandel-knop om de stap direct te halveren.</p>
-          <button class="btn btn-secondary" style="padding: 8px 12px; font-size: 0.85rem; width: auto;" onclick="renegotiatePact()">✨ Maak 'm de helft kleiner</button>
+        <div style="background-color: var(--soft-warm); border: 1px solid var(--warm-border); padding: 12px; border-radius: 10px; margin-top: 10px;">
+          <strong style="font-size: 0.85rem; color: var(--warm-text);">Voelt dit nu te zwaar?</strong>
+          <p style="font-size: 0.8rem; color: var(--warm-text); margin-top: 2px; margin-bottom: 8px;">Geen probleem. Halveer de stap direct zonder schuldgevoel.</p>
+          <button class="btn btn-secondary btn-small" onclick="renegotiatePact()">✨ Maak 'm de helft kleiner</button>
         </div>
       </div>
 
@@ -270,35 +304,88 @@
       </div>
     </div>
 
-    <!-- 3. GEVOELS-ANKER -->
-    <div class="card" style="background-color: var(--soft-teal); border-color: var(--teal-border);">
-      <h2 style="color: var(--teal-text);">⚓ Gevoels-Anker</h2>
-      <p class="subtitle" style="color: var(--teal-text); opacity: 0.9;">
-        Onthoud: gisteren gaven 5 minuten rustige muziek bij de koffie een heel fijn gevoel. Geen verplichting voor nu, wel een zacht geheugensteuntje.
-      </p>
-    </div>
-
-    <!-- 4. WILDE IDEEËNBUS -->
+    <!-- 🎯 3. HET ZACHTE PLANBORD (MAX 3 FOCUSPUNTEN) -->
     <div class="card">
-      <h2>💡 Wilde Ideeënbus</h2>
-      <p class="subtitle">Schiet er een willekeurige gedachte, plan of creatief idee door je hoofd? Schrijf het hier van je af om je hoofd leeg te maken.</p>
+      <h2>🎯 Zacht Planbord</h2>
+      <p class="subtitle">Kies maximaal 2 of 3 behapbare acties voor nu. Geen deadlines, geen rode meldingen.</p>
 
-      <textarea id="idea-input" rows="2" placeholder="Typ je losse gedachte of idee..."></textarea>
-      <button class="btn btn-secondary" onclick="addIdea()">Dump in Ideeënbus</button>
+      <div style="display: flex; gap: 8px;">
+        <input type="text" id="task-input" placeholder="Kleine actie voor nu..." style="margin-bottom: 0;">
+        <button class="btn btn-small" onclick="addTask()">Toevoegen</button>
+      </div>
 
-      <div id="ideas-list" style="margin-top: 16px;"></div>
+      <div id="tasks-list" class="item-list"></div>
     </div>
 
-    <!-- 5. BUDDY PULSE -->
+    <!-- 💡 4. DE IDEEËNKLUIS -->
+    <div class="card">
+      <h2>
+        🗃️ Ideeënkluis
+        <button class="btn btn-secondary btn-small" onclick="grabRandomIdea()">🎲 Grabbelton</button>
+      </h2>
+      <p class="subtitle">ADHD-breinen zitten vol ideeën. Schrijf ze van je af zodat je ze niet vergeet, maar ook niet meteen hoeft uit te voeren.</p>
+
+      <textarea id="idea-input" rows="2" placeholder="Typ een willekeurig idee of wilde gedachte..."></textarea>
+      <button class="btn btn-secondary" onclick="addIdea()">Veilig opslaan in kluis</button>
+
+      <div id="ideas-list" class="item-list"></div>
+    </div>
+
+    <!-- 📊 5. ZACHTE INZICHTEN (GEEN STREAKS) -->
+    <div class="card">
+      <h2>📊 Jouw Reis In Cijfers</h2>
+      <p class="subtitle">Geen reeksen of gemiste dagen. Alleen de dingen die je wél hebt gedaan.</p>
+      
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-number" id="stat-starts">0</div>
+          <div class="stat-label">Zachte Starts</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number" id="stat-pacts">0</div>
+          <div class="stat-label">Pacten Gemaakt</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number" id="stat-tasks">0</div>
+          <div class="stat-label">Gelukt! 🎉</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 💜 6. BUDDY PULSE -->
     <div class="buddy-pulse">
-      <p style="font-size: 0.9rem; font-weight: 500;">💜 <strong>Zachte Buddy-Pulse</strong></p>
-      <p style="font-size: 0.85rem; margin-top: 4px; opacity: 0.9;">Er zijn op dit moment 24 anderen ook bezig met rustig opstarten.</p>
-      <button class="btn" style="margin-top: 10px; background-color: var(--purple-text); font-size: 0.85rem; padding: 8px 14px;" onclick="alert('❤️ Signaal verzonden! Je hebt anoniem een schouderklopje gestuurd naar een lotgenoot.')">Stuur een anoniem schouderklopje</button>
+      <strong style="font-size: 0.9rem;">💜 Zachte Buddy-Pulse</strong>
+      <p style="font-size: 0.82rem; margin-top: 4px; opacity: 0.9;">Er zijn nu 31 anderen ook rustig op hun eigen tempo bezig.</p>
+      <button class="btn" style="margin-top: 10px; background-color: var(--purple-text); font-size: 0.82rem; padding: 8px 14px;" onclick="alert('❤️ Signaal verzonden! Je hebt anoniem een schouderklopje gestuurd naar een lotgenoot.')">Stuur een anoniem schouderklopje</button>
     </div>
 
   </div>
 
   <script>
+    // --- ADHD TIPS BIBLIOTHEEK ---
+    const adhdTips = [
+      "De 2-Minuten Regel: Kost een taak minder dan 2 minuten? Doe het meteen of laat het bewust los. Geen twijfelruimte laten.",
+      "Body Doubling: Werken in het bijzijn van iemand anders (fysiek of online) verlaagt de drempel om te starten enorm.",
+      "Verlaag de wrijving: Wil je morgen gitaar spelen of sporten? Zet de gitaar midden in de kamer of leg je kleren al klaar.",
+      "Dopamine-stapelen: Koppel een saaie taak (was opvouwen) aan iets leuks (jouw favoriete podcast of aflevering).",
+      "Slecht beginnen is beter dan niet beginnen: Geef jezelf toestemming om de eerste 5 minuten een verschrikkelijk slechte poging te doen.",
+      "Maak het visueel: Als iets uit het zicht is, bestaat het niet meer voor je brein. Gebruik transparante dozen of open opbergplekken.",
+      "Gebruik een eierwekker: Zien hoeveel tijd er 'verstrijkt' (fysiek) werkt beter voor een ADHD-brein dan een digitale klok.",
+      "Nee zeggen is ja zeggen tegen rust: Elke 'ja' tegen een ander is een onbewuste 'nee' tegen jouw eigen energie."
+    ];
+
+    let currentTipIndex = 0;
+
+    function renderTip() {
+      document.getElementById('tip-text').innerText = adhdTips[currentTipIndex];
+    }
+
+    function nextTip() {
+      currentTipIndex = (currentTipIndex + 1) % adhdTips.length;
+      renderTip();
+    }
+
+    // --- TIJDLOZE START & STATS ---
     let selectedEnergyState = '';
 
     function selectEnergy(el, energy) {
@@ -309,15 +396,30 @@
     }
 
     function startDay() {
-      alert(`Je dag is gestart in de stand: ${selectedEnergyState}. Neem alle tijd!`);
+      let starts = parseInt(localStorage.getItem('voldaan_stat_starts') || '0') + 1;
+      localStorage.setItem('voldaan_stat_starts', starts);
+      updateStats();
+      alert(`Je dag is rustig gestart in de stand: '${selectedEnergyState}'. Neem alle tijd!`);
     }
 
+    function updateStats() {
+      document.getElementById('stat-starts').innerText = localStorage.getItem('voldaan_stat_starts') || '0';
+      document.getElementById('stat-pacts').innerText = localStorage.getItem('voldaan_stat_pacts') || '0';
+      document.getElementById('stat-tasks').innerText = localStorage.getItem('voldaan_stat_tasks') || '0';
+    }
+
+    // --- AVOND PACT ---
     function savePact() {
       const input = document.getElementById('pact-input').value;
       if (!input.trim()) return;
       
       localStorage.setItem('voldaan_pact', input);
+      let pacts = parseInt(localStorage.getItem('voldaan_stat_pacts') || '0') + 1;
+      localStorage.setItem('voldaan_stat_pacts', pacts);
+      
+      document.getElementById('pact-input').value = '';
       renderPact();
+      updateStats();
     }
 
     function renderPact() {
@@ -330,12 +432,61 @@
     }
 
     function renegotiatePact() {
-      const current = localStorage.getItem('voldaan_pact');
-      const smaller = "Alleen 1 glas water drinken en diep ademhalen";
+      const smaller = "Alleen 1 glas water drinken en rustig ademhalen";
       localStorage.setItem('voldaan_pact', smaller);
       renderPact();
     }
 
+    // --- ZACHT PLANBORD ---
+    function addTask() {
+      const input = document.getElementById('task-input');
+      if (!input.value.trim()) return;
+
+      let tasks = JSON.parse(localStorage.getItem('voldaan_tasks') || '[]');
+      tasks.push({ text: input.value, done: false });
+      localStorage.setItem('voldaan_tasks', JSON.stringify(tasks));
+      input.value = '';
+      renderTasks();
+    }
+
+    function toggleTask(index) {
+      let tasks = JSON.parse(localStorage.getItem('voldaan_tasks') || '[]');
+      tasks[index].done = !tasks[index].done;
+      
+      if (tasks[index].done) {
+        let doneCount = parseInt(localStorage.getItem('voldaan_stat_tasks') || '0') + 1;
+        localStorage.setItem('voldaan_stat_tasks', doneCount);
+      }
+      
+      localStorage.setItem('voldaan_tasks', JSON.stringify(tasks));
+      renderTasks();
+      updateStats();
+    }
+
+    function removeTask(index) {
+      let tasks = JSON.parse(localStorage.getItem('voldaan_tasks') || '[]');
+      tasks.splice(index, 1);
+      localStorage.setItem('voldaan_tasks', JSON.stringify(tasks));
+      renderTasks();
+    }
+
+    function renderTasks() {
+      let tasks = JSON.parse(localStorage.getItem('voldaan_tasks') || '[]');
+      const container = document.getElementById('tasks-list');
+      container.innerHTML = '';
+
+      tasks.forEach((task, index) => {
+        const div = document.createElement('div');
+        div.className = `item-card ${task.done ? 'done' : ''}`;
+        div.innerHTML = `
+          <span style="cursor:pointer;" onclick="toggleTask(${index})">${task.done ? '✅' : '⚪'} ${task.text}</span>
+          <button style="background:none; border:none; color:#E53E3E; cursor:pointer;" onclick="removeTask(${index})">✕</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // --- IDEEËNKLUIS ---
     function addIdea() {
       const input = document.getElementById('idea-input');
       if (!input.value.trim()) return;
@@ -354,8 +505,11 @@
 
       ideas.forEach((idea, index) => {
         const div = document.createElement('div');
-        div.className = 'idea-item';
-        div.innerHTML = `<span>${idea}</span><button onclick="removeIdea(${index})">Wis</button>`;
+        div.className = 'item-card';
+        div.innerHTML = `
+          <span>💡 ${idea}</span>
+          <button style="background:none; border:none; color:#E53E3E; cursor:pointer;" onclick="removeIdea(${index})">✕</button>
+        `;
         container.appendChild(div);
       });
     }
@@ -367,9 +521,22 @@
       renderIdeas();
     }
 
-    // Init
+    function grabRandomIdea() {
+      let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
+      if (ideas.length === 0) {
+        alert("Je Ideeënkluis is nog leeg! Voeg eerst een paar gedachten of ideeën toe.");
+        return;
+      }
+      const randomIdea = ideas[Math.floor(Math.random() * ideas.length)];
+      alert(`🎲 GRABBELTON HERINNERING:\n\n"${randomIdea}"\n\nWil je hier vandaag iets mee, of laat je 'm nog lekker in de kluis?`);
+    }
+
+    // --- INIT ---
+    renderTip();
     renderPact();
+    renderTasks();
     renderIdeas();
+    updateStats();
   </script>
 </body>
 </html>
