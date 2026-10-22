@@ -255,7 +255,7 @@
       margin-top: 2px;
     }
 
-    /* POST-IT STIJLEN FÜR IDEEËNKLUIS */
+    /* POST-IT STIJLEN */
     .postit-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -477,7 +477,7 @@
       </div>
     </div>
 
-    <!-- 🌙 2. AVOND PACT MET WHATSAPP SHARE & HISTORIE -->
+    <!-- 🌙 2. AVOND PACT MET WHATSAPP SHARE & AGENDA KOPPELING -->
     <div class="card">
       <h2>
         🌙 Het Avond-Pact
@@ -494,6 +494,7 @@
         
         <div class="btn-group">
           <button class="btn btn-small" style="background-color: #38A169; color: white;" onclick="completePact()">✅ Voltooid</button>
+          <button class="btn btn-secondary btn-small" onclick="pushPactToCalendar()" style="background-color: #3182CE; color: white;">📅 Zet in Agenda</button>
           <button class="btn btn-secondary btn-small" onclick="sharePactWhatsApp()" style="background-color: #25D366; color: white;">📲 Deel met Buddy</button>
           <button class="btn btn-secondary btn-small" onclick="renegotiatePact()">✨ Maak kleiner</button>
           <button class="btn btn-secondary btn-small" onclick="editPact()">✏️ Bewerken</button>
@@ -660,6 +661,52 @@
       render();
     }
 
+    // --- AGENDA EXPORT FUNCTIE (GOOGLE & ICS) ---
+    function exportToCalendar(title, description) {
+      const choice = confirm("Wil je deze herinnering openen in Google Calendar?\n\n(Klik 'Annuleren' om direct een .ics kalenderbestand voor Apple/Outlook te downloaden)");
+      
+      const now = new Date();
+      // Zet herinnering standaard op morgenochtend 09:00 uur
+      const tomorrow = new Date(now);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(9, 0, 0, 0);
+
+      const endTime = new Date(tomorrow);
+      endTime.setMinutes(endTime.getMinutes() + 15);
+
+      const formatICSDate = (d) => d.toISOString().replace(/-|:|\.\d+/g, '');
+
+      if (choice) {
+        // Google Calendar direct
+        const gUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&details=${encodeURIComponent(description)}&dates=${formatICSDate(tomorrow)}/${formatICSDate(endTime)}`;
+        window.open(gUrl, '_blank');
+      } else {
+        // .ics bestand genereren voor Apple / Outlook / Mobiel
+        const icsData = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:${title}\nDESCRIPTION:${description}\nDTSTART:${formatICSDate(tomorrow)}\nDTEND:${formatICSDate(endTime)}\nEND:VEVENT\nEND:VCALENDAR`;
+        const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.setAttribute('download', 'Voldaan_Herinnering.ics');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    }
+
+    function pushPactToCalendar() {
+      const pactText = localStorage.getItem('voldaan_pact');
+      if (!pactText) return;
+      exportToCalendar(`🌙 Avond-pact: ${pactText}`, `Mijn zachte micro-stap van de dag: "${pactText}". Geen druk, alleen een zacht steuntje in de rug!`);
+    }
+
+    function pushTaskToCalendar(taskId) {
+      let tasks = JSON.parse(localStorage.getItem('voldaan_tasks') || '[]');
+      const task = tasks.find(t => t.id === taskId);
+      if (task) {
+        exportToCalendar(`🎯 Zacht Plan: ${task.text}`, `Mijn kleine focus-actie: "${task.text}". Neem alle tijd!`);
+      }
+    }
+
     // --- THEMA SCHAKELER ---
     function toggleTheme() {
       document.body.classList.toggle('dark-theme');
@@ -807,7 +854,7 @@
       });
     }
 
-    // --- ZACHT PLANBORD (MET SLIM ARCHIEF & TIJDSSTEMPEL) ---
+    // --- ZACHT PLANBORD ---
     function addTask(textInput) {
       const input = textInput || document.getElementById('task-input').value;
       if (!input.trim()) return;
@@ -868,7 +915,6 @@
       const activeTasks = tasks.filter(t => !t.done);
       const doneTasks = tasks.filter(t => t.done).sort((a,b) => b.id - a.id);
 
-      // Houd alleen de méést recent voltooide taak op het actieve bord
       const recentDone = doneTasks.slice(0, 1);
       const archivedDone = doneTasks.slice(1);
 
@@ -886,12 +932,14 @@
             <span style="cursor:pointer;" onclick="toggleTask(${task.id})">${task.done ? '✅' : '⚪'} ${task.text}</span>
             <span class="time-badge">${task.done ? 'Voltooid: ' + task.doneAt : 'Aangemaakt: ' + task.created}</span>
           </div>
-          <button style="background:none; border:none; color:#E53E3E; cursor:pointer;" onclick="removeTask(${task.id})">✕</button>
+          <div style="display:flex; gap:6px; align-items:center;">
+            ${!task.done ? `<button class="btn btn-secondary btn-small" style="font-size:0.75rem; padding:4px 8px;" onclick="pushTaskToCalendar(${task.id})">📅 Agenda</button>` : ''}
+            <button style="background:none; border:none; color:#E53E3E; cursor:pointer;" onclick="removeTask(${task.id})">✕</button>
+          </div>
         `;
         container.appendChild(div);
       });
 
-      // Archief invullen
       if (archivedDone.length === 0) {
         archiveContainer.innerHTML = '<span style="font-size:0.8rem; color:var(--text-muted);">Nog geen oudere voltooide taken in het archief.</span>';
       } else {
@@ -911,7 +959,7 @@
       }
     }
 
-    // --- IDEEËNKLUIS (POST-ITS MET DRIE PUNTJES MENU) ---
+    // --- IDEEËNKLUIS (POST-ITS) ---
     let openMenuId = null;
 
     function getCategories() {
@@ -1026,12 +1074,10 @@
       const sortVal = document.getElementById('sort-ideas').value;
       const showDates = localStorage.getItem('voldaan_show_idea_dates') !== 'false';
 
-      // Filteren
       if (filterCat !== 'ALL') {
         ideas = ideas.filter(i => i.category === filterCat);
       }
 
-      // Sorteren
       if (sortVal === 'NEWEST') {
         ideas.sort((a,b) => b.id - a.id);
       } else if (sortVal === 'OLDEST') {
@@ -1084,7 +1130,6 @@
       alert(`🎲 GRABBELTON POST-IT:\n\n"${randomIdea.text}" (${randomIdea.category})\n\nWil je hier vandaag iets mee op je Planbord?`);
     }
 
-    // Sluit drie-puntjes menu bij op scherm klikken
     window.addEventListener('click', () => {
       if (openMenuId !== null) {
         openMenuId = null;
