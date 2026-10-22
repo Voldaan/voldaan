@@ -4,12 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Voldaan — Rust & Structuur op Jouw Tempo</title>
+  
+  <!-- Het app-icoon & Manifest koppeling -->
+  <link rel="icon" type="image/jpeg" href="icon.jpg">
+  <link rel="apple-touch-icon" href="icon.jpg">
+  <link rel="manifest" href="manifest.json">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <!-- Het app-icoon voor je browser en startscherm -->
-  <link rel="icon" type="image/png" href="icon.png">
-  <link rel="apple-touch-icon" href="icon.png">
   <style>
     :root {
       --bg-color: #F8F6F0;
@@ -574,7 +577,7 @@
       </div>
     </div>
 
-    <!-- 📌 4. IDEEËNKLUIS (HOOFDDASHBOARD: MAX 3 LAATSTE POST-ITS) -->
+    <!-- 📌 4. IDEEËNKLUIS -->
     <div class="card">
       <h2>
         📌 Ideeënkluis
@@ -596,10 +599,8 @@
 
       <button class="btn btn-secondary" onclick="addIdea()">Prik op het Bord 📌</button>
 
-      <!-- LAATSTE 3 POST-ITS RENDER GRID -->
       <div id="main-ideas-postit-grid" class="postit-grid"></div>
 
-      <!-- KNOP NAAR VOLLEDIGE IDEEËNKLUIS POP-UP -->
       <button class="btn btn-secondary" style="margin-top: 14px; font-size:0.9rem;" onclick="openIdeasModal()" id="open-ideas-modal-btn">
         📂 Bekijk alle ideeën (0)
       </button>
@@ -650,7 +651,6 @@
       </div>
       <p class="subtitle">Een rustig overzicht van al jouw losse Post-its en creatieve invallen.</p>
 
-      <!-- FILTER & SORTEER BALK IN MODAL -->
       <div class="filter-bar">
         <select id="modal-filter-category" onchange="renderIdeas()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 6px;">
           <option value="ALL">📂 Alles</option>
@@ -665,7 +665,6 @@
         <button class="btn btn-secondary btn-small" onclick="toggleIdeaDates()" id="modal-toggle-dates-btn">🕒 Datum: Aan</button>
       </div>
 
-      <!-- VOLLEDIGE GRID VAN ALLE POST-ITS -->
       <div id="modal-ideas-postit-grid" class="postit-grid"></div>
 
     </div>
@@ -1003,7 +1002,7 @@
       }
     }
 
-    // --- IDEEËNKLUIS (DASHBOARD MAX 3 + MODAL OVERLAY) ---
+    // --- IDEEËNKLUIS ---
     let openMenuId = null;
 
     function getCategories() {
@@ -1149,10 +1148,8 @@
       let allIdeas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
       const showDates = localStorage.getItem('voldaan_show_idea_dates') !== 'false';
       
-      // Update knop-tekst met totaal aantal ideeën
       document.getElementById('open-ideas-modal-btn').innerText = `📂 Bekijk alle ideeën (${allIdeas.length})`;
 
-      // 1. RENDER HOOFDDASHBOARD (LAATSTE 3 IDEEËN - ALLE CATEGORIEËN)
       const mainGrid = document.getElementById('main-ideas-postit-grid');
       mainGrid.innerHTML = '';
 
@@ -1166,7 +1163,6 @@
         });
       }
 
-      // 2. RENDER POP-UP MODAL (VOLLEDIGE IDEEËNKLUIS MET FILTERS)
       const filterCat = document.getElementById('modal-filter-category').value;
       const sortVal = document.getElementById('modal-sort-ideas').value;
 
