@@ -136,12 +136,12 @@
 
     .tab-btn {
       flex: 1;
-      padding: 10px 6px;
+      padding: 10px 4px;
       border: none;
       background: none;
       color: var(--text-muted);
       font-weight: 600;
-      font-size: 0.88rem;
+      font-size: 0.82rem;
       border-radius: 10px;
       cursor: pointer;
       transition: all 0.2s ease;
@@ -552,11 +552,12 @@
     <!-- 🧭 NAVIGATIE BALK VOOR PAGINA'S -->
     <nav class="nav-tabs">
       <button class="tab-btn active" onclick="switchView('today')" id="tab-today">🏠 Vandaag</button>
+      <button class="tab-btn" onclick="switchView('plan')" id="tab-plan">🎯 Plannen & Doelen</button>
       <button class="tab-btn" onclick="switchView('ideas')" id="tab-ideas">📌 Ideeënkluis</button>
       <button class="tab-btn" onclick="switchView('money')" id="tab-money">💶 Geld-Kompas</button>
     </nav>
 
-    <!-- ==================== PAGINA 1: VANDAAG (HOOFDDASHBOARD) ==================== -->
+    <!-- ==================== PAGINA 1: VANDAAG (HOOFDDASHBOARD & SAMENVATTING) ==================== -->
     <div id="view-today">
       
       <!-- 💡 BREIN & FOCUS HACK -->
@@ -585,7 +586,104 @@
         </div>
       </div>
 
-      <!-- 🌙 2. AVOND PACT -->
+      <!-- 📋 2. JOUW RUSTIGE ACTIES VOOR VANDAAG (GEKOPPELD HOOFDDASHBOARD) -->
+      <div class="card" style="margin-bottom: 18px; border: 2px solid var(--accent-primary);">
+        <h2>
+          📋 Actie-Hub voor Vandaag
+          <span style="font-size: 0.75rem; background: var(--accent-primary); color: white; padding: 3px 8px; border-radius: 10px;">Direct Afvinken</span>
+        </h2>
+        <p class="subtitle">Hier verzamelen we de belangrijkste zaken van jouw andere tabbladen. Vink ze hier direct af, het synchroniseert automatisch!</p>
+
+        <!-- A. AVOND PACT WEERGEGEVEN OP VANDAAG -->
+        <div style="margin-bottom: 14px;">
+          <strong style="font-size: 0.82rem; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 6px;">🌙 Jouw Avond-Pact voor Vandaag:</strong>
+          <div id="today-pact-box"></div>
+        </div>
+
+        <!-- B. ACTIEVE TAKEN VOOR VANDAAG -->
+        <div style="margin-bottom: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <strong style="font-size: 0.82rem; color: var(--text-muted); text-transform: uppercase;">🎯 Focus-Taken voor Vandaag:</strong>
+            <button class="btn btn-secondary btn-small" style="font-size: 0.72rem; padding: 2px 8px;" onclick="switchView('plan')">Beheer op Plannen-tab ➔</button>
+          </div>
+          <div id="today-tasks-list" class="item-list"></div>
+        </div>
+
+        <!-- C. HET ZACHTE KOMPAS VANDAAG -->
+        <div style="margin-bottom: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <strong style="font-size: 0.82rem; color: var(--text-muted); text-transform: uppercase;">🧭 Doelen Check-in:</strong>
+            <button class="btn btn-secondary btn-small" style="font-size: 0.72rem; padding: 2px 8px;" onclick="switchView('plan')">Beheer op Plannen-tab ➔</button>
+          </div>
+          <div id="today-goals-list" class="item-list"></div>
+        </div>
+      </div>
+
+      <!-- 🏺 3. DE TROTS-KLUIS (DIGITAL MARBLE JAR) -->
+      <div class="card" style="margin-bottom: 18px;">
+        <h2>
+          🏺 De Trots-Kluis
+          <span id="marble-count-badge" style="font-size:0.82rem; background:var(--accent-primary); color:white; padding:3px 10px; border-radius:12px; font-weight:600;">0 Knikkers</span>
+        </h2>
+        <p class="subtitle">Elke kleine overwinning vult jouw virtuele glazen pot. Zie in één oogopslag wat je allemaal wél hebt bereikt!</p>
+
+        <div id="marble-jar-visual" style="background:var(--item-bg); border:2px dashed var(--input-border); border-radius:16px; padding:16px 12px; min-height:85px; display:flex; flex-wrap:wrap-reverse; gap:6px; align-items:flex-start; justify-content:center; max-height: 180px; overflow-y: auto;">
+          <!-- Knikkers worden dynamisch ingeladen -->
+        </div>
+      </div>
+
+      <!-- 💡 4. IDEE VAN DE DAG (COMPACT) + GRABBELTON POPUP TRIGGER -->
+      <div class="card" style="margin-bottom: 18px; background: linear-gradient(135deg, var(--card-bg) 0%, var(--soft-warm) 100%); border: 1px solid var(--warm-border);">
+        <h2>
+          💡 Idee van de Dag
+          <button class="btn btn-small" style="background-color: #ED8936; color: white;" onclick="openGrabbeltonModal()">🎲 Grabbelen</button>
+        </h2>
+        <p class="subtitle">Een willekeurige gedachte uit jouw Ideeënkluis ter inspiratie.</p>
+        
+        <div id="today-random-idea-box" style="background: var(--card-bg); padding: 12px 14px; border-radius: 12px; border: 1px solid var(--input-border); font-size: 0.9rem;">
+          Laden van een mooi idee...
+        </div>
+      </div>
+
+      <!-- 📊 5. ZACHTE INZICHTEN -->
+      <div class="card" style="margin-bottom: 18px;">
+        <h2>📊 Jouw Reis In Cijfers</h2>
+        <p class="subtitle">Geen reeksen of gemiste dagen. Alleen de dingen die je wél hebt gedaan.</p>
+        
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="stat-number" id="stat-starts">0</div>
+            <div class="stat-label">Zachte Starts</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number" id="stat-pacts">0</div>
+            <div class="stat-label">Pacten Nagekomen</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number" id="stat-tasks">0</div>
+            <div class="stat-label">Gelukt! 🎉</div>
+          </div>
+        </div>
+
+        <div class="insight-card" id="insight-box">
+          <strong>💡 Zacht Inzicht:</strong>
+          <span id="insight-text">Je bouwt stap voor stap aan je eigen ritme. Er is geen haast!</span>
+        </div>
+      </div>
+
+      <!-- 💜 6. BUDDY PULSE -->
+      <div class="buddy-pulse">
+        <strong style="font-size: 0.9rem;">💜 Zachte Buddy-Pulse</strong>
+        <p style="font-size: 0.82rem; margin-top: 4px; opacity: 0.9;">Er zijn nu 54 anderen ook rustig op hun eigen tempo bezig.</p>
+        <button class="btn" style="margin-top: 10px; background-color: var(--purple-text); color: white; font-size: 0.82rem; padding: 8px 14px;" onclick="triggerConfetti(); alert('❤️ Signaal verzonden! Je hebt anoniem een schouderklopje gestuurd naar een lotgenoot.');">Stuur een anoniem schouderklopje</button>
+      </div>
+
+    </div>
+
+    <!-- ==================== PAGINA 2: PLANNEN & DOELEN (COMPLEET BEHEER) ==================== -->
+    <div id="view-plan" class="hidden">
+      
+      <!-- 🌙 0. AVOND PACT BEHEER -->
       <div class="card" style="margin-bottom: 18px;">
         <h2>
           🌙 Het Avond-Pact
@@ -621,20 +719,7 @@
         </div>
       </div>
 
-      <!-- 🏺 DE TROTS-KLUIS (DIGITAL MARBLE JAR) -->
-      <div class="card" style="margin-bottom: 18px; border: 2px solid var(--accent-primary);">
-        <h2>
-          🏺 De Trots-Kluis
-          <span id="marble-count-badge" style="font-size:0.82rem; background:var(--accent-primary); color:white; padding:3px 10px; border-radius:12px; font-weight:600;">0 Knikkers</span>
-        </h2>
-        <p class="subtitle">Elke kleine overwinning vult jouw virtuele glazen pot. Zie in één oogopslag wat je allemaal wél hebt bereikt!</p>
-
-        <div id="marble-jar-visual" style="background:var(--item-bg); border:2px dashed var(--input-border); border-radius:16px; padding:16px 12px; min-height:85px; display:flex; flex-wrap:wrap-reverse; gap:6px; align-items:flex-start; justify-content:center; max-height: 180px; overflow-y: auto;">
-          <!-- Knikkers worden dynamisch ingeladen -->
-        </div>
-      </div>
-
-      <!-- 🎯 3. HET ZACHTE PLANBORD -->
+      <!-- 🎯 1. HET ZACHTE PLANBORD -->
       <div class="card" style="margin-bottom: 18px;">
         <h2>
           🎯 Zacht Planbord
@@ -679,7 +764,7 @@
         </div>
       </div>
 
-      <!-- 🧭 4. HET ZACHTE KOMPAS -->
+      <!-- 🧭 2. HET ZACHTE KOMPAS -->
       <div class="card" style="margin-bottom: 18px;">
         <h2>
           🧭 Het Zachte KomPAS
@@ -701,7 +786,7 @@
         <div id="compass-goals-list" class="item-list"></div>
       </div>
 
-      <!-- 💜 5. HET CONTACT-KOMPAS -->
+      <!-- 💜 3. HET CONTACT-KOMPAS -->
       <div class="card" style="margin-bottom: 18px;">
         <h2>
           💜 Contact-KomPAS
@@ -712,47 +797,14 @@
         <div id="contacts-list" class="item-list"></div>
       </div>
 
-      <!-- 📊 6. ZACHTE INZICHTEN -->
-      <div class="card" style="margin-bottom: 18px;">
-        <h2>📊 Jouw Reis In Cijfers</h2>
-        <p class="subtitle">Geen reeksen of gemiste dagen. Alleen de dingen die je wél hebt gedaan.</p>
-        
-        <div class="stats-grid">
-          <div class="stat-box">
-            <div class="stat-number" id="stat-starts">0</div>
-            <div class="stat-label">Zachte Starts</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-number" id="stat-pacts">0</div>
-            <div class="stat-label">Pacten Nagekomen</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-number" id="stat-tasks">0</div>
-            <div class="stat-label">Gelukt! 🎉</div>
-          </div>
-        </div>
-
-        <div class="insight-card" id="insight-box">
-          <strong>💡 Zacht Inzicht:</strong>
-          <span id="insight-text">Je bouwt stap voor stap aan je eigen ritme. Er is geen haast!</span>
-        </div>
-      </div>
-
-      <!-- 💜 7. BUDDY PULSE -->
-      <div class="buddy-pulse">
-        <strong style="font-size: 0.9rem;">💜 Zachte Buddy-Pulse</strong>
-        <p style="font-size: 0.82rem; margin-top: 4px; opacity: 0.9;">Er zijn nu 54 anderen ook rustig op hun eigen tempo bezig.</p>
-        <button class="btn" style="margin-top: 10px; background-color: var(--purple-text); color: white; font-size: 0.82rem; padding: 8px 14px;" onclick="triggerConfetti(); alert('❤️ Signaal verzonden! Je hebt anoniem een schouderklopje gestuurd naar een lotgenoot.');">Stuur een anoniem schouderklopje</button>
-      </div>
-
     </div>
 
-    <!-- ==================== PAGINA 2: IDEEËNKLUIS ==================== -->
+    <!-- ==================== PAGINA 3: IDEEËNKLUIS ==================== -->
     <div id="view-ideas" class="hidden">
       <div class="card">
         <h2>
           📌 Ideeënkluis
-          <button class="btn btn-secondary btn-small" onclick="grabRandomIdea()">🎲 Grabbelton</button>
+          <button class="btn btn-secondary btn-small" onclick="openGrabbeltonModal()">🎲 Grabbelton</button>
         </h2>
         <p class="subtitle">Schrijf je gedachten als Post-its van je af. Elke categorie heeft een eigen kleur. Pas tekst en categorieën eenvoudig aan via de drie puntjes (...)!</p>
 
@@ -771,7 +823,6 @@
         <button class="btn btn-secondary" onclick="addIdea()">Prik op het Bord 📌</button>
 
         <div class="filter-bar" style="margin-top: 16px;">
-          <!-- 🔍 DYNAMISCHE ZOEKBALK VOOR IDEEËN -->
           <input type="text" id="ideas-search-input" oninput="renderIdeas()" placeholder="🔍 Zoek in ideeën..." style="margin-bottom:0; flex: 1 1 180px; font-size: 0.85rem; padding: 6px 10px;">
 
           <select id="ideas-filter-category" onchange="renderIdeas()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 6px;">
@@ -791,7 +842,7 @@
       </div>
     </div>
 
-    <!-- ==================== PAGINA 3: GELD-KOMPAS ==================== -->
+    <!-- ==================== PAGINA 4: GELD-KOMPAS ==================== -->
     <div id="view-money" class="hidden">
       
       <!-- BOVENBALK MET ARCHIEF KNOP -->
@@ -803,7 +854,7 @@
       <!-- 🌿 0. HET RUIMTE-KOMPAS (SLANKE VOORPAGINA BAROMETER) -->
       <div class="card" style="margin-bottom: 18px; border: 2px solid var(--accent-primary);">
         <h2>
-          🌿 Het Ruimte-Kompas
+          🌿 Het Ruimte-KomPAS
           <span id="ruimte-project-count-badge" style="font-size: 0.75rem; background: var(--accent-primary); color: white; padding: 3px 8px; border-radius: 10px;">0 Projecten</span>
         </h2>
         <p class="subtitle">Herstel en breng familie-afspraken rustig in balans op jouw eigen tempo. Vier elke euro die je vrijmaakt!</p>
@@ -836,38 +887,25 @@
         </div>
       </div>
 
-      <!-- 💶 0B. PAYDAY COUNTDOWN RADAR -->
-      <div class="card" style="margin-bottom: 18px; border: 2px solid #38A169; background: linear-gradient(135deg, var(--card-bg) 0%, var(--soft-green) 100%);">
-        <h2>
-          💶 Payday Radar
-          <span style="font-size: 0.75rem; background: #38A169; color: white; padding: 3px 8px; border-radius: 10px;">Elke 23e (08:00)</span>
-        </h2>
-        <p class="subtitle" id="payday-target-date-text">Laden van Payday datum...</p>
+      <!-- 💶 0B. PAYDAY COUNTDOWN RADAR (COMPLIANT & COMPACT) -->
+      <div class="card" style="margin-bottom: 18px; border: 1px solid #38A169; padding: 14px; background: linear-gradient(135deg, var(--card-bg) 0%, var(--soft-green) 100%);">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 1.2rem;">💶</span>
+            <div>
+              <strong style="font-size: 0.95rem; display: block;">Payday Radar</strong>
+              <span id="payday-target-date-text" style="font-size: 0.75rem; color: var(--text-muted);">Elke 23e (08:00)</span>
+            </div>
+          </div>
 
-        <!-- AFTELLER BOX -->
-        <div id="payday-countdown-box" class="stats-grid" style="margin-top: 10px;">
-          <div class="stat-box">
-            <div class="stat-number" id="pd-days" style="color: #38A169;">00</div>
-            <div class="stat-label">Dagen</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-number" id="pd-hours" style="color: #38A169;">00</div>
-            <div class="stat-label">Uren</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-number" id="pd-mins" style="color: #38A169;">00</div>
-            <div class="stat-label">Minuten</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-number" id="pd-secs" style="color: #38A169;">00</div>
-            <div class="stat-label">Secs</div>
+          <!-- SLANKE HORIZONTALE BADGES -->
+          <div id="payday-countdown-box" style="display: flex; gap: 4px; font-weight: 700; font-size: 0.85rem; color: #38A169; background: var(--card-bg); padding: 6px 10px; border-radius: 10px; border: 1px solid var(--green-border);">
+            <span id="pd-days">00</span>d <span id="pd-hours">00</span>u <span id="pd-mins">00</span>m <span id="pd-secs">00</span>s
           </div>
         </div>
 
-        <!-- HOERA PAYDAY MELDING (VERBORGEN TOT PAYDAY) -->
-        <div id="payday-celebration-box" class="hidden" style="background: var(--soft-green); border: 1px solid var(--green-border); color: var(--green-text); padding: 14px; border-radius: 12px; margin-top: 10px; text-align: center;">
-          <strong style="font-size: 1.1rem; display: block; margin-bottom: 4px;">🎉 HET IS PAYDAY! 💶</strong>
-          <p style="font-size: 0.88rem; line-height: 1.4;">Jouw salaris/inkomen is binnen! Een mooi moment om je vaste lasten af te vinken of wat geld naar je opvangpotjes te sturen. Geniet van je verdiende rust!</p>
+        <div id="payday-celebration-box" class="hidden" style="margin-top: 8px; font-size: 0.85rem; color: var(--green-text); font-weight: 600; text-align: center;">
+          🎉 HET IS PAYDAY! Jouw salaris is binnen. Geniet van je rust! 💶
         </div>
       </div>
 
@@ -947,6 +985,23 @@
 
   </div>
 
+  <!-- 🗂️ MODAL POP-UP: GRABBELTON DIEPTE KAART -->
+  <div id="grabbelton-modal" class="modal-overlay hidden" onclick="closeGrabbeltonModal()">
+    <div class="modal-content" onclick="event.stopPropagation()" style="text-align: center; border: 2px dashed #ED8936;">
+      <div class="modal-header">
+        <h2>🎲 Grabbelton Post-it</h2>
+        <button class="btn btn-secondary btn-small" onclick="closeGrabbeltonModal()">✕ Sluiten</button>
+      </div>
+      
+      <div id="grabbelton-card-container" style="margin-top: 14px; margin-bottom: 20px;"></div>
+
+      <div style="display: flex; gap: 8px; justify-content: center;">
+        <button class="btn btn-small" style="background-color: #ED8936;" onclick="grabNewRandomIdea()">🎲 Volgende Grabbelen</button>
+        <button class="btn btn-secondary btn-small" id="grabbelton-push-plan-btn">🎯 Zet op Planbord</button>
+      </div>
+    </div>
+  </div>
+
   <!-- 🗂️ MODAL POP-UP 1: GESPLITSTE RUIMTE-PROJECTEN BEHEREN -->
   <div id="ruimte-projects-modal" class="modal-overlay hidden" onclick="closeRuimteProjectsModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
@@ -1006,7 +1061,6 @@
   <!-- 🗂️ MODAL POP-UP: GELD-ARCHIEF -->
   <div id="money-archive-modal" class="modal-overlay hidden" onclick="closeMoneyArchiveModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
-      
       <div class="modal-header">
         <h2>📜 Geld-Kompas Archief</h2>
         <button class="btn btn-secondary btn-small" onclick="closeMoneyArchiveModal()">✕ Sluiten</button>
@@ -1023,7 +1077,6 @@
       </div>
 
       <div id="money-archive-list" class="item-list" style="margin-top: 14px;"></div>
-
     </div>
   </div>
 
@@ -1042,16 +1095,20 @@
     // --- TABBLADEN NAVIGATION (SPA) ---
     function switchView(viewName) {
       document.getElementById('view-today').classList.add('hidden');
+      document.getElementById('view-plan').classList.add('hidden');
       document.getElementById('view-ideas').classList.add('hidden');
       document.getElementById('view-money').classList.add('hidden');
 
       document.getElementById('tab-today').classList.remove('active');
+      document.getElementById('tab-plan').classList.remove('active');
       document.getElementById('tab-ideas').classList.remove('active');
       document.getElementById('tab-money').classList.remove('active');
 
       document.getElementById(`view-${viewName}`).classList.remove('hidden');
       document.getElementById(`tab-${viewName}`).classList.add('active');
 
+      if (viewName === 'today') renderTodayDashboard();
+      if (viewName === 'plan') { renderTasks(); renderCompassGoals(); renderContacts(); renderPact(); }
       if (viewName === 'ideas') renderIdeas();
       if (viewName === 'money') renderMoneyView();
     }
@@ -1222,11 +1279,8 @@
     function getPaydayDate(year, month) {
       let d = new Date(year, month, 23, 8, 0, 0, 0);
       let dayOfWeek = d.getDay(); // 0 = Zondag, 6 = Zaterdag
-      if (dayOfWeek === 6) {
-        d.setDate(22); // Zaterdag -> Vrijdag 22e
-      } else if (dayOfWeek === 0) {
-        d.setDate(21); // Zondag -> Vrijdag 21e
-      }
+      if (dayOfWeek === 6) d.setDate(22);
+      else if (dayOfWeek === 0) d.setDate(21);
       return d;
     }
 
@@ -1243,19 +1297,14 @@
         now.getDate() === paydayThisMonth.getDate()
       );
 
-      // Als het vandaag Payday is en het is 08:00 geweest
       if (isPaydayToday && now >= paydayThisMonth) {
         return { isPaydayNow: true, paydayDate: paydayThisMonth };
       }
 
-      // Als Payday deze maand al voorbij is (of eerder vandaag voor 08:00)
       let targetPayday = paydayThisMonth;
       if (now >= paydayThisMonth && !isPaydayToday) {
-        if (month === 11) {
-          targetPayday = getPaydayDate(year + 1, 0);
-        } else {
-          targetPayday = getPaydayDate(year, month + 1);
-        }
+        if (month === 11) targetPayday = getPaydayDate(year + 1, 0);
+        else targetPayday = getPaydayDate(year, month + 1);
       }
 
       return { isPaydayNow: false, paydayDate: targetPayday };
@@ -1296,10 +1345,145 @@
         document.getElementById('pd-mins').innerText = String(minutes).padStart(2, '0');
         document.getElementById('pd-secs').innerText = String(seconds).padStart(2, '0');
 
-        const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+        const options = { weekday: 'short', day: 'numeric', month: 'short' };
         const formattedDate = paydayInfo.paydayDate.toLocaleDateString('nl-NL', options);
-        targetText.innerText = `Eerstvolgende Payday: ${formattedDate} om 08:00 uur`;
+        targetText.innerText = `Eerstvolgende: ${formattedDate} (08:00)`;
       }
+    }
+
+    // --- 🏠 HOOFDDASHBOARD "VANDAAG" GEKOPPELDE RENDERER ---
+    let currentGrabbelIdea = null;
+
+    function renderTodayDashboard() {
+      // 1. Avond-Pact
+      const savedPact = localStorage.getItem('voldaan_pact');
+      const pactBox = document.getElementById('today-pact-box');
+      if (savedPact) {
+        pactBox.innerHTML = `
+          <div class="item-card" style="border-left: 4px solid var(--accent-primary);">
+            <div>
+              <strong>${savedPact}</strong>
+              <span class="time-badge">Aangemaakt voor vandaag</span>
+            </div>
+            <button class="btn btn-small" style="background-color: #38A169; color: white;" onclick="completePact()">✅ Voltooid</button>
+          </div>
+        `;
+      } else {
+        pactBox.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted);">Nog geen Avond-pact gezet. Maak er een aan op de Plannen-tab!</span>';
+      }
+
+      // 2. Active Focus Taken
+      let tasks = JSON.parse(localStorage.getItem('voldaan_tasks') || '[]');
+      const todayTasksBox = document.getElementById('today-tasks-list');
+      todayTasksBox.innerHTML = '';
+      const activeTasks = tasks.filter(t => !t.done);
+
+      if (activeTasks.length === 0) {
+        todayTasksBox.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted);">Geen actieve focus-taken voor vandaag. Rustig aan! 🎉</span>';
+      } else {
+        activeTasks.slice(0, 3).forEach(task => {
+          const div = document.createElement('div');
+          div.className = 'item-card';
+          div.innerHTML = `
+            <span style="cursor:pointer;" onclick="toggleTask(${task.id})">⚪ <strong>[${task.category || 'Privé'}]</strong> ${task.text}</span>
+            <button class="btn btn-small" style="font-size:0.75rem; padding: 4px 8px;" onclick="toggleTask(${task.id})">✅ Afvinken</button>
+          `;
+          todayTasksBox.appendChild(div);
+        });
+      }
+
+      // 3. Doelen Kompas voor Vandaag
+      let goals = JSON.parse(localStorage.getItem('voldaan_compass_goals') || '[]');
+      const todayGoalsBox = document.getElementById('today-goals-list');
+      todayGoalsBox.innerHTML = '';
+      const todayStr = new Date().toLocaleDateString('nl-NL');
+
+      if (goals.length === 0) {
+        todayGoalsBox.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted);">Nog geen langetermijndoelen ingesteld.</span>';
+      } else {
+        goals.forEach(goal => {
+          const isToday = goal.lastLoggedDate === todayStr;
+          const div = document.createElement('div');
+          div.className = 'item-card';
+          
+          if (isToday) {
+            let label = goal.lastStatus === 'full' ? '✅ Gelukt!' : goal.lastStatus === 'shield' ? '🛡️ Zacht Schild' : '🍃 Rustdag';
+            div.innerHTML = `<span>🎯 ${goal.title}</span><span style="font-size:0.8rem; font-weight:600; color:var(--accent-primary);">${label}</span>`;
+          } else {
+            div.innerHTML = `
+              <span>🎯 ${goal.title}</span>
+              <div style="display:flex; gap:4px;">
+                <button class="btn btn-small" style="font-size:0.72rem; padding:4px 6px; background-color:#38A169;" onclick="logGoalAction(${goal.id}, 'full')">✅</button>
+                ${goal.shield ? `<button class="btn btn-secondary btn-small" style="font-size:0.72rem; padding:4px 6px; background-color:#3182CE; color:white;" onclick="logGoalAction(${goal.id}, 'shield')">🛡️</button>` : ''}
+              </div>
+            `;
+          }
+          todayGoalsBox.appendChild(div);
+        });
+      }
+
+      // 4. Idee van de dag
+      renderTodayRandomIdea();
+    }
+
+    function renderTodayRandomIdea() {
+      let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
+      const container = document.getElementById('today-random-idea-box');
+      if (ideas.length === 0) {
+        container.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted);">Geen Post-its in je kluis. Prik er een op het Ideeën-tabblad!</span>';
+        return;
+      }
+      if (!currentGrabbelIdea) {
+        currentGrabbelIdea = ideas[Math.floor(Math.random() * ideas.length)];
+      }
+      container.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <strong style="font-size:0.95rem;">"${currentGrabbelIdea.text}"</strong>
+            <span class="time-badge">🏷️ Categorie: ${currentGrabbelIdea.category}</span>
+          </div>
+          <button class="btn btn-secondary btn-small" style="font-size:0.75rem;" onclick="moveIdeaToPlanbord(${currentGrabbelIdea.id})">🎯 Naar Planbord</button>
+        </div>
+      `;
+    }
+
+    // --- GRABBELTON MODAL ---
+    function openGrabbeltonModal() {
+      let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
+      if (ideas.length === 0) { alert("Je Ideeënkluis is leeg!"); return; }
+      
+      grabNewRandomIdea();
+      document.getElementById('grabbelton-modal').classList.remove('hidden');
+    }
+
+    function grabNewRandomIdea() {
+      let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
+      if (ideas.length === 0) return;
+      
+      currentGrabbelIdea = ideas[Math.floor(Math.random() * ideas.length)];
+      const container = document.getElementById('grabbelton-card-container');
+      
+      container.innerHTML = `
+        <div class="postit" style="${getPostitStyle(currentGrabbelIdea.category)} margin: 0 auto; max-width: 280px; text-align: left;">
+          <div class="postit-pin">📌</div>
+          <div class="postit-content" style="font-size: 1.05rem; min-height: 80px;">${currentGrabbelIdea.text}</div>
+          <div class="postit-footer">
+            <span>🏷️ <strong>${currentGrabbelIdea.category}</strong></span>
+            <span>🕒 ${currentGrabbelIdea.created}</span>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('grabbelton-push-plan-btn').onclick = function() {
+        moveIdeaToPlanbord(currentGrabbelIdea.id);
+        closeGrabbeltonModal();
+      };
+
+      renderTodayRandomIdea();
+    }
+
+    function closeGrabbeltonModal() {
+      document.getElementById('grabbelton-modal').classList.add('hidden');
     }
 
     // --- 🌿 HET RUIMTE-KOMPAS (FAMILIE-BALANS LOGICA) ---
@@ -1467,7 +1651,6 @@
       }
     }
 
-    // --- BEWERKEN & VERWIJDEREN VAN RUIMTE GESCHIEDENIS REGELS ---
     function editRuimteHistoryItem(projectId, historyItemId) {
       let projects = JSON.parse(localStorage.getItem('voldaan_ruimte_projects') || '[]');
       const p = projects.find(item => item.id === projectId);
@@ -1496,7 +1679,6 @@
       localStorage.setItem('voldaan_ruimte_projects', JSON.stringify(projects));
       renderRuimteKompas();
 
-      // Modals verversen indien ze open zijn
       if (!document.getElementById('ruimte-details-modal').classList.contains('hidden')) {
         openRuimteDetailsModal(projectId);
       }
@@ -1518,7 +1700,6 @@
       localStorage.setItem('voldaan_ruimte_projects', JSON.stringify(projects));
       renderRuimteKompas();
 
-      // Modals verversen indien ze open zijn
       if (!document.getElementById('ruimte-details-modal').classList.contains('hidden')) {
         openRuimteDetailsModal(projectId);
       }
@@ -1527,7 +1708,6 @@
       }
     }
 
-    // --- TOTALE DETAILS MODAL ---
     function openRuimteTotalDetailsModal() {
       let projects = JSON.parse(localStorage.getItem('voldaan_ruimte_projects') || '[]');
       const content = document.getElementById('ruimte-total-details-content');
@@ -1616,7 +1796,6 @@
       document.getElementById('ruimte-total-details-modal').classList.add('hidden');
     }
 
-    // --- INDIVIDUELE DETAILS MODAL ---
     function openRuimteDetailsModal(id) {
       let projects = JSON.parse(localStorage.getItem('voldaan_ruimte_projects') || '[]');
       const p = projects.find(item => item.id === id);
@@ -1730,12 +1909,10 @@
             </div>
           </div>
 
-          <!-- GROEIBALK PER PROJECT -->
           <div class="progress-bar-bg">
             <div class="progress-bar-fill" style="width: ${pct}%;"></div>
           </div>
 
-          <!-- ACTIEBALK PER PROJECT -->
           <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin-top:2px;">
             <input type="number" id="ruimte-pay-input-${p.id}" placeholder="Bedrag (€)" value="${p.monthlyTarget || ''}" style="margin-bottom:0; width:100px; font-size:0.8rem; padding:4px 8px;">
             <button class="btn btn-small" style="font-size:0.75rem; padding:6px 10px; background-color:#38A169;" onclick="addRuimteRepayment(${p.id})">💶 Aflossen</button>
@@ -1747,7 +1924,6 @@
         container.appendChild(card);
       });
 
-      // Update Totale Barometer op voorpagina
       const totalRemaining = Math.max(0, totalOriginal - totalRepaid);
       const totalPct = totalOriginal > 0 ? Math.min(100, Math.round((totalRepaid / totalOriginal) * 100)) : 0;
 
@@ -1812,6 +1988,7 @@
       localStorage.setItem('voldaan_pact', input);
       document.getElementById('pact-input').value = '';
       renderPact();
+      renderTodayDashboard();
     }
 
     function renderPact() {
@@ -1845,6 +2022,7 @@
       localStorage.removeItem('voldaan_pact');
       renderPact();
       renderPactHistory();
+      renderTodayDashboard();
       updateStats();
       updateInsight();
       triggerConfetti();
@@ -1854,6 +2032,7 @@
     function renegotiatePact() {
       localStorage.setItem('voldaan_pact', "Alleen 1 glas water drinken en rustig ademhalen");
       renderPact();
+      renderTodayDashboard();
     }
 
     function editPact() {
@@ -1862,6 +2041,7 @@
       if (updated && updated.trim()) {
         localStorage.setItem('voldaan_pact', updated);
         renderPact();
+        renderTodayDashboard();
       }
     }
 
@@ -1869,6 +2049,7 @@
       if (confirm("Wil je dit Avond-pact verwijderen?")) {
         localStorage.removeItem('voldaan_pact');
         renderPact();
+        renderTodayDashboard();
       }
     }
 
@@ -1890,7 +2071,7 @@
       });
     }
 
-    // --- ZACHT PLANBORD LOGICA MET CATEGORIEËN & EDIT ---
+    // --- ZACHT PLANBORD LOGICA ---
     const taskCatIcons = {
       'Privé': '🏠',
       'Gezin': '👨‍👩‍👧‍👦',
@@ -1921,6 +2102,7 @@
       localStorage.setItem('voldaan_tasks', JSON.stringify(tasks));
       if (!textInput) document.getElementById('task-input').value = '';
       renderTasks();
+      renderTodayDashboard();
     }
 
     function editTask(id) {
@@ -1933,6 +2115,7 @@
         task.text = newText.trim();
         localStorage.setItem('voldaan_tasks', JSON.stringify(tasks));
         renderTasks();
+        renderTodayDashboard();
       }
     }
 
@@ -1950,6 +2133,7 @@
         }
         localStorage.setItem('voldaan_tasks', JSON.stringify(tasks));
         renderTasks();
+        renderTodayDashboard();
         updateStats();
         updateInsight();
       }
@@ -1960,6 +2144,7 @@
       tasks = tasks.filter(t => t.id !== id);
       localStorage.setItem('voldaan_tasks', JSON.stringify(tasks));
       renderTasks();
+      renderTodayDashboard();
     }
 
     function toggleTaskArchive() {
@@ -1971,6 +2156,8 @@
       let tasks = JSON.parse(localStorage.getItem('voldaan_tasks') || '[]');
       const container = document.getElementById('tasks-list');
       const archiveContainer = document.getElementById('task-archive-list');
+      if (!container || !archiveContainer) return;
+
       container.innerHTML = '';
       archiveContainer.innerHTML = '';
 
@@ -2095,6 +2282,7 @@
     function renderContacts() {
       let contacts = JSON.parse(localStorage.getItem('voldaan_contacts') || '[]');
       const container = document.getElementById('contacts-list');
+      if (!container) return;
       container.innerHTML = '';
 
       if (contacts.length === 0) {
@@ -2151,6 +2339,7 @@
       document.getElementById('goal-shield-input').value = '';
       toggleAddGoalForm();
       renderCompassGoals();
+      renderTodayDashboard();
     }
 
     function logGoalAction(goalId, status) {
@@ -2169,6 +2358,7 @@
           updateStats();
         }
         renderCompassGoals();
+        renderTodayDashboard();
       }
     }
 
@@ -2180,6 +2370,7 @@
         goals[idx].lastStatus = null;
         localStorage.setItem('voldaan_compass_goals', JSON.stringify(goals));
         renderCompassGoals();
+        renderTodayDashboard();
       }
     }
 
@@ -2189,12 +2380,14 @@
         goals = goals.filter(g => g.id !== goalId);
         localStorage.setItem('voldaan_compass_goals', JSON.stringify(goals));
         renderCompassGoals();
+        renderTodayDashboard();
       }
     }
 
     function renderCompassGoals() {
       let goals = JSON.parse(localStorage.getItem('voldaan_compass_goals') || '[]');
       const container = document.getElementById('compass-goals-list');
+      if (!container) return;
       container.innerHTML = '';
 
       const todayStr = new Date().toLocaleDateString('nl-NL');
@@ -2299,6 +2492,8 @@
       const addSelect = document.getElementById('idea-category-select');
       const filterSelect = document.getElementById('ideas-filter-category');
 
+      if (!addSelect || !filterSelect) return;
+
       addSelect.innerHTML = '';
       filterSelect.innerHTML = '<option value="ALL">📂 Alle categorieën</option>';
 
@@ -2321,6 +2516,7 @@
       localStorage.setItem('voldaan_ideas', JSON.stringify(ideas));
       input.value = '';
       renderIdeas();
+      renderTodayDashboard();
     }
 
     function toggleIdeaDates() {
@@ -2339,14 +2535,22 @@
     function moveIdeaToPlanbord(id) {
       let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
       const idea = ideas.find(i => i.id === id);
-      if (idea) { addTask(idea.text, 'Privé'); alert(`🎯 "${idea.text}" is toegevoegd aan je Zacht Planbord!`); }
+      if (idea) { 
+        addTask(idea.text, 'Privé'); 
+        alert(`🎯 "${idea.text}" is toegevoegd aan je Zacht Planbord!`); 
+      }
       openMenuId = null;
     }
 
     function moveIdeaToPact(id) {
       let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
       const idea = ideas.find(i => i.id === id);
-      if (idea) { localStorage.setItem('voldaan_pact', idea.text); renderPact(); alert(`🌙 "${idea.text}" is ingesteld als Avond-pact!`); }
+      if (idea) { 
+        localStorage.setItem('voldaan_pact', idea.text); 
+        renderPact(); 
+        renderTodayDashboard();
+        alert(`🌙 "${idea.text}" is ingesteld als Avond-pact!`); 
+      }
       openMenuId = null;
     }
 
@@ -2359,6 +2563,7 @@
           idea.text = newText.trim();
           localStorage.setItem('voldaan_ideas', JSON.stringify(ideas));
           renderIdeas();
+          renderTodayDashboard();
         }
       }
       openMenuId = null;
@@ -2380,6 +2585,7 @@
       ideas = ideas.filter(i => i.id !== id);
       localStorage.setItem('voldaan_ideas', JSON.stringify(ideas));
       renderIdeas();
+      renderTodayDashboard();
     }
 
     function createPostitElement(idea, showDates) {
@@ -2419,26 +2625,24 @@
     function renderIdeas() {
       let allIdeas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
       const showDates = localStorage.getItem('voldaan_show_idea_dates') !== 'false';
-      const filterCat = document.getElementById('ideas-filter-category').value;
-      const sortVal = document.getElementById('ideas-sort-select').value;
+      const filterCat = document.getElementById('ideas-filter-category') ? document.getElementById('ideas-filter-category').value : 'ALL';
+      const sortVal = document.getElementById('ideas-sort-select') ? document.getElementById('ideas-sort-select').value : 'NEWEST';
       const searchQuery = (document.getElementById('ideas-search-input') ? document.getElementById('ideas-search-input').value : '').toLowerCase().trim();
 
       let modalIdeas = [...allIdeas];
 
-      // Filteren op categorie
       if (filterCat !== 'ALL') modalIdeas = modalIdeas.filter(i => i.category === filterCat);
 
-      // Filteren op zoekopdracht
       if (searchQuery !== '') {
         modalIdeas = modalIdeas.filter(i => i.text.toLowerCase().includes(searchQuery));
       }
 
-      // Sorteren
       if (sortVal === 'NEWEST') modalIdeas.sort((a,b) => b.id - a.id);
       else if (sortVal === 'OLDEST') modalIdeas.sort((a,b) => a.id - b.id);
       else if (sortVal === 'SHUFFLE') modalIdeas.sort(() => Math.random() - 0.5);
 
       const grid = document.getElementById('main-ideas-postit-grid');
+      if (!grid) return;
       grid.innerHTML = '';
 
       if (modalIdeas.length === 0) {
@@ -2452,14 +2656,7 @@
       }
     }
 
-    function grabRandomIdea() {
-      let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
-      if (ideas.length === 0) { alert("Je Ideeënkluis is leeg!"); return; }
-      const randomIdea = ideas[Math.floor(Math.random() * ideas.length)];
-      alert(`🎲 GRABBELTON POST-IT:\n\n"${randomIdea.text}" (${randomIdea.category})\n\nWil je hier vandaag iets mee?`);
-    }
-
-    // --- GELD-KOMPAS LOGICA MET DATUM & TIJD ---
+    // --- GELD-KOMPAS LOGICA MIT DATUM & TIJD ---
     function initDefaultMoneyData() {
       const nowStr = getNowDateTimeStr();
       if (!localStorage.getItem('voldaan_fixed_bills')) {
@@ -2772,7 +2969,7 @@
         type: 'anchor',
         name: anchor.name,
         price: `€${anchor.amount}`,
-        note: anchor.saved ? `Behaald op ${anchor.savedAt || 'onbekend'}` : `Doel for ${anchor.targetMonth}`
+        note: anchor.saved ? `Behaald op ${anchor.savedAt || 'onbekend'}` : `Doel voor ${anchor.targetMonth}`
       });
 
       renderMoneyView();
@@ -2787,13 +2984,9 @@
 
     // --- HOOFD RENDER LOGICA VOOR GELD-KOMPAS ---
     function renderMoneyView() {
-      // 1. Update Ruimte-KomPAS Barometer
       renderRuimteKompas();
-
-      // 2. Update Payday radar
       updatePaydayCountdown();
 
-      // 3. IMPULS WACHTKAMER
       let impulseItems = JSON.parse(localStorage.getItem('voldaan_impulse_items') || '[]');
       const impulseSort = document.getElementById('impulse-sort').value;
       const impulseContainer = document.getElementById('impulse-list');
@@ -2825,7 +3018,6 @@
         });
       }
 
-      // 4. VASTE LASTEN
       let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
       const billsFilter = document.getElementById('bills-filter').value;
       const billsContainer = document.getElementById('fixed-bills-list');
@@ -2855,7 +3047,6 @@
         });
       }
 
-      // 5. TOEKOMST ANKERS
       let anchors = JSON.parse(localStorage.getItem('voldaan_future_anchors') || '[]');
       const anchorsFilter = document.getElementById('anchors-filter').value;
       const anchorsContainer = document.getElementById('future-anchors-list');
@@ -2903,15 +3094,11 @@
     renderTip();
     renderMoneyTip();
     renderMarbleJar();
-    renderPact();
-    renderTasks();
-    renderContacts();
-    renderCompassGoals();
-    renderIdeas();
+    renderTodayDashboard();
     updateStats();
     updateInsight();
     
-    // Payday timer elke seconde updaten
+    // Payday timer updaten
     updatePaydayCountdown();
     setInterval(updatePaydayCountdown, 1000);
   </script>
