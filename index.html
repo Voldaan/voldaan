@@ -755,6 +755,9 @@
         <button class="btn btn-secondary" onclick="addIdea()">Prik op het Bord 📌</button>
 
         <div class="filter-bar" style="margin-top: 16px;">
+          <!-- 🔍 DYNAMISCHE ZOEKBALK VOOR IDEEËN -->
+          <input type="text" id="ideas-search-input" oninput="renderIdeas()" placeholder="🔍 Zoek in ideeën..." style="margin-bottom:0; flex: 1 1 180px; font-size: 0.85rem; padding: 6px 10px;">
+
           <select id="ideas-filter-category" onchange="renderIdeas()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 6px;">
             <option value="ALL">📂 Alle categorieën</option>
           </select>
@@ -1723,10 +1726,19 @@
       const showDates = localStorage.getItem('voldaan_show_idea_dates') !== 'false';
       const filterCat = document.getElementById('ideas-filter-category').value;
       const sortVal = document.getElementById('ideas-sort-select').value;
+      const searchQuery = (document.getElementById('ideas-search-input') ? document.getElementById('ideas-search-input').value : '').toLowerCase().trim();
 
       let modalIdeas = [...allIdeas];
+
+      // Filteren op categorie
       if (filterCat !== 'ALL') modalIdeas = modalIdeas.filter(i => i.category === filterCat);
 
+      // Filteren op zoekopdracht
+      if (searchQuery !== '') {
+        modalIdeas = modalIdeas.filter(i => i.text.toLowerCase().includes(searchQuery));
+      }
+
+      // Sorteren
       if (sortVal === 'NEWEST') modalIdeas.sort((a,b) => b.id - a.id);
       else if (sortVal === 'OLDEST') modalIdeas.sort((a,b) => a.id - b.id);
       else if (sortVal === 'SHUFFLE') modalIdeas.sort(() => Math.random() - 0.5);
@@ -1735,7 +1747,11 @@
       grid.innerHTML = '';
 
       if (modalIdeas.length === 0) {
-        grid.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted); grid-column: 1/-1;">Geen Post-its gevonden. Prik er hierboven een op!</span>';
+        if (searchQuery !== '') {
+          grid.innerHTML = `<span style="font-size:0.85rem; color:var(--text-muted); grid-column: 1/-1;">Geen ideeën gevonden die overeenkomen met "${searchQuery}".</span>`;
+        } else {
+          grid.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted); grid-column: 1/-1;">Geen Post-its gevonden. Prik er hierboven een op!</span>';
+        }
       } else {
         modalIdeas.forEach(idea => grid.appendChild(createPostitElement(idea, showDates)));
       }
