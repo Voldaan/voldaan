@@ -293,6 +293,21 @@
       margin-top: 2px;
     }
 
+    /* KNIKKERPOT STIJLEN */
+    .marble {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: inset -2px -2px 4px rgba(0,0,0,0.35), 1px 2px 4px rgba(0,0,0,0.2);
+      animation: dropMarble 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes dropMarble {
+      0% { transform: translateY(-30px) scale(1.3); opacity: 0; }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
     /* POST-IT STIJLEN FÜR IDEEËNKLUIS */
     .postit-grid {
       display: grid;
@@ -522,7 +537,7 @@
     <nav class="nav-tabs">
       <button class="tab-btn active" onclick="switchView('today')" id="tab-today">🏠 Vandaag</button>
       <button class="tab-btn" onclick="switchView('ideas')" id="tab-ideas">📌 Ideeënkluis</button>
-      <button class="tab-btn" onclick="switchView('money')" id="tab-money">💶 Geld-KomPAS</button>
+      <button class="tab-btn" onclick="switchView('money')" id="tab-money">💶 Geld-Kompas</button>
     </nav>
 
     <!-- ==================== PAGINA 1: VANDAAG (HOOFDDASHBOARD) ==================== -->
@@ -535,6 +550,19 @@
           <button class="btn btn-secondary btn-small" onclick="nextTip()">Andere tip 🔄</button>
         </div>
         <p id="tip-text" style="font-size: 0.92rem; line-height: 1.4;"></p>
+      </div>
+
+      <!-- 🏺 DE TROTS-KLUIS (DIGITAL MARBLE JAR) -->
+      <div class="card" style="margin-bottom: 18px; border: 2px solid var(--accent-primary);">
+        <h2>
+          🏺 De Trots-Kluis
+          <span id="marble-count-badge" style="font-size:0.82rem; background:var(--accent-primary); color:white; padding:3px 10px; border-radius:12px; font-weight:600;">0 Knikkers</span>
+        </h2>
+        <p class="subtitle">Elke kleine overwinning vult jouw virtuele glazen pot. Zie in één oogopslag wat je allemaal wél hebt bereikt!</p>
+
+        <div id="marble-jar-visual" style="background:var(--item-bg); border:2px dashed var(--input-border); border-radius:16px; padding:16px 12px; min-height:85px; display:flex; flex-wrap:wrap-reverse; gap:6px; align-items:flex-start; justify-content:center; max-height: 180px; overflow-y: auto;">
+          <!-- Knikkers worden dynamisch ingeladen -->
+        </div>
       </div>
 
       <!-- ☀️ 1. TIJDLOZE STARTKNOP -->
@@ -612,10 +640,21 @@
         </div>
       </div>
 
-      <!-- 🧭 4. HET ZACHTE KOMPAS -->
+      <!-- 💜 4. HET CONTACT-KOMPAS -->
       <div class="card" style="margin-bottom: 18px;">
         <h2>
-          🧭 Het Zachte KomPAS
+          💜 Contact-Kompas
+          <button class="btn btn-secondary btn-small" onclick="addContactPrompt()">+ Contact</button>
+        </h2>
+        <p class="subtitle">Geen schuldgevoel meer bij 'uit het oog, uit het hart'. Stuur eenvoudig een warm berichtje zonder prestatiedruk.</p>
+
+        <div id="contacts-list" class="item-list"></div>
+      </div>
+
+      <!-- 🧭 5. HET ZACHTE KOMPAS -->
+      <div class="card" style="margin-bottom: 18px;">
+        <h2>
+          🧭 Het Zachte Kompas
           <button class="btn btn-secondary btn-small" onclick="toggleAddGoalForm()">+ Nieuw Doel</button>
         </h2>
         <p class="subtitle">Langetermijn voornemens met een ingebouwd veiligheidsnet. Vier elke stap, ook de micro-versie op zware dagen!</p>
@@ -634,7 +673,7 @@
         <div id="compass-goals-list" class="item-list"></div>
       </div>
 
-      <!-- 📊 5. ZACHTE INZICHTEN -->
+      <!-- 📊 6. ZACHTE INZICHTEN -->
       <div class="card" style="margin-bottom: 18px;">
         <h2>📊 Jouw Reis In Cijfers</h2>
         <p class="subtitle">Geen reeksen of gemiste dagen. Alleen de dingen die je wél hebt gedaan.</p>
@@ -660,7 +699,7 @@
         </div>
       </div>
 
-      <!-- 💜 6. BUDDY PULSE -->
+      <!-- 💜 7. BUDDY PULSE -->
       <div class="buddy-pulse">
         <strong style="font-size: 0.9rem;">💜 Zachte Buddy-Pulse</strong>
         <p style="font-size: 0.82rem; margin-top: 4px; opacity: 0.9;">Er zijn nu 54 anderen ook rustig op hun eigen tempo bezig.</p>
@@ -890,6 +929,44 @@
       render();
     }
 
+    // --- 🏺 DE TROTS-KLUIS (DIGITAL MARBLE JAR) LOGICA ---
+    const marbleColors = ['#5A67D8', '#38A169', '#ED8936', '#9F7AEA', '#E53E3E', '#319795', '#D69E2E', '#ED64A6'];
+
+    function addMarble(reason) {
+      let marbles = JSON.parse(localStorage.getItem('voldaan_marbles') || '[]');
+      const randomColor = marbleColors[Math.floor(Math.random() * marbleColors.length)];
+      marbles.push({
+        id: Date.now(),
+        color: randomColor,
+        reason: reason || 'Kleine zege',
+        date: getNowDateTimeStr()
+      });
+      localStorage.setItem('voldaan_marbles', JSON.stringify(marbles));
+      renderMarbleJar();
+    }
+
+    function renderMarbleJar() {
+      let marbles = JSON.parse(localStorage.getItem('voldaan_marbles') || '[]');
+      const container = document.getElementById('marble-jar-visual');
+      const badge = document.getElementById('marble-count-badge');
+      
+      badge.innerText = `${marbles.length} Knikker${marbles.length === 1 ? '' : 's'}`;
+      container.innerHTML = '';
+
+      if (marbles.length === 0) {
+        container.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted); text-align:center;">Je glazen pot is nog leeg. Vink hieronder een taak, pact of contact af!</span>';
+        return;
+      }
+
+      marbles.forEach(m => {
+        const div = document.createElement('div');
+        div.className = 'marble';
+        div.style.backgroundColor = m.color;
+        div.title = `${m.reason} (${m.date})`;
+        container.appendChild(div);
+      });
+    }
+
     // --- AGENDA EXPORT ---
     function exportToCalendar(title, description) {
       const choice = confirm("Wil je deze herinnering openen in Google Calendar?\n\n(Klik 'Annuleren' om direct een .ics bestand te downloaden voor Apple/Outlook)");
@@ -957,7 +1034,7 @@
     function renderTip() { document.getElementById('tip-text').innerText = brainTips[currentTipIndex]; }
     function nextTip() { currentTipIndex = (currentTipIndex + 1) % brainTips.length; renderTip(); }
 
-    // --- GELD INZICHTEN (ZACHTE GELD HACKS) ---
+    // --- GELD INZICHTEN ---
     const moneyTips = [
       "<strong>De Dopamine-Vraag:</strong> Koop je dit product voor je eigen toekomst, of zoek je op dit specifieke moment ontspanning of afleiding? Soms helpt een kop thee of een wandeling even goed!",
       "<strong>De 1-Euro-Per-Keer Regel:</strong> Vraag jezelf af: 'Als ik de prijs deel door het aantal keren dat ik dit ga gebruiken, voelt dat bedrag dan logisch en eerlijk?'",
@@ -969,13 +1046,8 @@
     ];
 
     let currentMoneyTipIndex = 0;
-    function renderMoneyTip() {
-      document.getElementById('money-tip-text').innerHTML = moneyTips[currentMoneyTipIndex];
-    }
-    function nextMoneyTip() {
-      currentMoneyTipIndex = (currentMoneyTipIndex + 1) % moneyTips.length;
-      renderMoneyTip();
-    }
+    function renderMoneyTip() { document.getElementById('money-tip-text').innerHTML = moneyTips[currentMoneyTipIndex]; }
+    function nextMoneyTip() { currentMoneyTipIndex = (currentMoneyTipIndex + 1) % moneyTips.length; renderMoneyTip(); }
 
     // --- START & STATS ---
     let selectedEnergyState = '';
@@ -993,6 +1065,7 @@
       updateStats();
       updateInsight();
       triggerConfetti();
+      addMarble('Zachte start gemaakt');
       alert(`Je dag is rustig gestart in de stand: '${selectedEnergyState}'. Neem alle tijd!`);
     }
 
@@ -1054,6 +1127,7 @@
       updateStats();
       updateInsight();
       triggerConfetti();
+      addMarble(`Avond-pact nagekomen (${pactText})`);
     }
 
     function renegotiatePact() {
@@ -1126,6 +1200,7 @@
           let doneCount = parseInt(localStorage.getItem('voldaan_stat_tasks') || '0') + 1;
           localStorage.setItem('voldaan_stat_tasks', doneCount);
           triggerConfetti();
+          addMarble(`Taak gelukt: "${tasks[idx].text}"`);
         }
         localStorage.setItem('voldaan_tasks', JSON.stringify(tasks));
         renderTasks();
@@ -1200,6 +1275,93 @@
       }
     }
 
+    // --- 💜 HET CONTACT-KOMPAS LOGICA ---
+    function initDefaultContacts() {
+      if (!localStorage.getItem('voldaan_contacts')) {
+        const defaultContacts = [
+          { id: 1, name: "Beste Vriend(in)", phone: "", lastContacted: null },
+          { id: 2, name: "Familielid / Ouders", phone: "", lastContacted: null }
+        ];
+        localStorage.setItem('voldaan_contacts', JSON.stringify(defaultContacts));
+      }
+    }
+
+    function addContactPrompt() {
+      const name = prompt("Naam van je dierbare:");
+      if (!name || !name.trim()) return;
+      const phone = prompt("Telefoonnummer voor WhatsApp (optioneel, bijv. 0612345678):");
+
+      let contacts = JSON.parse(localStorage.getItem('voldaan_contacts') || '[]');
+      contacts.push({
+        id: Date.now(),
+        name: name.trim(),
+        phone: phone ? phone.replace(/[^0-9]/g, '') : '',
+        lastContacted: null
+      });
+
+      localStorage.setItem('voldaan_contacts', JSON.stringify(contacts));
+      renderContacts();
+    }
+
+    function sendContactWhatsApp(id) {
+      let contacts = JSON.parse(localStorage.getItem('voldaan_contacts') || '[]');
+      const contact = contacts.find(c => c.id === id);
+      if (!contact) return;
+
+      const defaultMsg = encodeURIComponent(`Hey ${contact.name}! Ik dacht even aan je, geen druk om terug te appen hoor! ❤️`);
+      let url = contact.phone ? `https://wa.me/${contact.phone}?text=${defaultMsg}` : `https://wa.me/?text=${defaultMsg}`;
+      window.open(url, '_blank');
+    }
+
+    function markContacted(id) {
+      let contacts = JSON.parse(localStorage.getItem('voldaan_contacts') || '[]');
+      const idx = contacts.findIndex(c => c.id === id);
+      if (idx !== -1) {
+        contacts[idx].lastContacted = getNowDateTimeStr();
+        localStorage.setItem('voldaan_contacts', JSON.stringify(contacts));
+        triggerConfetti();
+        addMarble(`Berichtje gestuurd naar ${contacts[idx].name}`);
+        renderContacts();
+      }
+    }
+
+    function removeContact(id) {
+      if (confirm("Wil je dit contact verwijderen uit je Contact-Kompas?")) {
+        let contacts = JSON.parse(localStorage.getItem('voldaan_contacts') || '[]');
+        contacts = contacts.filter(c => c.id !== id);
+        localStorage.setItem('voldaan_contacts', JSON.stringify(contacts));
+        renderContacts();
+      }
+    }
+
+    function renderContacts() {
+      let contacts = JSON.parse(localStorage.getItem('voldaan_contacts') || '[]');
+      const container = document.getElementById('contacts-list');
+      container.innerHTML = '';
+
+      if (contacts.length === 0) {
+        container.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted);">Geen contacten ingevoerd. Klik op "+ Contact" om te beginnen!</span>';
+        return;
+      }
+
+      contacts.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'item-card';
+        div.innerHTML = `
+          <div>
+            <strong>💜 ${c.name}</strong>
+            <span class="time-badge">${c.lastContacted ? '✅ Laatst benaderd: ' + c.lastContacted : '🕒 Nog geen bericht via de app gestuurd'}</span>
+          </div>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <button class="btn btn-secondary btn-small" style="font-size:0.75rem; background-color:#25D366; color:white;" onclick="sendContactWhatsApp(${c.id})">💬 Appje</button>
+            <button class="btn btn-small" style="font-size:0.75rem; background-color:#38A169; color:white;" onclick="markContacted(${c.id})">✅ Contact gehad</button>
+            <button style="background:none; border:none; color:#E53E3E; cursor:pointer; font-size:0.9rem;" onclick="removeContact(${c.id})">✕</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
     // --- HET ZACHTE KOMPAS ---
     function initDefaultCompassGoals() {
       if (!localStorage.getItem('voldaan_compass_goals')) {
@@ -1243,6 +1405,7 @@
 
         if (status === 'full' || status === 'shield') {
           triggerConfetti();
+          addMarble(`Doel actie: "${goals[idx].title}"`);
           let doneCount = parseInt(localStorage.getItem('voldaan_stat_tasks') || '0') + 1;
           localStorage.setItem('voldaan_stat_tasks', doneCount);
           updateStats();
@@ -1685,6 +1848,7 @@
 
       if (wasSaved) {
         triggerConfetti();
+        addMarble(`Impuls-aankoop laten schieten (${item.name})`);
         alert("🎉 Geweldig gedaan! Je hebt een impuls-aankoop laten schieten en verplaatst naar je Geld-Archief.");
       }
 
@@ -1735,7 +1899,10 @@
       if (idx !== -1) {
         bills[idx].paid = !bills[idx].paid;
         bills[idx].paidAt = bills[idx].paid ? getNowDateTimeStr() : null;
-        if (bills[idx].paid) triggerConfetti();
+        if (bills[idx].paid) {
+          triggerConfetti();
+          addMarble(`Vaste last voldaan (${bills[idx].name})`);
+        }
         localStorage.setItem('voldaan_fixed_bills', JSON.stringify(bills));
         renderMoneyView();
       }
@@ -1812,7 +1979,10 @@
       if (idx !== -1) {
         anchors[idx].saved = !anchors[idx].saved;
         anchors[idx].savedAt = anchors[idx].saved ? getNowDateTimeStr() : null;
-        if (anchors[idx].saved) triggerConfetti();
+        if (anchors[idx].saved) {
+          triggerConfetti();
+          addMarble(`Potje behaald (${anchors[idx].name})`);
+        }
         localStorage.setItem('voldaan_future_anchors', JSON.stringify(anchors));
         renderMoneyView();
       }
@@ -1950,11 +2120,14 @@
     initTheme();
     initDefaultCompassGoals();
     initDefaultMoneyData();
+    initDefaultContacts();
     updateCategoryDropdowns();
     renderTip();
     renderMoneyTip();
+    renderMarbleJar();
     renderPact();
     renderTasks();
+    renderContacts();
     renderCompassGoals();
     renderIdeas();
     updateStats();
