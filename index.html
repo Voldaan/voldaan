@@ -393,6 +393,42 @@
       background-color: var(--input-border);
     }
 
+    /* MODAL OVERLAY STIJLEN */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      z-index: 10000;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 16px;
+      overflow-y: auto;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      color: var(--text-main);
+      width: 100%;
+      max-width: 580px;
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      margin-top: 20px;
+      margin-bottom: 40px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -677,6 +713,12 @@
     <!-- ==================== PAGINA 3: GELD-KOMPAS ==================== -->
     <div id="view-money" class="hidden">
       
+      <!-- BOVENBALK MET ARCHIEF KNOP -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <span style="font-size: 0.85rem; color: var(--text-muted);">Houd rust & overzicht in je uitgaven</span>
+        <button class="btn btn-secondary btn-small" onclick="openMoneyArchiveModal()">📜 Geld-Archief</button>
+      </div>
+
       <!-- 🛑 1. IMPULS-WACHTKAMER -->
       <div class="card" style="margin-bottom: 18px;">
         <h2>🛑 Impuls-Wachtkamer</h2>
@@ -686,6 +728,15 @@
           <input type="text" id="impulse-name" placeholder="Wat wil je kopen?" style="margin-bottom:0; flex:2;">
           <input type="number" id="impulse-price" placeholder="Prijs (€)" style="margin-bottom:0; flex:1;">
           <button class="btn btn-small" onclick="addImpulseItem()">Parkeren</button>
+        </div>
+
+        <div class="filter-bar" style="margin-top: 10px;">
+          <label style="font-size: 0.78rem; color: var(--text-muted);">Sorteren:</label>
+          <select id="impulse-sort" onchange="renderMoneyView()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 4px 8px;">
+            <option value="NEWEST">⏱️ Nieuwste eerst</option>
+            <option value="OLDEST">⏳ Oudste eerst</option>
+            <option value="PRICE_HIGH">💶 Prijs: Hoog naar Laag</option>
+          </select>
         </div>
 
         <div id="impulse-list" class="item-list"></div>
@@ -699,6 +750,15 @@
         </h2>
         <p class="subtitle">Houd in één oogopslag de belangrijkste verplichtingen van de maand bij. Zodra ze betaald zijn, weet je dat de basis veilig staat.</p>
 
+        <div class="filter-bar">
+          <label style="font-size: 0.78rem; color: var(--text-muted);">Filter:</label>
+          <select id="bills-filter" onchange="renderMoneyView()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 4px 8px;">
+            <option value="ALL">📂 Alles</option>
+            <option value="UNPAID">⚪ Nog te betalen</option>
+            <option value="PAID">✅ Betaald</option>
+          </select>
+        </div>
+
         <div id="fixed-bills-list" class="item-list"></div>
       </div>
 
@@ -709,6 +769,15 @@
           <button class="btn btn-secondary btn-small" onclick="addFutureAnchorPrompt()">+ Potje</button>
         </h2>
         <p class="subtitle">Geen verrassingen voor jaarlijkse of kwartaalrekeningen. Bouw rustig een veiligheidsbuffer op.</p>
+
+        <div class="filter-bar">
+          <label style="font-size: 0.78rem; color: var(--text-muted);">Filter:</label>
+          <select id="anchors-filter" onchange="renderMoneyView()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 4px 8px;">
+            <option value="ALL">📂 Alles</option>
+            <option value="ACTIVE">🔮 Openstaand</option>
+            <option value="SAVED">✅ Behaald / Gespaard</option>
+          </select>
+        </div>
 
         <div id="future-anchors-list" class="item-list"></div>
       </div>
@@ -723,6 +792,30 @@
 
     </div>
 
+  </div>
+
+  <!-- 🗂️ MODAL POP-UP VOOR GELD-ARCHIEF -->
+  <div id="money-archive-modal" class="modal-overlay hidden" onclick="closeMoneyArchiveModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      
+      <div class="modal-header">
+        <h2>📜 Geld-Kompas Archief</h2>
+        <button class="btn btn-secondary btn-small" onclick="closeMoneyArchiveModal()">✕ Sluiten</button>
+      </div>
+      <p class="subtitle">Een helder overzicht van al jouw opgebouwde zeges: bespaarde impuls-aankopen, voldane vaste lasten en gespaarde opvangpotjes!</p>
+
+      <div class="filter-bar">
+        <select id="money-archive-filter" onchange="renderMoneyArchive()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 6px;">
+          <option value="ALL">📂 Alles in het archief</option>
+          <option value="impulse">🍃 Bespaarde Impulsen</option>
+          <option value="bill">🛡️ Vaste Lasten</option>
+          <option value="anchor">🔮 Afgeronde Potjes</option>
+        </select>
+      </div>
+
+      <div id="money-archive-list" class="item-list" style="margin-top: 14px;"></div>
+
+    </div>
   </div>
 
   <script>
@@ -1404,20 +1497,106 @@
     function initDefaultMoneyData() {
       if (!localStorage.getItem('voldaan_fixed_bills')) {
         const defaultBills = [
-          { id: 1, name: "Huur / Hypotheek & Vaste Lasten", paid: false },
-          { id: 2, name: "Zorgverzekering", paid: false }
+          { id: 1, name: "Huur / Hypotheek & Vaste Lasten", paid: false, rawAmount: 0 },
+          { id: 2, name: "Zorgverzekering", paid: false, rawAmount: 0 }
         ];
         localStorage.setItem('voldaan_fixed_bills', JSON.stringify(defaultBills));
       }
       if (!localStorage.getItem('voldaan_future_anchors')) {
         const defaultAnchors = [
-          { id: 1, name: "Auto-APK / Onderhoud", amount: 200, targetMonth: "Mei", saved: false },
-          { id: 2, name: "Feestdagen / Cadeaus", amount: 150, targetMonth: "December", saved: false }
+          { id: 1, name: "Auto-APK / Onderhoud", amount: 200, rawAmount: 200, targetMonth: "Mei", saved: false },
+          { id: 2, name: "Feestdagen / Cadeaus", amount: 150, rawAmount: 150, targetMonth: "December", saved: false }
         ];
         localStorage.setItem('voldaan_future_anchors', JSON.stringify(defaultAnchors));
       }
     }
 
+    function addToMoneyArchive(item) {
+      let archive = JSON.parse(localStorage.getItem('voldaan_money_archive') || '[]');
+      const dateStr = new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
+      item.archivedDate = dateStr;
+      archive.unshift(item);
+      localStorage.setItem('voldaan_money_archive', JSON.stringify(archive));
+    }
+
+    function openMoneyArchiveModal() {
+      document.getElementById('money-archive-modal').classList.remove('hidden');
+      renderMoneyArchive();
+    }
+
+    function closeMoneyArchiveModal() {
+      document.getElementById('money-archive-modal').classList.add('hidden');
+    }
+
+    function renderMoneyArchive() {
+      let archive = JSON.parse(localStorage.getItem('voldaan_money_archive') || '[]');
+      const filterType = document.getElementById('money-archive-filter').value;
+      const container = document.getElementById('money-archive-list');
+      container.innerHTML = '';
+
+      if (filterType !== 'ALL') {
+        archive = archive.filter(i => i.type === filterType);
+      }
+
+      if (archive.length === 0) {
+        container.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted);">Nog geen gearchiveerde items in deze categorie.</span>';
+        return;
+      }
+
+      archive.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'item-card';
+
+        let typeLabel = item.type === 'impulse' ? '🍃 Bespaarde Impuls' : item.type === 'bill' ? '🛡️ Vaste Last' : '🔮 Gespaard Potje';
+
+        div.innerHTML = `
+          <div>
+            <strong>${typeLabel}: ${item.name}</strong> ${item.price ? `<span style="color:var(--accent-primary); font-weight:600;">(${item.price})</span>` : ''}
+            <span class="time-badge">Gearchiveerd op ${item.archivedDate} ${item.note ? '• ' + item.note : ''}</span>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-secondary btn-small" style="font-size:0.75rem;" onclick="restoreArchiveItem(${item.id})">↩️ Herstellen</button>
+            <button style="background:none; border:none; color:#E53E3E; cursor:pointer;" onclick="deleteArchiveItem(${item.id})">✕</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function deleteArchiveItem(id) {
+      let archive = JSON.parse(localStorage.getItem('voldaan_money_archive') || '[]');
+      archive = archive.filter(i => i.id !== id);
+      localStorage.setItem('voldaan_money_archive', JSON.stringify(archive));
+      renderMoneyArchive();
+    }
+
+    function restoreArchiveItem(id) {
+      let archive = JSON.parse(localStorage.getItem('voldaan_money_archive') || '[]');
+      const item = archive.find(i => i.id === id);
+      if (!item) return;
+
+      archive = archive.filter(i => i.id !== id);
+      localStorage.setItem('voldaan_money_archive', JSON.stringify(archive));
+
+      if (item.type === 'impulse') {
+        let items = JSON.parse(localStorage.getItem('voldaan_impulse_items') || '[]');
+        items.unshift({ id: item.id, name: item.name, price: item.price, rawAmount: item.rawAmount || 0, date: item.archivedDate });
+        localStorage.setItem('voldaan_impulse_items', JSON.stringify(items));
+      } else if (item.type === 'bill') {
+        let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
+        bills.push({ id: item.id, name: item.name, paid: false, rawAmount: 0 });
+        localStorage.setItem('voldaan_fixed_bills', JSON.stringify(bills));
+      } else if (item.type === 'anchor') {
+        let anchors = JSON.parse(localStorage.getItem('voldaan_future_anchors') || '[]');
+        anchors.push({ id: item.id, name: item.name, amount: item.price ? item.price.replace('€','') : '0', targetMonth: 'Bewerken', saved: false });
+        localStorage.setItem('voldaan_future_anchors', JSON.stringify(anchors));
+      }
+
+      renderMoneyArchive();
+      renderMoneyView();
+    }
+
+    // --- IMPULS WACHTKAMER ACTIES ---
     function addImpulseItem() {
       const name = document.getElementById('impulse-name').value;
       const price = document.getElementById('impulse-price').value;
@@ -1426,8 +1605,9 @@
       let items = JSON.parse(localStorage.getItem('voldaan_impulse_items') || '[]');
       items.unshift({
         id: Date.now(),
-        name: name,
+        name: name.trim(),
         price: price ? `€${price}` : '',
+        rawAmount: price ? parseFloat(price) : 0,
         date: new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })
       });
 
@@ -1437,22 +1617,74 @@
       renderMoneyView();
     }
 
-    function removeImpulseItem(id, wasSaved) {
+    function editImpulseItem(id) {
       let items = JSON.parse(localStorage.getItem('voldaan_impulse_items') || '[]');
-      items = items.filter(i => i.id !== id);
+      const item = items.find(i => i.id === id);
+      if (!item) return;
+
+      const newName = prompt("Pas naam van aankoop aan:", item.name);
+      if (newName === null) return;
+      const newPrice = prompt("Pas prijs in € aan:", item.price ? item.price.replace('€','') : '');
+
+      item.name = newName.trim() || item.name;
+      item.price = newPrice ? `€${newPrice}` : '';
+      item.rawAmount = newPrice ? parseFloat(newPrice) : 0;
+
       localStorage.setItem('voldaan_impulse_items', JSON.stringify(items));
-      if (wasSaved) {
-        triggerConfetti();
-        alert("🎉 Geweldig gedaan! Je hebt een impuls-aankoop laten schieten en geld bespaard.");
-      }
       renderMoneyView();
     }
 
+    function archiveImpulseItem(id, wasSaved) {
+      let items = JSON.parse(localStorage.getItem('voldaan_impulse_items') || '[]');
+      const item = items.find(i => i.id === id);
+      if (!item) return;
+
+      items = items.filter(i => i.id !== id);
+      localStorage.setItem('voldaan_impulse_items', JSON.stringify(items));
+
+      addToMoneyArchive({
+        id: item.id,
+        type: 'impulse',
+        name: item.name,
+        price: item.price,
+        rawAmount: item.rawAmount,
+        note: wasSaved ? '🎉 Laten schieten! Besparing gelukt.' : 'Gearchiveerd'
+      });
+
+      if (wasSaved) {
+        triggerConfetti();
+        alert("🎉 Geweldig gedaan! Je hebt een impuls-aankoop laten schieten en verplaatst naar je Geld-Archief.");
+      }
+
+      renderMoneyView();
+    }
+
+    function removeImpulseItem(id) {
+      let items = JSON.parse(localStorage.getItem('voldaan_impulse_items') || '[]');
+      items = items.filter(i => i.id !== id);
+      localStorage.setItem('voldaan_impulse_items', JSON.stringify(items));
+      renderMoneyView();
+    }
+
+    // --- VASTE LASTEN ACTIES ---
     function addFixedBillPrompt() {
       const name = prompt("Naam van de vaste last / betaling:");
       if (name && name.trim()) {
         let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
-        bills.push({ id: Date.now(), name: name.trim(), paid: false });
+        bills.push({ id: Date.now(), name: name.trim(), paid: false, rawAmount: 0 });
+        localStorage.setItem('voldaan_fixed_bills', JSON.stringify(bills));
+        renderMoneyView();
+      }
+    }
+
+    function editFixedBill(id) {
+      let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
+      const bill = bills.find(b => b.id === id);
+      if (!bill) return;
+
+      const newName = prompt("Pas naam aan:", bill.name);
+      if (newName !== null && newName.trim() !== '') {
+        bill.name = newName.trim();
         localStorage.setItem('voldaan_fixed_bills', JSON.stringify(bills));
         renderMoneyView();
       }
@@ -1469,6 +1701,25 @@
       }
     }
 
+    function archiveFixedBill(id) {
+      let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
+      const bill = bills.find(b => b.id === id);
+      if (!bill) return;
+
+      bills = bills.filter(b => b.id !== id);
+      localStorage.setItem('voldaan_fixed_bills', JSON.stringify(bills));
+
+      addToMoneyArchive({
+        id: bill.id,
+        type: 'bill',
+        name: bill.name,
+        price: '',
+        note: bill.paid ? '✅ Voldaan en gearchiveerd' : 'Gearchiveerd'
+      });
+
+      renderMoneyView();
+    }
+
     function removeFixedBill(id) {
       let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
       bills = bills.filter(b => b.id !== id);
@@ -1476,6 +1727,7 @@
       renderMoneyView();
     }
 
+    // --- TOEKOMST ANKERS ACTIES ---
     function addFutureAnchorPrompt() {
       const name = prompt("Naam van het opvangpotje (bijv. Gemeentebelasting):");
       if (!name) return;
@@ -1483,7 +1735,25 @@
       const month = prompt("Welke maand/periode? (bijv. April):");
 
       let anchors = JSON.parse(localStorage.getItem('voldaan_future_anchors') || '[]');
-      anchors.push({ id: Date.now(), name, amount, targetMonth: month, saved: false });
+      anchors.push({ id: Date.now(), name: name.trim(), amount: amount || '0', targetMonth: month || 'Z.A.P.', saved: false });
+      localStorage.setItem('voldaan_future_anchors', JSON.stringify(anchors));
+      renderMoneyView();
+    }
+
+    function editFutureAnchor(id) {
+      let anchors = JSON.parse(localStorage.getItem('voldaan_future_anchors') || '[]');
+      const anchor = anchors.find(a => a.id === id);
+      if (!anchor) return;
+
+      const newName = prompt("Pas naam potje aan:", anchor.name);
+      if (newName === null) return;
+      const newAmount = prompt("Pas streefbedrag (€) aan:", anchor.amount);
+      const newMonth = prompt("Pas maand/periode aan:", anchor.targetMonth);
+
+      anchor.name = newName.trim() || anchor.name;
+      anchor.amount = newAmount || anchor.amount;
+      anchor.targetMonth = newMonth || anchor.targetMonth;
+
       localStorage.setItem('voldaan_future_anchors', JSON.stringify(anchors));
       renderMoneyView();
     }
@@ -1499,6 +1769,25 @@
       }
     }
 
+    function archiveFutureAnchor(id) {
+      let anchors = JSON.parse(localStorage.getItem('voldaan_future_anchors') || '[]');
+      const anchor = anchors.find(a => a.id === id);
+      if (!anchor) return;
+
+      anchors = anchors.filter(a => a.id !== id);
+      localStorage.setItem('voldaan_future_anchors', JSON.stringify(anchors));
+
+      addToMoneyArchive({
+        id: anchor.id,
+        type: 'anchor',
+        name: anchor.name,
+        price: `€${anchor.amount}`,
+        note: `Doel bereikt for ${anchor.targetMonth}!`
+      });
+
+      renderMoneyView();
+    }
+
     function removeFutureAnchor(id) {
       let anchors = JSON.parse(localStorage.getItem('voldaan_future_anchors') || '[]');
       anchors = anchors.filter(a => a.id !== id);
@@ -1506,10 +1795,17 @@
       renderMoneyView();
     }
 
+    // --- HOOFD RENDER LOGICA VOOR GELD-KOMPAS ---
     function renderMoneyView() {
+      // 1. IMPULS WACHTKAMER
       let impulseItems = JSON.parse(localStorage.getItem('voldaan_impulse_items') || '[]');
+      const impulseSort = document.getElementById('impulse-sort').value;
       const impulseContainer = document.getElementById('impulse-list');
       impulseContainer.innerHTML = '';
+
+      if (impulseSort === 'NEWEST') impulseItems.sort((a,b) => b.id - a.id);
+      else if (impulseSort === 'OLDEST') impulseItems.sort((a,b) => a.id - b.id);
+      else if (impulseSort === 'PRICE_HIGH') impulseItems.sort((a,b) => (b.rawAmount || 0) - (a.rawAmount || 0));
 
       if (impulseItems.length === 0) {
         impulseContainer.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted);">De wachtkamer is leeg. Rust in je hoofd!</span>';
@@ -1522,45 +1818,73 @@
               <strong>${item.name}</strong> ${item.price ? `<span style="color:var(--accent-primary); font-weight:600;">(${item.price})</span>` : ''}
               <span class="time-badge">Geparkeerd op ${item.date} — Neem 24u bedenktijd</span>
             </div>
-            <div style="display:flex; gap:6px;">
-              <button class="btn btn-small" style="background-color:#38A169; color:white; font-size:0.75rem;" onclick="removeImpulseItem(${item.id}, true)">🍃 Laten schieten</button>
-              <button style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.8rem;" onclick="removeImpulseItem(${item.id}, false)">✕</button>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <button class="btn btn-small" style="background-color:#38A169; color:white; font-size:0.75rem;" onclick="archiveImpulseItem(${item.id}, true)">🍃 Laten schieten</button>
+              <button class="btn btn-secondary btn-small" style="font-size:0.75rem; padding:4px 6px;" onclick="editImpulseItem(${item.id})">✏️</button>
+              <button class="btn btn-secondary btn-small" style="font-size:0.75rem; padding:4px 6px;" onclick="archiveImpulseItem(${item.id}, false)">📦</button>
+              <button style="background:none; border:none; color:#E53E3E; cursor:pointer; font-size:0.9rem;" onclick="removeImpulseItem(${item.id})">✕</button>
             </div>
           `;
           impulseContainer.appendChild(div);
         });
       }
 
+      // 2. VASTE LASTEN
       let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
+      const billsFilter = document.getElementById('bills-filter').value;
       const billsContainer = document.getElementById('fixed-bills-list');
       billsContainer.innerHTML = '';
 
-      bills.forEach(bill => {
-        const div = document.createElement('div');
-        div.className = `item-card ${bill.paid ? 'done' : ''}`;
-        div.innerHTML = `
-          <span style="cursor:pointer;" onclick="toggleFixedBill(${bill.id})">${bill.paid ? '✅' : '⚪'} ${bill.name}</span>
-          <button style="background:none; border:none; color:#E53E3E; cursor:pointer;" onclick="removeFixedBill(${bill.id})">✕</button>
-        `;
-        billsContainer.appendChild(div);
-      });
+      if (billsFilter === 'UNPAID') bills = bills.filter(b => !b.paid);
+      else if (billsFilter === 'PAID') bills = bills.filter(b => b.paid);
 
+      if (bills.length === 0) {
+        billsContainer.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted);">Geen vaste lasten gevonden in deze filter.</span>';
+      } else {
+        bills.forEach(bill => {
+          const div = document.createElement('div');
+          div.className = `item-card ${bill.paid ? 'done' : ''}`;
+          div.innerHTML = `
+            <span style="cursor:pointer;" onclick="toggleFixedBill(${bill.id})">${bill.paid ? '✅' : '⚪'} ${bill.name}</span>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <button class="btn btn-secondary btn-small" style="font-size:0.75rem; padding:4px 6px;" onclick="editFixedBill(${bill.id})">✏️</button>
+              <button class="btn btn-secondary btn-small" style="font-size:0.75rem; padding:4px 6px;" onclick="archiveFixedBill(${bill.id})">📦</button>
+              <button style="background:none; border:none; color:#E53E3E; cursor:pointer; font-size:0.9rem;" onclick="removeFixedBill(${bill.id})">✕</button>
+            </div>
+          `;
+          billsContainer.appendChild(div);
+        });
+      }
+
+      // 3. TOEKOMST ANKERS
       let anchors = JSON.parse(localStorage.getItem('voldaan_future_anchors') || '[]');
+      const anchorsFilter = document.getElementById('anchors-filter').value;
       const anchorsContainer = document.getElementById('future-anchors-list');
       anchorsContainer.innerHTML = '';
 
-      anchors.forEach(anchor => {
-        const div = document.createElement('div');
-        div.className = `item-card ${anchor.saved ? 'done' : ''}`;
-        div.innerHTML = `
-          <div style="cursor:pointer;" onclick="toggleFutureAnchor(${anchor.id})">
-            <span>${anchor.saved ? '✅' : '🔮'} <strong>${anchor.name}</strong></span>
-            <span class="time-badge">Doel: €${anchor.amount} (${anchor.targetMonth})</span>
-          </div>
-          <button style="background:none; border:none; color:#E53E3E; cursor:pointer;" onclick="removeFutureAnchor(${anchor.id})">✕</button>
-        `;
-        anchorsContainer.appendChild(div);
-      });
+      if (anchorsFilter === 'ACTIVE') anchors = anchors.filter(a => !a.saved);
+      else if (anchorsFilter === 'SAVED') anchors = anchors.filter(a => a.saved);
+
+      if (anchors.length === 0) {
+        anchorsContainer.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted);">Geen potjes gevonden in deze filter.</span>';
+      } else {
+        anchors.forEach(anchor => {
+          const div = document.createElement('div');
+          div.className = `item-card ${anchor.saved ? 'done' : ''}`;
+          div.innerHTML = `
+            <div style="cursor:pointer;" onclick="toggleFutureAnchor(${anchor.id})">
+              <span>${anchor.saved ? '✅' : '🔮'} <strong>${anchor.name}</strong></span>
+              <span class="time-badge">Doel: €${anchor.amount} (${anchor.targetMonth})</span>
+            </div>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <button class="btn btn-secondary btn-small" style="font-size:0.75rem; padding:4px 6px;" onclick="editFutureAnchor(${anchor.id})">✏️</button>
+              <button class="btn btn-secondary btn-small" style="font-size:0.75rem; padding:4px 6px;" onclick="archiveFutureAnchor(${anchor.id})">📦</button>
+              <button style="background:none; border:none; color:#E53E3E; cursor:pointer; font-size:0.9rem;" onclick="removeFutureAnchor(${anchor.id})">✕</button>
+            </div>
+          `;
+          anchorsContainer.appendChild(div);
+        });
+      }
     }
 
     window.addEventListener('click', () => {
