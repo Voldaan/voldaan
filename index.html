@@ -88,7 +88,7 @@
 
     .container {
       width: 100%;
-      max-width: 520px;
+      max-width: 540px;
       display: flex;
       flex-direction: column;
       gap: 18px;
@@ -207,20 +207,19 @@
       font-weight: 600;
     }
 
-    textarea, input[type="text"] {
+    textarea, input[type="text"], select {
       width: 100%;
       background: var(--input-bg);
       color: var(--text-main);
       border: 1px solid var(--input-border);
       border-radius: 10px;
-      padding: 12px;
+      padding: 10px 12px;
       font-size: 0.9rem;
       margin-bottom: 10px;
-      resize: vertical;
       outline: none;
     }
 
-    textarea:focus, input[type="text"]:focus {
+    textarea:focus, input[type="text"]:focus, select:focus {
       border-color: var(--accent-primary);
     }
 
@@ -247,6 +246,120 @@
       border-color: var(--green-border);
       color: var(--green-text);
       text-decoration: line-through;
+    }
+
+    .time-badge {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      display: block;
+      margin-top: 2px;
+    }
+
+    /* POST-IT STIJLEN FÜR IDEEËNKLUIS */
+    .postit-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .postit {
+      background-color: #FEF08A;
+      color: #1E293B;
+      border-radius: 4px;
+      padding: 16px 14px 12px 14px;
+      box-shadow: 2px 4px 12px rgba(0,0,0,0.12);
+      position: relative;
+      transform: rotate(-1deg);
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 120px;
+    }
+
+    body.dark-theme .postit {
+      background-color: #D97706;
+      color: #FFFBEB;
+    }
+
+    .postit:nth-child(even) {
+      transform: rotate(1.5deg);
+    }
+
+    .postit:hover {
+      transform: scale(1.02) rotate(0deg);
+      z-index: 10;
+    }
+
+    .postit-pin {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.2rem;
+      filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.3));
+    }
+
+    .postit-content {
+      font-size: 0.92rem;
+      line-height: 1.35;
+      font-weight: 500;
+      word-break: break-word;
+      margin-top: 4px;
+    }
+
+    .postit-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-top: 10px;
+      font-size: 0.75rem;
+      opacity: 0.85;
+      border-top: 1px dashed rgba(0,0,0,0.15);
+      padding-top: 6px;
+    }
+
+    .postit-menu-btn {
+      background: none;
+      border: none;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      color: inherit;
+      padding: 0 4px;
+    }
+
+    .postit-menu {
+      position: absolute;
+      bottom: 30px;
+      right: 10px;
+      background: var(--card-bg);
+      color: var(--text-main);
+      border: 1px solid var(--input-border);
+      box-shadow: var(--shadow);
+      border-radius: 8px;
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 20;
+      width: 170px;
+    }
+
+    .postit-menu button {
+      background: none;
+      border: none;
+      text-align: left;
+      padding: 6px 8px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      color: var(--text-main);
+      border-radius: 4px;
+    }
+
+    .postit-menu button:hover {
+      background-color: var(--input-border);
     }
 
     .stats-grid {
@@ -303,6 +416,15 @@
       text-align: center;
     }
 
+    .filter-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+
     .btn-group {
       display: flex;
       gap: 6px;
@@ -311,7 +433,7 @@
     }
 
     .hidden {
-      display: none;
+      display: none !important;
     }
   </style>
 </head>
@@ -385,7 +507,7 @@
         <button class="btn" onclick="savePact()">Leg vast voor morgen</button>
       </div>
 
-      <!-- PACTEN ARCHIEF (HISTORIE) -->
+      <!-- PACTEN ARCHIEF -->
       <div id="pact-history-box" class="hidden" style="margin-top: 14px; background: var(--item-bg); padding: 12px; border-radius: 10px; border: 1px solid var(--input-border);">
         <strong style="font-size: 0.85rem;">📜 Jouw Pacten Historie</strong>
         <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">Afspraken die je met jezelf bent nagekomen:</p>
@@ -395,29 +517,68 @@
 
     <!-- 🎯 3. HET ZACHTE PLANBORD -->
     <div class="card">
-      <h2>🎯 Zacht Planbord</h2>
-      <p class="subtitle">Kies maximaal 2 of 3 behapbare acties voor nu. Geen deadlines, geen druk.</p>
+      <h2>
+        🎯 Zacht Planbord
+        <button class="btn btn-secondary btn-small" onclick="toggleTaskArchive()">📜 Taken Archief</button>
+      </h2>
+      <p class="subtitle">Kies maximaal 2 of 3 behapbare acties voor nu. Oudere voltooide acties verhuizen automatisch naar het archief.</p>
 
       <div style="display: flex; gap: 8px;">
         <input type="text" id="task-input" placeholder="Kleine actie voor nu..." style="margin-bottom: 0;">
         <button class="btn btn-small" onclick="addTask()">Toevoegen</button>
       </div>
 
+      <!-- ACTIEVE EN RECENTE TAKEN -->
       <div id="tasks-list" class="item-list"></div>
+
+      <!-- TAKEN ARCHIEF -->
+      <div id="task-archive-box" class="hidden" style="margin-top: 14px; background: var(--item-bg); padding: 12px; border-radius: 10px; border: 1px solid var(--input-border);">
+        <strong style="font-size: 0.85rem;">📜 Voltooide Taken Archief</strong>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">Eerder afgevinkte acties:</p>
+        <div id="task-archive-list" class="item-list"></div>
+      </div>
     </div>
 
-    <!-- 💡 4. DE IDEEËNKLUIS -->
+    <!-- 💡 4. DE IDEEËNKLUIS (POST-ITS) -->
     <div class="card">
       <h2>
-        🗃️ Ideeënkluis
+        📌 Ideeënkluis
         <button class="btn btn-secondary btn-small" onclick="grabRandomIdea()">🎲 Grabbelton</button>
       </h2>
-      <p class="subtitle">Vol met gedachten? Schrijf ze van je af zodat je ze niet vergeet, maar ook niet direct hoeft uit te voeren.</p>
+      <p class="subtitle">Schrijf je gedachten als Post-its van je af. Organiseer ze per categorie of stuur ze door naar je Planbord.</p>
 
+      <!-- INVOER HIER -->
       <textarea id="idea-input" rows="2" placeholder="Typ een willekeurig idee of wilde gedachte..."></textarea>
-      <button class="btn btn-secondary" onclick="addIdea()">Veilig opslaan in kluis</button>
+      
+      <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+        <select id="idea-category-select" style="margin-bottom: 0; flex: 1;">
+          <option value="Algemeen">📂 Categorie: Algemeen</option>
+          <option value="Creatief">🎨 Creatief</option>
+          <option value="Werk / Studie">💼 Werk / Studie</option>
+          <option value="Privé / Thuis">🏠 Privé / Thuis</option>
+        </select>
+        <button class="btn btn-secondary btn-small" onclick="addNewCategoryPrompt()">+ Cat</button>
+      </div>
 
-      <div id="ideas-list" class="item-list"></div>
+      <button class="btn btn-secondary" onclick="addIdea()">Prik op het Bord 📌</button>
+
+      <!-- FILTER & SORTEER BALK -->
+      <div class="filter-bar">
+        <select id="filter-category" onchange="renderIdeas()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 6px;">
+          <option value="ALL">🔍 Alle categorieën</option>
+        </select>
+
+        <select id="sort-ideas" onchange="renderIdeas()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 6px;">
+          <option value="NEWEST">⏱️ Nieuwste eerst</option>
+          <option value="OLDEST">⏳ Oudste eerst</option>
+          <option value="SHUFFLE">🎲 Alles door elkaar</option>
+        </select>
+
+        <button class="btn btn-secondary btn-small" onclick="toggleIdeaDates()" id="toggle-dates-btn">🕒 Datum: Aan</button>
+      </div>
+
+      <!-- POST-IT BORD -->
+      <div id="ideas-postit-grid" class="postit-grid"></div>
     </div>
 
     <!-- 📊 5. ZACHTE INZICHTEN & CORRELATIES -->
@@ -450,7 +611,7 @@
     <!-- 💜 6. BUDDY PULSE -->
     <div class="buddy-pulse">
       <strong style="font-size: 0.9rem;">💜 Zachte Buddy-Pulse</strong>
-      <p style="font-size: 0.82rem; margin-top: 4px; opacity: 0.9;">Er zijn nu 42 anderen ook rustig op hun eigen tempo bezig.</p>
+      <p style="font-size: 0.82rem; margin-top: 4px; opacity: 0.9;">Er zijn nu 45 anderen ook rustig op hun eigen tempo bezig.</p>
       <button class="btn" style="margin-top: 10px; background-color: var(--purple-text); color: white; font-size: 0.82rem; padding: 8px 14px;" onclick="triggerConfetti(); alert('❤️ Signaal verzonden! Je hebt anoniem een schouderklopje gestuurd naar een lotgenoot.');">Stuur een anoniem schouderklopje</button>
     </div>
 
@@ -487,7 +648,7 @@
             active = true;
             p.x += p.vx;
             p.y += p.vy;
-            p.vy += 0.25; // zwaartekracht
+            p.vy += 0.25;
             p.life -= 2;
             ctx.fillStyle = p.color;
             ctx.fillRect(p.x, p.y, p.size, p.size);
@@ -499,7 +660,7 @@
       render();
     }
 
-    // --- THEMA SCHAKELER (DONKERE MODUS) ---
+    // --- THEMA SCHAKELER ---
     function toggleTheme() {
       document.body.classList.toggle('dark-theme');
       const isDark = document.body.classList.contains('dark-theme');
@@ -515,32 +676,21 @@
       }
     }
 
-    // --- BREIN HACKS BIBLIOTHEEK ---
+    // --- BREIN HACKS ---
     const brainTips = [
-      "De 2-Minuten Regel: Kost een taak minder dan 2 minuten? Doe het meteen of laat het bewust los. Geen twijfelruimte laten.",
-      "Body Doubling: Werken in het bijzijn van iemand anders (fysiek of online) verlaagt de drempel om te starten enorm.",
-      "Verlaag de wrijving: Wil je morgen iets creatiefs doen of sporten? Zet de spullen alvast in het zicht.",
-      "Dopamine-stapelen: Koppel een saaie taak (zoals opruimen) aan iets fijns (zoals je favoriete podcast).",
-      "Slecht beginnen is prima: Geef jezelf toestemming om de eerste 5 minuten een hele slechte poging te doen.",
-      "Maak het visueel: Als iets uit het zicht is, verdwijnt het uit je werkgeheugen. Houd belangrijke spullen in het zicht.",
-      "Gebruik een eierwekker: Zien hoeveel tijd er 'verstrijkt' (fysiek) werkt rustgevender dan een digitale klok.",
-      "Nee zeggen is ja zeggen tegen rust: Elke 'ja' tegen een ander is een onbewuste 'nee' tegen jouw eigen energie."
+      "De 2-Minuten Regel: Kost een taak minder dan 2 minuten? Doe het meteen of laat het bewust los.",
+      "Body Doubling: Werken in het bijzijn van iemand anders verlaagt de drempel om te starten enorm.",
+      "Verlaag de wrijving: Wil je morgen iets doen? Zet de spullen alvast in het zicht.",
+      "Dopamine-stapelen: Koppel een saaie taak aan iets fijns (zoals een leuke podcast).",
+      "Slecht beginnen is prima: Geef jezelf toestemming om de eerste 5 minuten een slechte poging te doen."
     ];
 
     let currentTipIndex = 0;
+    function renderTip() { document.getElementById('tip-text').innerText = brainTips[currentTipIndex]; }
+    function nextTip() { currentTipIndex = (currentTipIndex + 1) % brainTips.length; renderTip(); }
 
-    function renderTip() {
-      document.getElementById('tip-text').innerText = brainTips[currentTipIndex];
-    }
-
-    function nextTip() {
-      currentTipIndex = (currentTipIndex + 1) % brainTips.length;
-      renderTip();
-    }
-
-    // --- TIJDLOZE START & CORRELATIES ---
+    // --- START & STATS ---
     let selectedEnergyState = '';
-
     function selectEnergy(el, energy) {
       document.querySelectorAll('.energy-btn').forEach(btn => btn.classList.remove('selected'));
       el.classList.add('selected');
@@ -565,29 +715,18 @@
     }
 
     function updateInsight() {
-      const starts = parseInt(localStorage.getItem('voldaan_stat_starts') || '0');
       const pacts = parseInt(localStorage.getItem('voldaan_stat_pacts') || '0');
       const tasks = parseInt(localStorage.getItem('voldaan_stat_tasks') || '0');
-      const lastEnergy = localStorage.getItem('voldaan_last_energy');
-
       let text = "Je bouwt stap voor stap aan je eigen ritme. Er is geen haast!";
-
-      if (pacts > 0 && starts > 0) {
-        text = `Je hebt al ${pacts}x een Avond-pact afgerond! Zachte voorbereiding geeft je brein merkbaar meer rust.`;
-      } else if (lastEnergy === 'Wazig / Moe' && tasks > 0) {
-        text = `Zelfs op opstartdagen waarop je je 'Wazig' voelde, heb je toch acties afgerond. Dat is echte veerkracht!`;
-      } else if (tasks >= 3) {
-        text = `Je hebt al ${tasks} kleine acties afgevinkt zonder prestatiedruk. Lekker bezig!`;
-      }
-
+      if (pacts > 0) text = `Je hebt al ${pacts}x een Avond-pact afgerond! Zachte voorbereiding geeft je brein merkbaar meer rust.`;
+      else if (tasks >= 3) text = `Je hebt al ${tasks} kleine acties afgevinkt zonder prestatiedruk. Lekker bezig!`;
       document.getElementById('insight-text').innerText = text;
     }
 
-    // --- AVOND PACT BEHEER & WHATSAPP SHARE ---
+    // --- AVOND PACT BEHEER ---
     function savePact() {
       const input = document.getElementById('pact-input').value;
       if (!input.trim()) return;
-      
       localStorage.setItem('voldaan_pact', input);
       document.getElementById('pact-input').value = '';
       renderPact();
@@ -608,22 +747,19 @@
     function sharePactWhatsApp() {
       const pactText = localStorage.getItem('voldaan_pact');
       if (!pactText) return;
-      const msg = encodeURIComponent(`Mijn zachte afspraak met mezelf voor morgen is: "${pactText}". Zachte aanmoediging is altijd welkom! ☕ (gemaakt via Voldaan)`);
+      const msg = encodeURIComponent(`Mijn zachte afspraak met mezelf voor morgen is: "${pactText}". Zachte aanmoediging is altijd welkom! ☕ (via Voldaan)`);
       window.open(`https://wa.me/?text=${msg}`, '_blank');
     }
 
     function completePact() {
       const pactText = localStorage.getItem('voldaan_pact');
       if (!pactText) return;
-
       let history = JSON.parse(localStorage.getItem('voldaan_pact_history') || '[]');
-      const dateStr = new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
+      const dateStr = new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
       history.unshift({ text: pactText, date: dateStr, status: '✅ Voltooid' });
       localStorage.setItem('voldaan_pact_history', JSON.stringify(history));
-
       let pactsCount = parseInt(localStorage.getItem('voldaan_stat_pacts') || '0') + 1;
       localStorage.setItem('voldaan_stat_pacts', pactsCount);
-
       localStorage.removeItem('voldaan_pact');
       renderPact();
       renderPactHistory();
@@ -633,8 +769,7 @@
     }
 
     function renegotiatePact() {
-      const smaller = "Alleen 1 glas water drinken en rustig ademhalen";
-      localStorage.setItem('voldaan_pact', smaller);
+      localStorage.setItem('voldaan_pact', "Alleen 1 glas water drinken en rustig ademhalen");
       renderPact();
     }
 
@@ -655,131 +790,311 @@
     }
 
     function togglePactHistory() {
-      const box = document.getElementById('pact-history-box');
-      box.classList.toggle('hidden');
+      document.getElementById('pact-history-box').classList.toggle('hidden');
       renderPactHistory();
     }
 
     function renderPactHistory() {
       let history = JSON.parse(localStorage.getItem('voldaan_pact_history') || '[]');
       const container = document.getElementById('pact-history-list');
-      container.innerHTML = '';
-
-      if (history.length === 0) {
-        container.innerHTML = '<span style="font-size:0.8rem; color:var(--text-muted);">Nog geen gearchiveerde pacten.</span>';
-        return;
-      }
-
+      container.innerHTML = history.length === 0 ? '<span style="font-size:0.8rem; color:var(--text-muted);">Nog geen gearchiveerde pacten.</span>' : '';
       history.forEach((item) => {
         const div = document.createElement('div');
         div.className = 'item-card';
         div.style.fontSize = '0.82rem';
-        div.innerHTML = `
-          <span>${item.status} <strong>${item.text}</strong></span>
-          <span style="color:var(--text-muted); font-size:0.75rem;">${item.date}</span>
-        `;
+        div.innerHTML = `<span>${item.status} <strong>${item.text}</strong></span><span class="time-badge">${item.date}</span>`;
         container.appendChild(div);
       });
     }
 
-    // --- ZACHT PLANBORD ---
-    function addTask() {
-      const input = document.getElementById('task-input');
-      if (!input.value.trim()) return;
+    // --- ZACHT PLANBORD (MET SLIM ARCHIEF & TIJDSSTEMPEL) ---
+    function addTask(textInput) {
+      const input = textInput || document.getElementById('task-input').value;
+      if (!input.trim()) return;
 
       let tasks = JSON.parse(localStorage.getItem('voldaan_tasks') || '[]');
-      tasks.push({ text: input.value, done: false });
+      const nowStr = new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+      
+      tasks.push({
+        id: Date.now(),
+        text: input,
+        done: false,
+        created: nowStr,
+        doneAt: null
+      });
+
       localStorage.setItem('voldaan_tasks', JSON.stringify(tasks));
-      input.value = '';
+      if (!textInput) document.getElementById('task-input').value = '';
       renderTasks();
     }
 
-    function toggleTask(index) {
+    function toggleTask(id) {
       let tasks = JSON.parse(localStorage.getItem('voldaan_tasks') || '[]');
-      tasks[index].done = !tasks[index].done;
-      
-      if (tasks[index].done) {
-        let doneCount = parseInt(localStorage.getItem('voldaan_stat_tasks') || '0') + 1;
-        localStorage.setItem('voldaan_stat_tasks', doneCount);
-        triggerConfetti();
+      const idx = tasks.findIndex(t => t.id === id);
+      if (idx !== -1) {
+        tasks[idx].done = !tasks[idx].done;
+        if (tasks[idx].done) {
+          tasks[idx].doneAt = new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+          let doneCount = parseInt(localStorage.getItem('voldaan_stat_tasks') || '0') + 1;
+          localStorage.setItem('voldaan_stat_tasks', doneCount);
+          triggerConfetti();
+        }
+        localStorage.setItem('voldaan_tasks', JSON.stringify(tasks));
+        renderTasks();
+        updateStats();
+        updateInsight();
       }
-      
-      localStorage.setItem('voldaan_tasks', JSON.stringify(tasks));
-      renderTasks();
-      updateStats();
-      updateInsight();
     }
 
-    function removeTask(index) {
+    function removeTask(id) {
       let tasks = JSON.parse(localStorage.getItem('voldaan_tasks') || '[]');
-      tasks.splice(index, 1);
+      tasks = tasks.filter(t => t.id !== id);
       localStorage.setItem('voldaan_tasks', JSON.stringify(tasks));
+      renderTasks();
+    }
+
+    function toggleTaskArchive() {
+      document.getElementById('task-archive-box').classList.toggle('hidden');
       renderTasks();
     }
 
     function renderTasks() {
       let tasks = JSON.parse(localStorage.getItem('voldaan_tasks') || '[]');
       const container = document.getElementById('tasks-list');
+      const archiveContainer = document.getElementById('task-archive-list');
       container.innerHTML = '';
+      archiveContainer.innerHTML = '';
 
-      tasks.forEach((task, index) => {
+      const activeTasks = tasks.filter(t => !t.done);
+      const doneTasks = tasks.filter(t => t.done).sort((a,b) => b.id - a.id);
+
+      // Houd alleen de méést recent voltooide taak op het actieve bord
+      const recentDone = doneTasks.slice(0, 1);
+      const archivedDone = doneTasks.slice(1);
+
+      const mainBoardTasks = [...activeTasks, ...recentDone];
+
+      if (mainBoardTasks.length === 0) {
+        container.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted);">Geen actieve taken op je bord. Neem rust!</span>';
+      }
+
+      mainBoardTasks.forEach((task) => {
         const div = document.createElement('div');
         div.className = `item-card ${task.done ? 'done' : ''}`;
         div.innerHTML = `
-          <span style="cursor:pointer;" onclick="toggleTask(${index})">${task.done ? '✅' : '⚪'} ${task.text}</span>
-          <button style="background:none; border:none; color:#E53E3E; cursor:pointer;" onclick="removeTask(${index})">✕</button>
+          <div>
+            <span style="cursor:pointer;" onclick="toggleTask(${task.id})">${task.done ? '✅' : '⚪'} ${task.text}</span>
+            <span class="time-badge">${task.done ? 'Voltooid: ' + task.doneAt : 'Aangemaakt: ' + task.created}</span>
+          </div>
+          <button style="background:none; border:none; color:#E53E3E; cursor:pointer;" onclick="removeTask(${task.id})">✕</button>
         `;
         container.appendChild(div);
       });
+
+      // Archief invullen
+      if (archivedDone.length === 0) {
+        archiveContainer.innerHTML = '<span style="font-size:0.8rem; color:var(--text-muted);">Nog geen oudere voltooide taken in het archief.</span>';
+      } else {
+        archivedDone.forEach((task) => {
+          const div = document.createElement('div');
+          div.className = 'item-card done';
+          div.style.fontSize = '0.82rem';
+          div.innerHTML = `
+            <div>
+              <span>✅ ${task.text}</span>
+              <span class="time-badge">Voltooid: ${task.doneAt}</span>
+            </div>
+            <button style="background:none; border:none; color:#E53E3E; cursor:pointer;" onclick="removeTask(${task.id})">✕</button>
+          `;
+          archiveContainer.appendChild(div);
+        });
+      }
     }
 
-    // --- IDEEËNKLUIS ---
+    // --- IDEEËNKLUIS (POST-ITS MET DRIE PUNTJES MENU) ---
+    let openMenuId = null;
+
+    function getCategories() {
+      return JSON.parse(localStorage.getItem('voldaan_categories') || '["Algemeen", "Creatief", "Werk / Studie", "Privé / Thuis"]');
+    }
+
+    function addNewCategoryPrompt() {
+      const newCat = prompt("Voer de naam van een nieuwe categorie in:");
+      if (newCat && newCat.trim()) {
+        let cats = getCategories();
+        if (!cats.includes(newCat.trim())) {
+          cats.push(newCat.trim());
+          localStorage.setItem('voldaan_categories', JSON.stringify(cats));
+          updateCategoryDropdowns();
+        }
+      }
+    }
+
+    function updateCategoryDropdowns() {
+      const cats = getCategories();
+      const addSelect = document.getElementById('idea-category-select');
+      const filterSelect = document.getElementById('filter-category');
+
+      addSelect.innerHTML = '';
+      filterSelect.innerHTML = '<option value="ALL">🔍 Alle categorieën</option>';
+
+      cats.forEach(c => {
+        addSelect.innerHTML += `<option value="${c}">${c}</option>`;
+        filterSelect.innerHTML += `<option value="${c}">${c}</option>`;
+      });
+    }
+
     function addIdea() {
       const input = document.getElementById('idea-input');
+      const catSelect = document.getElementById('idea-category-select');
       if (!input.value.trim()) return;
 
       let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
-      ideas.push(input.value);
+      const dateStr = new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+      ideas.push({
+        id: Date.now(),
+        text: input.value,
+        category: catSelect.value || 'Algemeen',
+        created: dateStr
+      });
+
       localStorage.setItem('voldaan_ideas', JSON.stringify(ideas));
       input.value = '';
       renderIdeas();
     }
 
-    function renderIdeas() {
-      let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
-      const container = document.getElementById('ideas-list');
-      container.innerHTML = '';
-
-      ideas.forEach((idea, index) => {
-        const div = document.createElement('div');
-        div.className = 'item-card';
-        div.innerHTML = `
-          <span>💡 ${idea}</span>
-          <button style="background:none; border:none; color:#E53E3E; cursor:pointer;" onclick="removeIdea(${index})">✕</button>
-        `;
-        container.appendChild(div);
-      });
+    function toggleIdeaDates() {
+      let show = localStorage.getItem('voldaan_show_idea_dates') !== 'false';
+      localStorage.setItem('voldaan_show_idea_dates', !show);
+      document.getElementById('toggle-dates-btn').innerText = !show ? '🕒 Datum: Aan' : '🕒 Datum: Uit';
+      renderIdeas();
     }
 
-    function removeIdea(index) {
+    function togglePostitMenu(id, e) {
+      e.stopPropagation();
+      openMenuId = (openMenuId === id) ? null : id;
+      renderIdeas();
+    }
+
+    function moveIdeaToPlanbord(id) {
       let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
-      ideas.splice(index, 1);
+      const idea = ideas.find(i => i.id === id);
+      if (idea) {
+        addTask(idea.text);
+        alert(`🎯 "${idea.text}" is toegevoegd aan je Zacht Planbord!`);
+      }
+      openMenuId = null;
+    }
+
+    function moveIdeaToPact(id) {
+      let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
+      const idea = ideas.find(i => i.id === id);
+      if (idea) {
+        localStorage.setItem('voldaan_pact', idea.text);
+        renderPact();
+        alert(`🌙 "${idea.text}" is ingesteld als jouw Avond-pact voor morgen!`);
+      }
+      openMenuId = null;
+    }
+
+    function changeIdeaCategory(id) {
+      const cats = getCategories();
+      const choice = prompt(`Kies een categorie:\n${cats.join(', ')}`);
+      if (choice && cats.includes(choice.trim())) {
+        let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
+        const idx = ideas.findIndex(i => i.id === id);
+        if (idx !== -1) {
+          ideas[idx].category = choice.trim();
+          localStorage.setItem('voldaan_ideas', JSON.stringify(ideas));
+          renderIdeas();
+        }
+      }
+      openMenuId = null;
+    }
+
+    function removeIdea(id) {
+      let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
+      ideas = ideas.filter(i => i.id !== id);
       localStorage.setItem('voldaan_ideas', JSON.stringify(ideas));
       renderIdeas();
+    }
+
+    function renderIdeas() {
+      let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
+      const filterCat = document.getElementById('filter-category').value;
+      const sortVal = document.getElementById('sort-ideas').value;
+      const showDates = localStorage.getItem('voldaan_show_idea_dates') !== 'false';
+
+      // Filteren
+      if (filterCat !== 'ALL') {
+        ideas = ideas.filter(i => i.category === filterCat);
+      }
+
+      // Sorteren
+      if (sortVal === 'NEWEST') {
+        ideas.sort((a,b) => b.id - a.id);
+      } else if (sortVal === 'OLDEST') {
+        ideas.sort((a,b) => a.id - b.id);
+      } else if (sortVal === 'SHUFFLE') {
+        ideas.sort(() => Math.random() - 0.5);
+      }
+
+      const grid = document.getElementById('ideas-postit-grid');
+      grid.innerHTML = '';
+
+      if (ideas.length === 0) {
+        grid.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted); grid-column: 1/-1;">Geen Post-its gevonden in deze categorie.</span>';
+        return;
+      }
+
+      ideas.forEach((idea) => {
+        const postit = document.createElement('div');
+        postit.className = 'postit';
+
+        const isMenuOpen = openMenuId === idea.id;
+
+        postit.innerHTML = `
+          <div class="postit-pin">📌</div>
+          <div class="postit-content">${idea.text}</div>
+          <div class="postit-footer">
+            <span>🏷️ ${idea.category} ${showDates ? '<br>🕒 ' + idea.created : ''}</span>
+            <button class="postit-menu-btn" onclick="togglePostitMenu(${idea.id}, event)">⋮</button>
+          </div>
+          ${isMenuOpen ? `
+            <div class="postit-menu" onclick="event.stopPropagation()">
+              <button onclick="moveIdeaToPlanbord(${idea.id})">🎯 Naar Planbord</button>
+              <button onclick="moveIdeaToPact(${idea.id})">🌙 Als Avond-pact</button>
+              <button onclick="changeIdeaCategory(${idea.id})">🏷️ Categorie wijzigen</button>
+              <button onclick="removeIdea(${idea.id})" style="color:#E53E3E;">🗑️ Verwijderen</button>
+            </div>
+          ` : ''}
+        `;
+        grid.appendChild(postit);
+      });
     }
 
     function grabRandomIdea() {
       let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
       if (ideas.length === 0) {
-        alert("Je Ideeënkluis is nog leeg! Voeg eerst een paar gedachten toe.");
+        alert("Je Ideeënkluis is nog leeg! Prik eerst een paar gedachten op de muur.");
         return;
       }
       const randomIdea = ideas[Math.floor(Math.random() * ideas.length)];
-      alert(`🎲 GRABBELTON HERINNERING:\n\n"${randomIdea}"\n\nWil je hier vandaag iets mee, of laat je 'm nog lekker in de kluis?`);
+      alert(`🎲 GRABBELTON POST-IT:\n\n"${randomIdea.text}" (${randomIdea.category})\n\nWil je hier vandaag iets mee op je Planbord?`);
     }
+
+    // Sluit drie-puntjes menu bij op scherm klikken
+    window.addEventListener('click', () => {
+      if (openMenuId !== null) {
+        openMenuId = null;
+        renderIdeas();
+      }
+    });
 
     // --- INIT ---
     initTheme();
+    updateCategoryDropdowns();
     renderTip();
     renderPact();
     renderTasks();
