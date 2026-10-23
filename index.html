@@ -33,7 +33,7 @@
       --green-border: #C6F6D5;
       --green-text: #22543D;
       --input-bg: #FFFFFF;
-      --input-border: #CBD5E0; /* Subtiel iets meer contrast voor strakke randen */
+      --input-border: #CBD5E0;
       --item-bg: #F7FAFC;
       --radius: 16px;
       --shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
@@ -165,7 +165,6 @@
       box-shadow: var(--shadow);
     }
 
-    /* UNIFORME RANDEN ROND ALLE KAARTEN */
     .card {
       background: var(--card-bg);
       border-radius: var(--radius);
@@ -270,7 +269,6 @@
       margin-top: 10px;
     }
 
-    /* UNIFORME RANDEN ROND ALLE ITEM CARDS */
     .item-card {
       background: var(--item-bg);
       padding: 12px;
@@ -700,10 +698,22 @@
         </div>
       </div>
 
-      <div class="buddy-pulse">
+      <div class="buddy-pulse" style="margin-bottom: 18px;">
         <strong style="font-size: 0.9rem;">💜 Zachte Buddy-Pulse</strong>
         <p style="font-size: 0.82rem; margin-top: 4px; opacity: 0.9;">Er zijn nu 54 anderen ook rustig op hun eigen tempo bezig.</p>
         <button class="btn" style="margin-top: 10px; background-color: var(--purple-text); color: white; font-size: 0.82rem; padding: 8px 14px;" onclick="triggerConfetti(); alert('❤️ Signaal verzonden! Je hebt anoniem een schouderklopje gestuurd naar een lotgenoot.');">Stuur een anoniem schouderklopje</button>
+      </div>
+
+      <!-- GEGEVENSBEHEER & BACKUP CARD -->
+      <div class="card">
+        <h2>💾 Gegevensbeheer & Backup</h2>
+        <p class="subtitle">Bewaar jouw opgebouwde progressie veilig op je eigen toestel.</p>
+
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="btn btn-secondary btn-small" style="flex: 1;" onclick="exportBackupData()">📥 Exporteer Backup (JSON)</button>
+          <button class="btn btn-secondary btn-small" style="flex: 1;" onclick="document.getElementById('import-file-input').click()">📤 Importeer Backup</button>
+          <input type="file" id="import-file-input" class="hidden" accept=".json" onchange="importBackupData(event)">
+        </div>
       </div>
 
     </div>
@@ -1128,7 +1138,7 @@
 
   <!-- ==================== MODALS ==================== -->
 
-  <!-- TAKEN ARCHIEF MODAL (MET TERUGZET OPTIE) -->
+  <!-- TAKEN ARCHIEF MODAL -->
   <div id="task-archive-modal" class="modal-overlay hidden" onclick="closeTaskArchiveModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
@@ -1141,7 +1151,7 @@
     </div>
   </div>
 
-  <!-- IDEEËN ARCHIEF MODAL (MET TERUGZET OPTIE) -->
+  <!-- IDEEËN ARCHIEF MODAL -->
   <div id="ideas-archive-modal" class="modal-overlay hidden" onclick="closeIdeasArchiveModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
@@ -1370,6 +1380,81 @@
         else ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
       render();
+    }
+
+    // --- AGENDA (.ICS) EXPORT VOOR TAKEN & PACTEN ---
+    function pushTaskToCalendar(title) {
+      const start = new Date();
+      start.setHours(start.getHours() + 1);
+      const end = new Date(start.getTime() + 30 * 60000);
+
+      const formatDate = (d) => d.toISOString().replace(/-|:|\.\d+/g, '');
+
+      const icsContent = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Voldaan App//NONSGML v1.0//NL',
+        'BEGIN:VEVENT',
+        `SUMMARY:🎯 Voldaan Focus-Taak: ${title}`,
+        `DESCRIPTION:Ingepland via Voldaan. Op jouw eigen tempo!`,
+        `DTSTART:${formatDate(start)}`,
+        `DTEND:${formatDate(end)}`,
+        'END:VEVENT',
+        'END:VCALENDAR'
+      ].join('\r\n');
+
+      const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.setAttribute('download', `Voldaan_Taak.ics`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function pushPactToCalendar() {
+      const pactText = localStorage.getItem('voldaan_pact');
+      if (pactText) pushTaskToCalendar(pactText);
+    }
+
+    // --- BACKUP & EXPORT/IMPORT LOGICA ---
+    function exportBackupData() {
+      let backup = {};
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith('voldaan_')) {
+          backup[key] = localStorage.getItem(key);
+        }
+      }
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backup, null, 2));
+      const dlAnchor = document.createElement('a');
+      dlAnchor.setAttribute("href", dataStr);
+      dlAnchor.setAttribute("download", `Voldaan_Backup_${new Date().toISOString().slice(0,10)}.json`);
+      document.body.appendChild(dlAnchor);
+      dlAnchor.click();
+      dlAnchor.remove();
+    }
+
+    function importBackupData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          Object.keys(imported).forEach(key => {
+            if (key.startsWith('voldaan_')) {
+              localStorage.setItem(key, imported[key]);
+            }
+          });
+          alert("🎉 Backup succesvol geïmporteerd! De pagina wordt opnieuw geladen.");
+          window.location.reload();
+        } catch (err) {
+          alert("❌ Ongeldig backup bestand.");
+        }
+      };
+      reader.readAsText(file);
     }
 
     // --- 🏺 DE TROTS-KLUIS ---
@@ -1859,8 +1944,7 @@
       let tasks = JSON.parse(localStorage.getItem('voldaan_tasks') || '[]');
       const todayTasksBox = document.getElementById('today-tasks-list');
       todayTasksBox.innerHTML = '';
-      
-      // Sorteer actief: nieuwste eerst
+
       const activeTasks = tasks.filter(t => !t.done).sort((a,b) => b.id - a.id);
 
       if (activeTasks.length === 0) {
@@ -2025,19 +2109,27 @@
 
     function closeGrabbeltonModal() { document.getElementById('grabbelton-modal').classList.add('hidden'); }
 
+    // DYNAMISCHE UPDATE VAN ALLE VERSTREKTE REIS-STATISTIEKEN
     function updateStats() {
       document.getElementById('stat-starts').innerText = localStorage.getItem('voldaan_stat_starts') || '0';
       document.getElementById('stat-pacts').innerText = localStorage.getItem('voldaan_stat_pacts') || '0';
       document.getElementById('stat-tasks').innerText = localStorage.getItem('voldaan_stat_tasks') || '0';
       
-      let moneyArchive = JSON.parse(localStorage.getItem('voldaan_money_archive') || '[]');
+      // Exacte Geld-Zeges Koppeling met Trots & KomPAS
+      let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
+      let paidBills = bills.filter(b => b.paid).length;
+      let anchors = JSON.parse(localStorage.getItem('voldaan_future_anchors') || '[]');
+      let savedAnchors = anchors.filter(a => a.saved).length;
       let repayments = JSON.parse(localStorage.getItem('voldaan_ruimte_projects') || '[]').reduce((sum, p) => sum + (p.history ? p.history.filter(h => h.type==='payment').length : 0), 0);
-      document.getElementById('stat-money').innerText = moneyArchive.length + repayments;
+      
+      let marbles = JSON.parse(localStorage.getItem('voldaan_marbles') || '[]');
+      let moneyMarbles = marbles.filter(m => m.category === 'Geld & Aflossingen').length;
+
+      document.getElementById('stat-money').innerText = paidBills + savedAnchors + repayments + moneyMarbles;
 
       let contacts = JSON.parse(localStorage.getItem('voldaan_contacts') || '[]');
       document.getElementById('stat-contacts').innerText = contacts.filter(c => c.lastContacted).length;
 
-      let marbles = JSON.parse(localStorage.getItem('voldaan_marbles') || '[]');
       document.getElementById('stat-marbles').innerText = marbles.length;
 
       updateInsight();
@@ -2193,7 +2285,6 @@
       if (!document.getElementById('task-archive-modal').classList.contains('hidden')) renderTaskArchiveModal();
     }
 
-    // TAKEN ARCHIEF MODAL MET TERUGZET OPTIE
     function openTaskArchiveModal() {
       document.getElementById('task-archive-modal').classList.remove('hidden');
       renderTaskArchiveModal();
@@ -2243,7 +2334,6 @@
       const filterCat = document.getElementById('tasks-filter-category') ? document.getElementById('tasks-filter-category').value : 'ALL';
       let filteredTasks = filterCat !== 'ALL' ? tasks.filter(t => (t.category || 'Privé') === filterCat) : tasks;
 
-      // NIEUWSTE EERST WEERGEVEN
       const activeTasks = filteredTasks.filter(t => !t.done).sort((a,b) => b.id - a.id);
 
       if (activeTasks.length === 0) {
@@ -2261,9 +2351,10 @@
             <span style="cursor:pointer;" onclick="toggleTask(${task.id})">⚪ <strong style="font-size:0.78rem; opacity:0.85;">[${icon} ${cat}]</strong> ${task.text}</span>
             <span class="time-badge">Aangemaakt: ${task.created}</span>
           </div>
-          <div style="display:flex; gap:6px; align-items:center;">
-            <button class="btn btn-secondary btn-small" style="font-size:0.75rem; padding:4px 6px;" onclick="editTask(${task.id})">✏️</button>
-            <button class="btn btn-small" style="font-size:0.75rem; padding:4px 6px; background-color:#38A169;" onclick="toggleTask(${task.id})">✅</button>
+          <div style="display:flex; gap:4px; align-items:center;">
+            <button class="btn btn-secondary btn-small" style="font-size:0.72rem; padding:3px 6px; background-color:#3182CE; color:white;" onclick="pushTaskToCalendar('${task.text.replace(/'/g, "\\'")}')">📅 Agenda</button>
+            <button class="btn btn-secondary btn-small" style="font-size:0.72rem; padding:3px 6px;" onclick="editTask(${task.id})">✏️</button>
+            <button class="btn btn-small" style="font-size:0.72rem; padding:3px 6px; background-color:#38A169;" onclick="toggleTask(${task.id})">✅</button>
             <button style="background:none; border:none; color:#E53E3E; cursor:pointer;" onclick="removeTask(${task.id})">✕</button>
           </div>
         `;
@@ -2609,14 +2700,12 @@
       return postit;
     }
 
-    // TOONT ALTIJD DE 3 NIEUWSTE ACTIEVE POST-ITS
     function renderIdeas() {
       let allIdeas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
       const grid = document.getElementById('main-ideas-postit-grid');
       if (!grid) return;
       grid.innerHTML = '';
 
-      // Sorteren op nieuwste eerst & filter niet-gearchiveerd
       const activeIdeas = allIdeas.filter(i => !i.archived).sort((a,b) => b.id - a.id);
       const newestIdeas = activeIdeas.slice(0, 3);
 
@@ -2804,6 +2893,7 @@
         triggerConfetti();
         addMarble(`Aflossing voor ${p.title} (€${val})`, 'Geld & Aflossingen');
         renderRuimteKompas();
+        updateStats();
       }
     }
 
@@ -2812,6 +2902,7 @@
       projects = projects.filter(p => p.id !== id);
       localStorage.setItem('voldaan_ruimte_projects', JSON.stringify(projects));
       renderRuimteKompas();
+      updateStats();
     }
 
     function openRuimteTotalDetailsModal() { document.getElementById('ruimte-total-details-modal').classList.remove('hidden'); }
@@ -2891,6 +2982,7 @@
 
       if (wasSaved) { triggerConfetti(); addMarble(`Impuls laten schieten`, 'Geld & Aflossingen'); }
       renderMoneyView();
+      updateStats();
     }
 
     function removeImpulseItem(id) {
@@ -2898,6 +2990,7 @@
       items = items.filter(i => i.id !== id);
       localStorage.setItem('voldaan_impulse_items', JSON.stringify(items));
       renderMoneyView();
+      updateStats();
     }
 
     function addFixedBillPrompt() {
@@ -2918,6 +3011,7 @@
         if (bills[idx].paid) { triggerConfetti(); addMarble(`Vaste last voldaan`, 'Geld & Aflossingen'); }
         localStorage.setItem('voldaan_fixed_bills', JSON.stringify(bills));
         renderMoneyView();
+        updateStats();
       }
     }
 
@@ -2926,6 +3020,7 @@
       bills = bills.filter(b => b.id !== id);
       localStorage.setItem('voldaan_fixed_bills', JSON.stringify(bills));
       renderMoneyView();
+      updateStats();
     }
 
     function addFutureAnchorPrompt() {
@@ -2947,6 +3042,7 @@
         if (anchors[idx].saved) { triggerConfetti(); addMarble(`Potje behaald`, 'Geld & Aflossingen'); }
         localStorage.setItem('voldaan_future_anchors', JSON.stringify(anchors));
         renderMoneyView();
+        updateStats();
       }
     }
 
@@ -2955,6 +3051,7 @@
       anchors = anchors.filter(a => a.id !== id);
       localStorage.setItem('voldaan_future_anchors', JSON.stringify(anchors));
       renderMoneyView();
+      updateStats();
     }
 
     function renderMoneyView() {
