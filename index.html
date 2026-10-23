@@ -360,46 +360,6 @@
       padding-top: 6px;
     }
 
-    .postit-menu-btn {
-      background: none;
-      border: none;
-      font-size: 1.1rem;
-      font-weight: bold;
-      cursor: pointer;
-      color: inherit;
-      padding: 0 4px;
-    }
-
-    .postit-menu {
-      position: absolute;
-      bottom: 30px;
-      right: 10px;
-      background: var(--card-bg);
-      color: var(--text-main);
-      border: 1.5px solid var(--input-border);
-      box-shadow: var(--shadow);
-      border-radius: 8px;
-      padding: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      z-index: 20;
-      width: 200px;
-    }
-
-    .postit-menu button {
-      background: none;
-      border: none;
-      text-align: left;
-      padding: 6px 8px;
-      font-size: 0.8rem;
-      cursor: pointer;
-      color: var(--text-main);
-      border-radius: 4px;
-    }
-
-    .postit-menu button:hover { background-color: var(--item-bg); }
-
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -532,10 +492,13 @@
 
     <nav class="nav-tabs">
       <button class="tab-btn active" onclick="switchView('today')" id="tab-today">🏠 Vandaag</button>
-      <button class="tab-btn" onclick="switchView('plan')" id="tab-plan">🎯 Plannen & Doelen</button>
+      <button class="tab-btn" onclick="switchView('plan')" id="tab-plan">🎯 Plannen</button>
       <button class="tab-btn" onclick="switchView('vitality')" id="tab-vitality">🌿 Vitaliteit</button>
+      <button class="tab-btn" onclick="switchView('hacks')" id="tab-hacks">💡 Kennis & Hacks</button>
       <button class="tab-btn" onclick="switchView('ideas')" id="tab-ideas">📌 Ideeënkluis</button>
-      <button class="tab-btn" onclick="switchView('money')" id="tab-money">💶 Geld-Kompas</button>
+      <button class="tab-btn" onclick="switchView('money')" id="tab-money">💶 Geld</button>
+      <button class="tab-btn" onclick="switchView('fun')" id="tab-fun">☕ Luchtig</button>
+      <button class="tab-btn" onclick="switchView('insights')" id="tab-insights">📊 Inzichten</button>
     </nav>
 
     <!-- ==================== PAGINA 1: VANDAAG ==================== -->
@@ -945,7 +908,39 @@
 
     </div>
 
-    <!-- ==================== PAGINA 4: IDEEËNKLUIS & PROJECTEN ==================== -->
+    <!-- ==================== PAGINA 4: KENNIS & HACKS (NIEUW!) ==================== -->
+    <div id="view-hacks" class="hidden">
+      
+      <div class="card" style="margin-bottom: 18px; border: 2px solid var(--accent-primary);">
+        <h2>
+          💡 Kennis & Brein-Hacks Feed
+          <div style="display: flex; gap: 6px;">
+            <button class="btn btn-secondary btn-small" onclick="openSavedTipsModal()">❤️ Bewaard (<span id="saved-tips-count">0</span>)</button>
+            <button class="btn btn-secondary btn-small" onclick="openAllTipsModal()">📚 Alle Tips</button>
+          </div>
+        </h2>
+        <p class="subtitle">Een live stroom van inzichten speciaal afgestemd op ADHD, focus, ontprikkelen en zachte keuzes.</p>
+
+        <div id="live-feed-card" style="background: var(--item-bg); border: 1.5px solid var(--input-border); padding: 18px; border-radius: 14px; position: relative;">
+          <span id="feed-category-badge" style="font-size: 0.75rem; font-weight: 700; background: var(--accent-primary); color: white; padding: 3px 8px; border-radius: 8px; text-transform: uppercase;">Categorie</span>
+          <h3 id="feed-title" style="font-size: 1.1rem; margin-top: 10px; margin-bottom: 6px;">Titel van het inzicht</h3>
+          <p id="feed-text" style="font-size: 0.92rem; line-height: 1.45; color: var(--text-main); margin-bottom: 14px;">Inhoud van de tip...</p>
+          
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+            <button class="btn btn-small" id="feed-save-btn" onclick="toggleSaveCurrentFeedTip()" style="background-color: #ED64A6;">❤️ Bewaren</button>
+            <button class="btn btn-secondary btn-small" onclick="generateNextFeedTip()">🎲 Volgend Inzicht ➔</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="tip-box">
+        <strong style="font-size: 0.88rem; text-transform: uppercase; display: block; margin-bottom: 4px;">🎯 ADHD Brein-Weetje</strong>
+        <p style="font-size: 0.85rem; line-height: 1.4;">Als je brein weerstand voelt om te starten, vraag jezelf niet af 'Hoe maak ik dit af?', maar 'Wat is de allerkleinste belachelijke stap die ik nu 30 seconden kan doen?'</p>
+      </div>
+
+    </div>
+
+    <!-- ==================== PAGINA 5: IDEEËNKLUIS & PROJECTEN ==================== -->
     <div id="view-ideas" class="hidden">
       
       <div class="card" style="margin-bottom: 18px;">
@@ -1001,7 +996,7 @@
 
     </div>
 
-    <!-- ==================== PAGINA 5: GELD-KOMPAS ==================== -->
+    <!-- ==================== PAGINA 6: GELD-KOMPAS ==================== -->
     <div id="view-money" class="hidden">
       
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
@@ -1132,9 +1127,71 @@
 
     </div>
 
+    <!-- ==================== PAGINA 7: LUCHTIG (VOORBEREIDING) ==================== -->
+    <div id="view-fun" class="hidden">
+      <div class="card">
+        <h2>☕ Luchtig & Passies</h2>
+        <p class="subtitle">Ontspanning, Ajax, muziek en creativiteit. Hier werken we straks verder aan!</p>
+
+        <div style="background: var(--item-bg); padding: 20px; border-radius: 12px; border: 1.5px dashed var(--input-border); text-align: center; color: var(--text-muted);">
+          ⚽ 🎵 🎨<br>
+          <em>"Binnenkort verrijkt met jouw favoriete ontspanning & humor!"</em>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== PAGINA 8: INZICHTEN (VOORBEREIDING) ==================== -->
+    <div id="view-insights" class="hidden">
+      <div class="card">
+        <h2>📊 Visuele Inzichten & Trends</h2>
+        <p class="subtitle">Koppel je slaap, mood en gewoontes aan handige grafieken.</p>
+
+        <div style="background: var(--item-bg); padding: 20px; border-radius: 12px; border: 1.5px dashed var(--input-border); text-align: center; color: var(--text-muted);">
+          📈 🔮 📊<br>
+          <em>"Binnenkort worden jouw data & trends hier visueel in kaart gebracht!"</em>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- ==================== MODALS ==================== -->
+
+  <!-- BEWAARDE TIPS MODAL -->
+  <div id="saved-tips-modal" class="modal-overlay hidden" onclick="closeSavedTipsModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2>❤️ Mijn Bewaarde Tips & Hacks</h2>
+        <button class="btn btn-secondary btn-small" onclick="closeSavedTipsModal()">✕ Sluiten</button>
+      </div>
+
+      <div class="filter-bar">
+        <input type="text" id="saved-tips-search" oninput="renderSavedTipsModal()" placeholder="🔍 Zoek in bewaarde tips..." style="margin-bottom:0; flex:1;">
+        <select id="saved-tips-sort" onchange="renderSavedTipsModal()" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:4px 8px;">
+          <option value="NEWEST">⏱️ Nieuwste eerst</option>
+          <option value="OLDEST">⏳ Oudste eerst</option>
+        </select>
+      </div>
+
+      <div id="saved-tips-modal-list" class="item-list" style="max-height: 380px; overflow-y: auto; margin-top:10px;"></div>
+    </div>
+  </div>
+
+  <!-- ALLE TIPS MODAL (BIBLIOTHEEK) -->
+  <div id="all-tips-modal" class="modal-overlay hidden" onclick="closeAllTipsModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2>📚 Alle Tips & Hacks Bibliotheek</h2>
+        <button class="btn btn-secondary btn-small" onclick="closeAllTipsModal()">✕ Sluiten</button>
+      </div>
+
+      <div class="filter-bar">
+        <input type="text" id="all-tips-search" oninput="renderAllTipsModal()" placeholder="🔍 Zoek in alle tips..." style="margin-bottom:0; flex:1;">
+      </div>
+
+      <div id="all-tips-modal-list" class="item-list" style="max-height: 380px; overflow-y: auto; margin-top:10px;"></div>
+    </div>
+  </div>
 
   <!-- BUDDY SELECTIE & ACTIE MODAL -->
   <div id="buddy-action-modal" class="modal-overlay hidden" onclick="closeBuddyActionModal()">
@@ -1367,17 +1424,22 @@
     }
 
     function switchView(viewName) {
-      ['today', 'plan', 'vitality', 'ideas', 'money'].forEach(v => {
-        document.getElementById(`view-${v}`).classList.add('hidden');
-        document.getElementById(`tab-${v}`).classList.remove('active');
+      ['today', 'plan', 'vitality', 'hacks', 'ideas', 'money', 'fun', 'insights'].forEach(v => {
+        const el = document.getElementById(`view-${v}`);
+        const tab = document.getElementById(`tab-${v}`);
+        if (el) el.classList.add('hidden');
+        if (tab) tab.classList.remove('active');
       });
 
-      document.getElementById(`view-${viewName}`).classList.remove('hidden');
-      document.getElementById(`tab-${viewName}`).classList.add('active');
+      const activeEl = document.getElementById(`view-${viewName}`);
+      const activeTab = document.getElementById(`tab-${viewName}`);
+      if (activeEl) activeEl.classList.remove('hidden');
+      if (activeTab) activeTab.classList.add('active');
 
       if (viewName === 'today') { renderTodayDashboard(); renderMarbleJar(); renderBuddyGrid(); }
       if (viewName === 'plan') { renderTasks(); renderCompassGoals(); renderContacts(); renderPact(); }
       if (viewName === 'vitality') renderVitalityView();
+      if (viewName === 'hacks') renderHacksView();
       if (viewName === 'ideas') { renderIdeas(); renderProjects(); }
       if (viewName === 'money') renderMoneyView();
     }
@@ -1421,6 +1483,165 @@
         else ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
       render();
+    }
+
+    // --- 💡 KENNIS & BREIN-HACKS LOGICA ---
+    const knowledgeDatabase = [
+      { id: 1, category: "🧠 ADHD & Brein", title: "De 5-Minuten 'Slechte Poging'", text: "Geef jezelf toestemming om de eerste 5 minuten een hele slechte poging te doen. De drempel om te beginnen zakt daarmee met 80%." },
+      { id: 2, category: "🧠 ADHD & Brein", title: "Body Doubling", text: "Werken terwijl iemand anders simpelweg in de kamer zit of via een stil scherm aanwezig is, verlaagt startuitstel enorm." },
+      { id: 3, category: "💶 Geld & Impuls", title: "De Dopamine-Pauze", text: "Impulsaankopen geven snel dopamine. Zet het item 24 uur op de Impuls-Wachtkamer. Vaak zakt de drang daarna weg." },
+      { id: 4, category: "🔋 Energie & Slaap", title: "Licht in je Ogen", text: "Ga binnen 30 minuten na het opstaan even naar buiten. Buitenlicht zet je biologische klok goed voor betere nachtrust." },
+      { id: 5, category: "🎯 Focus & Actie", title: "Micro-Stappen", text: "Als 'de garage opruimen' te groot voelt, maak je taak '1 lege doos pakken'. Eén piepkleine actie brengt beweging." },
+      { id: 6, category: "🧠 ADHD & Brein", title: "Prikkel-Pauze", text: "Zit je brein vol? Leg je telefoon 5 minuten weg en sluit je ogen. Geef je brein rust om informatie te verwerken." },
+      { id: 7, category: "💶 Geld & Aflossingen", title: "Zacht Zelfinzicht", text: "Een financieel misstapje maakt je geen slecht mens. Bekijk het zonder oordeel: wat kan ik er zacht van leren?" }
+    ];
+
+    let currentFeedTip = null;
+
+    function renderHacksView() {
+      updateSavedTipsBadge();
+      if (!currentFeedTip) generateNextFeedTip();
+    }
+
+    function generateNextFeedTip() {
+      const randomIndex = Math.floor(Math.random() * knowledgeDatabase.length);
+      currentFeedTip = knowledgeDatabase[randomIndex];
+
+      document.getElementById('feed-category-badge').innerText = currentFeedTip.category;
+      document.getElementById('feed-title').innerText = currentFeedTip.title;
+      document.getElementById('feed-text').innerText = currentFeedTip.text;
+
+      updateFeedSaveButtonState();
+    }
+
+    function updateSavedTipsBadge() {
+      let saved = JSON.parse(localStorage.getItem('voldaan_saved_tips') || '[]');
+      const badge = document.getElementById('saved-tips-count');
+      if (badge) badge.innerText = saved.length;
+    }
+
+    function toggleSaveCurrentFeedTip() {
+      if (!currentFeedTip) return;
+
+      let saved = JSON.parse(localStorage.getItem('voldaan_saved_tips') || '[]');
+      const existingIdx = saved.findIndex(t => t.id === currentFeedTip.id);
+
+      if (existingIdx !== -1) {
+        saved.splice(existingIdx, 1);
+      } else {
+        saved.unshift({ ...currentFeedTip, savedAt: getNowDateTimeStr(), timestamp: Date.now() });
+        addMarble(`Tip bewaard: ${currentFeedTip.title}`, 'Algemeen');
+        triggerConfetti();
+      }
+
+      localStorage.setItem('voldaan_saved_tips', JSON.stringify(saved));
+      updateSavedTipsBadge();
+      updateFeedSaveButtonState();
+    }
+
+    function updateFeedSaveButtonState() {
+      if (!currentFeedTip) return;
+
+      let saved = JSON.parse(localStorage.getItem('voldaan_saved_tips') || '[]');
+      const isSaved = saved.some(t => t.id === currentFeedTip.id);
+      const btn = document.getElementById('feed-save-btn');
+
+      if (btn) {
+        btn.innerText = isSaved ? '❤️ Bewaard!' : '❤️ Bewaren';
+        btn.style.backgroundColor = isSaved ? '#38A169' : '#ED64A6';
+      }
+    }
+
+    function openSavedTipsModal() {
+      document.getElementById('saved-tips-modal').classList.remove('hidden');
+      renderSavedTipsModal();
+    }
+
+    function closeSavedTipsModal() {
+      document.getElementById('saved-tips-modal').classList.add('hidden');
+    }
+
+    function renderSavedTipsModal() {
+      let saved = JSON.parse(localStorage.getItem('voldaan_saved_tips') || '[]');
+      const container = document.getElementById('saved-tips-modal-list');
+      const searchVal = (document.getElementById('saved-tips-search') ? document.getElementById('saved-tips-search').value : '').toLowerCase();
+      const sortVal = document.getElementById('saved-tips-sort') ? document.getElementById('saved-tips-sort').value : 'NEWEST';
+
+      container.innerHTML = '';
+
+      if (searchVal) {
+        saved = saved.filter(t => t.title.toLowerCase().includes(searchVal) || t.text.toLowerCase().includes(searchVal) || t.category.toLowerCase().includes(searchVal));
+      }
+
+      if (sortVal === 'NEWEST') saved.sort((a,b) => b.timestamp - a.timestamp);
+      else saved.sort((a,b) => a.timestamp - b.timestamp);
+
+      if (saved.length === 0) {
+        container.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted);">Geen bewaarde tips gevonden.</span>';
+        return;
+      }
+
+      saved.forEach(tip => {
+        const div = document.createElement('div');
+        div.className = 'item-card';
+        div.style.flexDirection = 'column';
+        div.style.alignItems = 'stretch';
+        div.style.gap = '6px';
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:0.75rem; font-weight:700; color:var(--accent-primary);">${tip.category}</span>
+            <button style="background:none; border:none; color:#E53E3E; cursor:pointer;" onclick="removeSavedTip(${tip.id})">✕ Verwijderen</button>
+          </div>
+          <strong>${tip.title}</strong>
+          <p style="font-size:0.85rem; color:var(--text-main); line-height:1.4;">${tip.text}</p>
+          <span class="time-badge">❤️ Bewaard op: ${tip.savedAt}</span>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function removeSavedTip(id) {
+      let saved = JSON.parse(localStorage.getItem('voldaan_saved_tips') || '[]');
+      saved = saved.filter(t => t.id !== id);
+      localStorage.setItem('voldaan_saved_tips', JSON.stringify(saved));
+      renderSavedTipsModal();
+      updateSavedTipsBadge();
+      updateFeedSaveButtonState();
+    }
+
+    function openAllTipsModal() {
+      document.getElementById('all-tips-modal').classList.remove('hidden');
+      renderAllTipsModal();
+    }
+
+    function closeAllTipsModal() {
+      document.getElementById('all-tips-modal').classList.add('hidden');
+    }
+
+    function renderAllTipsModal() {
+      const container = document.getElementById('all-tips-modal-list');
+      const searchVal = (document.getElementById('all-tips-search') ? document.getElementById('all-tips-search').value : '').toLowerCase();
+
+      container.innerHTML = '';
+      let tips = knowledgeDatabase;
+
+      if (searchVal) {
+        tips = tips.filter(t => t.title.toLowerCase().includes(searchVal) || t.text.toLowerCase().includes(searchVal) || t.category.toLowerCase().includes(searchVal));
+      }
+
+      tips.forEach(tip => {
+        const div = document.createElement('div');
+        div.className = 'item-card';
+        div.style.flexDirection = 'column';
+        div.style.alignItems = 'stretch';
+        div.style.gap = '6px';
+        div.innerHTML = `
+          <span style="font-size:0.75rem; font-weight:700; color:var(--accent-primary);">${tip.category}</span>
+          <strong>${tip.title}</strong>
+          <p style="font-size:0.85rem; color:var(--text-main); line-height:1.4;">${tip.text}</p>
+        `;
+        container.appendChild(div);
+      });
     }
 
     // --- ZACHTE BUDDY-LIJN LOGICA ---
@@ -3253,6 +3474,7 @@
     renderMarbleJar();
     renderTodayDashboard();
     renderProjects();
+    updateSavedTipsBadge();
     updatePaydayCountdown();
     setInterval(updatePaydayCountdown, 1000);
   </script>
