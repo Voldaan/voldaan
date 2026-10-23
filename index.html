@@ -223,17 +223,17 @@
     .energy-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin-top: 10px;
+      gap: 8px;
+      margin-top: 8px;
     }
 
     .energy-btn {
       background: var(--item-bg);
       border: 2px solid var(--input-border);
       color: var(--text-main);
-      border-radius: 12px;
-      padding: 12px;
-      font-size: 0.88rem;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 0.85rem;
       cursor: pointer;
       text-align: center;
       transition: all 0.2s;
@@ -547,12 +547,13 @@
     <!-- ==================== PAGINA 1: VANDAAG ==================== -->
     <div id="view-today">
 
+      <!-- DYNAMISCHE MOOD-CHECK-IN (COMPACT & EVOLUEREND) -->
       <div class="card" id="start-card" style="margin-bottom: 18px;">
         <h2>
-          ☀️ Mijn Dag Begint Nu
+          <span id="mood-card-title">☀️ Mijn Dag Begint Nu</span>
           <button class="btn btn-secondary btn-small" onclick="openMoodHistoryModal()">📜 Mood Historie</button>
         </h2>
-        <p class="subtitle">Het maakt niet uit hoe laat het is. Waar staat je brein op dit moment naar?</p>
+        <p class="subtitle" id="mood-card-subtitle">Het maakt niet uit hoe laat het is. Waar staat je brein op dit moment naar?</p>
         
         <div id="mood-selection-area">
           <div class="energy-grid">
@@ -562,20 +563,18 @@
             <button class="energy-btn" onclick="selectEnergy(this, 'Gefocust')">🚀 Gefocust</button>
           </div>
 
-          <div id="start-action" class="hidden" style="margin-top: 14px;">
-            <button class="btn" onclick="startDay()">Landen in mijn dag</button>
+          <div id="start-action" class="hidden" style="margin-top: 10px;">
+            <button class="btn btn-small" style="padding: 8px 14px;" onclick="startDay()">Stemming Vastleggen ✨</button>
           </div>
         </div>
 
-        <div id="mood-status-active" class="hidden" style="margin-top: 10px; background: var(--item-bg); padding: 12px; border-radius: 12px; border: 1px solid var(--input-border);">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <span style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Huidige Mood:</span>
-              <div id="current-mood-text" style="font-size:1rem; font-weight:600; color:var(--accent-primary);"></div>
-              <div id="today-mood-trend" style="font-size:0.78rem; color:var(--text-muted); margin-top:2px;">Trend vandaag: </div>
-            </div>
-            <button class="btn btn-secondary btn-small" onclick="resetMoodSelection()">🔄 Check-in bijwerken</button>
+        <!-- BEKNOPT TREND OVERZICHT VANDAAG -->
+        <div id="today-mood-trend-box" class="hidden" style="margin-top: 10px; background: var(--item-bg); padding: 8px 12px; border-radius: 10px; border: 1px solid var(--input-border); font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <span style="color: var(--text-muted);">Verloop vandaag:</span>
+            <strong id="today-mood-trend-text" style="color: var(--accent-primary); margin-left: 4px;"></strong>
           </div>
+          <button class="btn btn-secondary btn-small" style="font-size: 0.7rem; padding: 2px 6px;" onclick="toggleNewMoodInput()">+ Check-in</button>
         </div>
       </div>
 
@@ -821,7 +820,6 @@
     <!-- ==================== PAGINA 3: VITALITEIT ==================== -->
     <div id="view-vitality" class="hidden">
 
-      <!-- 🌙 1. NACHTRUST & HERSTEL -->
       <div class="card" style="margin-bottom: 18px;">
         <h2>🌙 Nachtrust & Herstel</h2>
         <p class="subtitle">Een goede dag begint bij een zachte nacht. Hoe voelt je herstel vanmorgen?</p>
@@ -849,7 +847,6 @@
         </div>
       </div>
 
-      <!-- 🚶 2. BEWEGING & 8.000 STAPPEN -->
       <div class="card" style="margin-bottom: 18px;">
         <h2>🚶 Beweging & Stappen-Anker</h2>
         <p class="subtitle">8.000 stappen is jouw richtlijn. Wel of niet gehaald? Beide is prima, beweging is altijd winst!</p>
@@ -884,12 +881,10 @@
         <div id="fitness-activity-list" class="item-list" style="margin-top: 10px;"></div>
       </div>
 
-      <!-- 🍎 3. OORDEELLOZE GEWOONTES & BALANS -->
       <div class="card" style="margin-bottom: 18px;">
         <h2>🍎 Voeding & Balans GewoONTES</h2>
         <p class="subtitle">Geen strenge regels. Alleen zachte stempels voor de gewoONTES die je bewust in balans wilt houden.</p>
 
-        <!-- A. ROOK-BALANS (MAX 5) -->
         <div style="background: var(--item-bg); padding: 12px; border-radius: 10px; border: 1px solid var(--input-border); margin-bottom: 12px;">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
@@ -903,13 +898,11 @@
           </div>
         </div>
 
-        <!-- B. ALCOHOLVRIJ & GEZOND ETEN -->
         <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;">
           <button class="btn btn-secondary btn-small" style="flex: 1; border: 1px solid var(--green-border);" onclick="logBalanceHabit('Alcoholvrije Dag 🍷❌', 'Gezondheid')">🍷 Alcoholvrije Dag</button>
           <button class="btn btn-secondary btn-small" style="flex: 1; border: 1px solid var(--green-border);" onclick="logBalanceHabit('Gezonde Voeding / Fruit 🥗', 'Gezondheid')">🥗 Gezond Gegeten</button>
         </div>
 
-        <!-- C. SNAAI-WACHTKAMER -->
         <div style="background: var(--soft-warm); padding: 12px; border-radius: 10px; border: 1px solid var(--warm-border);">
           <strong style="font-size: 0.85rem; color: var(--warm-text); display: block; margin-bottom: 4px;">🛑 Snaai-Wachtkamer (15 Minuten Pauze)</strong>
           <p style="font-size: 0.78rem; color: var(--warm-text); margin-bottom: 8px;">Trek in een ondoordachte snack? Zet het even 15 minuten op pauze en kijk of de trek wegzakt.</p>
@@ -923,7 +916,6 @@
         </div>
       </div>
 
-      <!-- 📊 4. VITALITEITS-HORIZON -->
       <div class="card">
         <h2>📊 Vitaliteits-Horizon</h2>
         <p class="subtitle">Overzicht van jouw opgebouwde gezondheids-zeges over langere tijd.</p>
@@ -954,7 +946,7 @@
           📌 Ideeënkluis
           <button class="btn btn-secondary btn-small" onclick="openGrabbeltonModal()">🎲 Grabbelton</button>
         </h2>
-        <p class="subtitle">Schrijf je gedachten direct van je af. Op deze pagina tonen we maximaal 3 Post-its voor meer rust.</p>
+        <p class="subtitle">Schrijf je gedachten direct van je af. Hier tonen we altijd de 3 nieuwste Post-its.</p>
 
         <textarea id="idea-input" rows="2" placeholder="Typ een willekeurig idee of wilde gedachte..."></textarea>
         
@@ -1134,26 +1126,27 @@
 
   <!-- ==================== MODALS ==================== -->
 
+  <!-- MOOD HISTORIE MODAL MET SLIMME FILTERS -->
   <div id="mood-history-modal" class="modal-overlay hidden" onclick="closeMoodHistoryModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
         <h2>📜 Mood Historie & Trends</h2>
         <button class="btn btn-secondary btn-small" onclick="closeMoodHistoryModal()">✕ Sluiten</button>
       </div>
-      <p class="subtitle">Bekijk hoe je gevoelswereld zich ontwikkelt.</p>
+      <p class="subtitle">Bekijk hoe je gevoelswereld zich over langere tijd positief ontwikkelt.</p>
 
       <div class="filter-bar">
         <label style="font-size:0.78rem; color:var(--text-muted);">Tijdsbestek:</label>
         <select id="mood-history-filter-time" onchange="renderMoodHistory()" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:4px 8px;">
           <option value="TODAY">☀️ Vandaag</option>
-          <option value="WEEK">📅 Deze Week</option>
+          <option value="WEEK" selected>📅 Deze Week</option>
           <option value="MONTH">🗓️ Deze Maand</option>
           <option value="YEAR">🚀 Dit Jaar</option>
         </select>
       </div>
 
       <div class="insight-card" id="mood-trend-positive-box" style="margin-top:10px; margin-bottom:14px; background:var(--soft-green); border-color:var(--green-border); color:var(--green-text);">
-        <strong>🌱 Positieve Trend Analyse:</strong>
+        <strong>🌱 Positieve Trend-Analyse:</strong>
         <span id="mood-trend-positive-text">Je overzicht laat een constante groei naar meer rust zien!</span>
       </div>
 
@@ -1594,7 +1587,7 @@
       document.getElementById('vitality-stat-balance').innerText = fitnessLogs.length;
     }
 
-    // --- MOOD TRACKER LOGICA ---
+    // --- MOOD TRACKER LOGICA (EVOLUEREND & DYNAMISCH) ---
     let selectedEnergyState = '';
 
     function selectEnergy(el, energy) {
@@ -1624,17 +1617,13 @@
       localStorage.setItem('voldaan_stat_starts', starts);
 
       triggerConfetti();
-      addMarble(`Zachte start: ${selectedEnergyState}`, 'Dagstart');
+      addMarble(`Mood Check-in: ${selectedEnergyState}`, 'Dagstart');
       updateStats();
       renderMoodTrackerUI();
-      alert(`Je dagstempel '${selectedEnergyState}' is vastgelegd. Neem alle tijd!`);
     }
 
-    function resetMoodSelection() {
-      document.getElementById('mood-selection-area').classList.remove('hidden');
-      document.getElementById('mood-status-active').classList.add('hidden');
-      document.querySelectorAll('.energy-btn').forEach(btn => btn.classList.remove('selected'));
-      document.getElementById('start-action').classList.add('hidden');
+    function toggleNewMoodInput() {
+      document.getElementById('mood-selection-area').classList.toggle('hidden');
     }
 
     function renderMoodTrackerUI() {
@@ -1642,15 +1631,33 @@
       const todayStr = new Date().toLocaleDateString('nl-NL');
       const todayLogs = energyLogs.filter(l => l.dateStr === todayStr);
 
-      if (todayLogs.length > 0) {
-        document.getElementById('mood-selection-area').classList.add('hidden');
-        document.getElementById('mood-status-active').classList.remove('hidden');
-        document.getElementById('current-mood-text').innerText = todayLogs[0].energy;
-        document.getElementById('today-mood-trend').innerText = `Verloop vandaag: ${todayLogs.map(l => l.energy).reverse().join(' ➔ ')}`;
+      const titleEl = document.getElementById('mood-card-title');
+      const subtitleEl = document.getElementById('mood-card-subtitle');
+      const selectionArea = document.getElementById('mood-selection-area');
+      const trendBox = document.getElementById('today-mood-trend-box');
+      const trendText = document.getElementById('today-mood-trend-text');
+
+      if (todayLogs.length === 0) {
+        titleEl.innerText = "☀️ Mijn Dag Begint Nu";
+        subtitleEl.innerText = "Het maakt niet uit hoe laat het is. Waar staat je brein op dit moment naar?";
+        selectionArea.classList.remove('hidden');
+        trendBox.classList.add('hidden');
+      } else if (todayLogs.length === 1) {
+        titleEl.innerText = "🍃 Zit je nog in dezelfde mood?";
+        subtitleEl.innerText = "Voel even hoe je er nu bij zit. Is er iets veranderd of stroomt het lekker?";
+        selectionArea.classList.add('hidden');
+        trendBox.classList.remove('hidden');
+        trendText.innerText = todayLogs[0].energy;
       } else {
-        document.getElementById('mood-selection-area').classList.remove('hidden');
-        document.getElementById('mood-status-active').classList.add('hidden');
+        titleEl.innerText = "🔄 Hoe staat je brein er nu voor?";
+        subtitleEl.innerText = "Elke check-in helpt om patronen in je energie en rust te herkennen.";
+        selectionArea.classList.add('hidden');
+        trendBox.classList.remove('hidden');
+        trendText.innerText = todayLogs.map(l => l.energy).reverse().join(' ➔ ');
       }
+
+      document.querySelectorAll('.energy-btn').forEach(btn => btn.classList.remove('selected'));
+      document.getElementById('start-action').classList.add('hidden');
     }
 
     function openMoodHistoryModal() {
@@ -1663,14 +1670,44 @@
     function renderMoodHistory() {
       let energyLogs = JSON.parse(localStorage.getItem('voldaan_energy_logs') || '[]');
       const container = document.getElementById('mood-history-list');
+      const timeFilter = document.getElementById('mood-history-filter-time') ? document.getElementById('mood-history-filter-time').value : 'WEEK';
+      const trendTextEl = document.getElementById('mood-trend-positive-text');
       container.innerHTML = '';
 
       if (energyLogs.length === 0) {
         container.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted);">Nog geen stemmingen vastgelegd.</span>';
+        if (trendTextEl) trendTextEl.innerText = "Begin met inchecken om je positieve trend te ontdekken!";
         return;
       }
 
-      energyLogs.forEach(item => {
+      const now = new Date();
+      const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+      const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay())).getTime();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+      const startOfYear = new Date(now.getFullYear(), 0, 1).getTime();
+
+      let filteredLogs = energyLogs.filter(item => {
+        const ts = item.timestamp || item.id;
+        if (timeFilter === 'TODAY') return ts >= startOfToday;
+        if (timeFilter === 'WEEK') return ts >= startOfWeek;
+        if (timeFilter === 'MONTH') return ts >= startOfMonth;
+        if (timeFilter === 'YEAR') return ts >= startOfYear;
+        return true;
+      });
+
+      if (trendTextEl) {
+        if (timeFilter === 'YEAR') trendTextEl.innerText = `Over het hele jaar zie je dat je pieken van drukte steeds sneller transformeren naar rust & herstel! (${filteredLogs.length} Check-ins)`;
+        else if (timeFilter === 'MONTH') trendTextEl.innerText = `Deze maand laat een duidelijke stijgende lijn zien in je balans en bewustzijn! (${filteredLogs.length} Check-ins)`;
+        else if (timeFilter === 'WEEK') trendTextEl.innerText = `Deze week heb je al ${filteredLogs.length}x bewust stilgestaan bij je energie. Dat geeft grip!`;
+        else trendTextEl.innerText = `Vandaag heb je ${filteredLogs.length} waardevolle stempels gezet op je dag.`;
+      }
+
+      if (filteredLogs.length === 0) {
+        container.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted);">Geen check-ins gevonden voor deze periode.</span>';
+        return;
+      }
+
+      filteredLogs.forEach(item => {
         const div = document.createElement('div');
         div.className = 'item-card';
         div.innerHTML = `<div><strong>Mood: ${item.energy}</strong><span class="time-badge">🕒 ${item.displayTime || item.dateStr}</span></div>`;
@@ -1695,7 +1732,7 @@
 
     const brainTips = [
       "De 2-Minuten Regel: Kost een taak minder dan 2 minuten? Doe het meteen of laat het bewust los.",
-      "Body Doubling: Werken in het bijzijn van iemand anders verlaagt de drempel om te starten enorm.",
+      "Body Doubling: Werken in het bij zijn van iemand anders verlaagt de drempel om te starten enorm.",
       "Verlaag de wrijving: Wil je morgen iets doen? Zet de spullen alvast in het zicht.",
       "Dopamine-stapelen: Koppel een saaie taak aan iets fijns (zoals een leuke podcast).",
       "Slecht beginnen is prima: Geef jezelf toestemming om de eerste 5 minuten een slechte poging te doen."
@@ -2360,7 +2397,7 @@
       if (!input.value.trim()) return;
 
       let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
-      ideas.push({ id: Date.now(), text: input.value.trim(), category: catSelect.value || 'Algemeen', created: getNowDateTimeStr() });
+      ideas.unshift({ id: Date.now(), text: input.value.trim(), category: catSelect.value || 'Algemeen', created: getNowDateTimeStr() });
       localStorage.setItem('voldaan_ideas', JSON.stringify(ideas));
       input.value = '';
       renderIdeas();
@@ -2387,7 +2424,7 @@
       if (!idea) return;
 
       let projects = JSON.parse(localStorage.getItem('voldaan_projects') || '[]');
-      projects.push({ id: Date.now(), title: idea.text, description: `Post-it (${idea.category})`, category: idea.category, created: getNowDateTimeStr(), archived: false, tasks: [] });
+      projects.unshift({ id: Date.now(), title: idea.text, description: `Post-it (${idea.category})`, category: idea.category, created: getNowDateTimeStr(), archived: false, tasks: [] });
       localStorage.setItem('voldaan_projects', JSON.stringify(projects));
       alert(`🚀 "${idea.text}" omgezet naar een Project!`);
       openMenuId = null;
@@ -2443,17 +2480,20 @@
       return postit;
     }
 
+    // TOONT ALTIJD DE 3 NIEUWSTE POST-ITS OP DE HOOFDPAGINA VAN IDEEËN
     function renderIdeas() {
       let allIdeas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
       const grid = document.getElementById('main-ideas-postit-grid');
       if (!grid) return;
       grid.innerHTML = '';
 
-      const compactList = allIdeas.slice(0, 3);
-      if (compactList.length === 0) {
+      // Sorteren op nieuwste eerst & pak de eerste 3
+      const newestIdeas = [...allIdeas].sort((a,b) => b.id - a.id).slice(0, 3);
+
+      if (newestIdeas.length === 0) {
         grid.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted); grid-column: 1/-1;">Geen Post-its in je kluis. Prik er een op!</span>';
       } else {
-        compactList.forEach(idea => grid.appendChild(createPostitElement(idea)));
+        newestIdeas.forEach(idea => grid.appendChild(createPostitElement(idea)));
       }
     }
 
@@ -2624,7 +2664,6 @@
       }
     }
 
-    function addRuimtePauseMonth(id) { alert("🍃 Zachte adempauze geregistreerd!"); }
     function removeRuimteProject(id) {
       let projects = JSON.parse(localStorage.getItem('voldaan_ruimte_projects') || '[]');
       projects = projects.filter(p => p.id !== id);
