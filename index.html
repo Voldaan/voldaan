@@ -490,13 +490,14 @@
       <button class="theme-toggle-btn" onclick="toggleTheme()" id="theme-btn">🌙 Nacht</button>
     </header>
 
+    <!-- GEWIJZIGDE VOLGORDE TABBLADEN: GELD IS NU 4E -->
     <nav class="nav-tabs">
       <button class="tab-btn active" onclick="switchView('today')" id="tab-today">🏠 Vandaag</button>
       <button class="tab-btn" onclick="switchView('plan')" id="tab-plan">🎯 Plannen</button>
       <button class="tab-btn" onclick="switchView('vitality')" id="tab-vitality">🌿 Vitaliteit</button>
+      <button class="tab-btn" onclick="switchView('money')" id="tab-money">💶 Geld</button>
       <button class="tab-btn" onclick="switchView('hacks')" id="tab-hacks">💡 Kennis & Hacks</button>
       <button class="tab-btn" onclick="switchView('ideas')" id="tab-ideas">📌 Ideeënkluis</button>
-      <button class="tab-btn" onclick="switchView('money')" id="tab-money">💶 Geld</button>
       <button class="tab-btn" onclick="switchView('fun')" id="tab-fun">☕ Luchtig</button>
       <button class="tab-btn" onclick="switchView('insights')" id="tab-insights">📊 Inzichten</button>
     </nav>
@@ -652,7 +653,7 @@
         </div>
       </div>
 
-      <!-- ZACHTE BUDDY-LIJN (PREVENTIE & EERLIJKHEID - LAAG OP VANDAAG PAGINA) -->
+      <!-- ZACHTE BUDDY-LIJN -->
       <div class="card" style="margin-bottom: 18px; border: 1.5px solid var(--purple-border); background: var(--soft-purple);">
         <h2>
           💜 Zachte Buddy-Lijn
@@ -908,95 +909,7 @@
 
     </div>
 
-    <!-- ==================== PAGINA 4: KENNIS & HACKS (NIEUW!) ==================== -->
-    <div id="view-hacks" class="hidden">
-      
-      <div class="card" style="margin-bottom: 18px; border: 2px solid var(--accent-primary);">
-        <h2>
-          💡 Kennis & Brein-Hacks Feed
-          <div style="display: flex; gap: 6px;">
-            <button class="btn btn-secondary btn-small" onclick="openSavedTipsModal()">❤️ Bewaard (<span id="saved-tips-count">0</span>)</button>
-            <button class="btn btn-secondary btn-small" onclick="openAllTipsModal()">📚 Alle Tips</button>
-          </div>
-        </h2>
-        <p class="subtitle">Een live stroom van inzichten speciaal afgestemd op ADHD, focus, ontprikkelen en zachte keuzes.</p>
-
-        <div id="live-feed-card" style="background: var(--item-bg); border: 1.5px solid var(--input-border); padding: 18px; border-radius: 14px; position: relative;">
-          <span id="feed-category-badge" style="font-size: 0.75rem; font-weight: 700; background: var(--accent-primary); color: white; padding: 3px 8px; border-radius: 8px; text-transform: uppercase;">Categorie</span>
-          <h3 id="feed-title" style="font-size: 1.1rem; margin-top: 10px; margin-bottom: 6px;">Titel van het inzicht</h3>
-          <p id="feed-text" style="font-size: 0.92rem; line-height: 1.45; color: var(--text-main); margin-bottom: 14px;">Inhoud van de tip...</p>
-          
-          <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
-            <button class="btn btn-small" id="feed-save-btn" onclick="toggleSaveCurrentFeedTip()" style="background-color: #ED64A6;">❤️ Bewaren</button>
-            <button class="btn btn-secondary btn-small" onclick="generateNextFeedTip()">🎲 Volgend Inzicht ➔</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="tip-box">
-        <strong style="font-size: 0.88rem; text-transform: uppercase; display: block; margin-bottom: 4px;">🎯 ADHD Brein-Weetje</strong>
-        <p style="font-size: 0.85rem; line-height: 1.4;">Als je brein weerstand voelt om te starten, vraag jezelf niet af 'Hoe maak ik dit af?', maar 'Wat is de allerkleinste belachelijke stap die ik nu 30 seconden kan doen?'</p>
-      </div>
-
-    </div>
-
-    <!-- ==================== PAGINA 5: IDEEËNKLUIS & PROJECTEN ==================== -->
-    <div id="view-ideas" class="hidden">
-      
-      <div class="card" style="margin-bottom: 18px;">
-        <h2>
-          📌 Ideeënkluis
-          <div style="display:flex; gap:6px;">
-            <button class="btn btn-secondary btn-small" onclick="openIdeasArchiveModal()">📜 Archief</button>
-            <button class="btn btn-secondary btn-small" onclick="openGrabbeltonModal()">🎲 Grabbelton</button>
-          </div>
-        </h2>
-        <p class="subtitle">Schrijf je gedachten van je af. Hier tonen we de 3 nieuwste Post-its.</p>
-
-        <textarea id="idea-input" rows="2" placeholder="Typ een willekeurig idee of wilde gedachte..."></textarea>
-        
-        <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-          <select id="idea-category-select" style="margin-bottom: 0; flex: 1;">
-            <option value="Algemeen">🟡 Algemeen</option>
-            <option value="Creatief">🌸 Creatief</option>
-            <option value="Werk / Studie">🔵 Werk / Studie</option>
-            <option value="Privé / Thuis">🟢 Privé / Thuis</option>
-          </select>
-          <button class="btn btn-secondary btn-small" onclick="addNewCategoryPrompt()">+ Cat</button>
-        </div>
-
-        <button class="btn btn-secondary" onclick="addIdea()">Prik op het Bord 📌</button>
-
-        <div id="main-ideas-postit-grid" class="postit-grid"></div>
-
-        <button class="btn btn-secondary" style="margin-top: 14px;" onclick="openAllIdeasModal()">📂 Bekijk Alle Post-its in Kluis Modal</button>
-      </div>
-
-      <div class="card">
-        <h2>
-          🚀 Projecten
-          <button class="btn btn-secondary btn-small" onclick="toggleAddProjectForm()">+ Nieuw Project</button>
-        </h2>
-        <p class="subtitle">Zet spontane Post-its of wilde ideeën om in gestructureerde projecten op jouw eigen tempo.</p>
-
-        <div id="add-project-form" class="hidden" style="background: var(--item-bg); padding: 14px; border-radius: 12px; margin-bottom: 14px; border: 1.5px solid var(--input-border);">
-          <strong style="display:block; font-size: 0.88rem; margin-bottom: 8px;">Nieuw Project Aanmaken</strong>
-          <input type="text" id="project-title-input" placeholder="🚀 Titel van het project...">
-          <textarea id="project-desc-input" rows="2" placeholder="Omschrijving of doel van dit project..."></textarea>
-          <div style="display:flex; gap:8px;">
-            <button class="btn btn-small" onclick="saveNewProject()">Project Opslaan</button>
-            <button class="btn btn-secondary btn-small" onclick="toggleAddProjectForm()">Annuleren</button>
-          </div>
-        </div>
-
-        <div id="projects-compact-list" class="item-list"></div>
-
-        <button id="show-all-projects-btn" class="btn btn-secondary hidden" style="margin-top: 12px;" onclick="openAllProjectsModal()">📂 Bekijk Alle Projecten Modal</button>
-      </div>
-
-    </div>
-
-    <!-- ==================== PAGINA 6: GELD-KOMPAS ==================== -->
+    <!-- ==================== PAGINA 4: GELD-KOMPAS (NU ALS 4E TABBLAD) ==================== -->
     <div id="view-money" class="hidden">
       
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
@@ -1123,6 +1036,94 @@
         </div>
 
         <div id="future-anchors-list" class="item-list"></div>
+      </div>
+
+    </div>
+
+    <!-- ==================== PAGINA 5: KENNIS & HACKS ==================== -->
+    <div id="view-hacks" class="hidden">
+      
+      <div class="card" style="margin-bottom: 18px; border: 2px solid var(--accent-primary);">
+        <h2>
+          💡 Kennis & Brein-Hacks Feed
+          <div style="display: flex; gap: 6px;">
+            <button class="btn btn-secondary btn-small" onclick="openSavedTipsModal()">❤️ Bewaard (<span id="saved-tips-count">0</span>)</button>
+            <button class="btn btn-secondary btn-small" onclick="openAllTipsModal()">📚 Alle Tips</button>
+          </div>
+        </h2>
+        <p class="subtitle">Een live stroom van inzichten speciaal afgestemd op ADHD, focus, ontprikkelen en zachte keuzes.</p>
+
+        <div id="live-feed-card" style="background: var(--item-bg); border: 1.5px solid var(--input-border); padding: 18px; border-radius: 14px; position: relative;">
+          <span id="feed-category-badge" style="font-size: 0.75rem; font-weight: 700; background: var(--accent-primary); color: white; padding: 3px 8px; border-radius: 8px; text-transform: uppercase;">Categorie</span>
+          <h3 id="feed-title" style="font-size: 1.1rem; margin-top: 10px; margin-bottom: 6px;">Titel van het inzicht</h3>
+          <p id="feed-text" style="font-size: 0.92rem; line-height: 1.45; color: var(--text-main); margin-bottom: 14px;">Inhoud van de tip...</p>
+          
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+            <button class="btn btn-small" id="feed-save-btn" onclick="toggleSaveCurrentFeedTip()" style="background-color: #ED64A6;">❤️ Bewaren</button>
+            <button class="btn btn-secondary btn-small" onclick="generateNextFeedTip()">🎲 Volgend Inzicht ➔</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="tip-box">
+        <strong style="font-size: 0.88rem; text-transform: uppercase; display: block; margin-bottom: 4px;">🎯 ADHD Brein-Weetje</strong>
+        <p style="font-size: 0.85rem; line-height: 1.4;">Als je brein weerstand voelt om te starten, vraag jezelf niet af 'Hoe maak ik dit af?', maar 'Wat is de allerkleinste belachelijke stap die ik nu 30 seconden kan doen?'</p>
+      </div>
+
+    </div>
+
+    <!-- ==================== PAGINA 6: IDEEËNKLUIS & PROJECTEN ==================== -->
+    <div id="view-ideas" class="hidden">
+      
+      <div class="card" style="margin-bottom: 18px;">
+        <h2>
+          📌 Ideeënkluis
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-secondary btn-small" onclick="openIdeasArchiveModal()">📜 Archief</button>
+            <button class="btn btn-secondary btn-small" onclick="openGrabbeltonModal()">🎲 Grabbelton</button>
+          </div>
+        </h2>
+        <p class="subtitle">Schrijf je gedachten van je af. Hier tonen we de 3 nieuwste Post-its.</p>
+
+        <textarea id="idea-input" rows="2" placeholder="Typ een willekeurig idee of wilde gedachte..."></textarea>
+        
+        <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+          <select id="idea-category-select" style="margin-bottom: 0; flex: 1;">
+            <option value="Algemeen">🟡 Algemeen</option>
+            <option value="Creatief">🌸 Creatief</option>
+            <option value="Werk / Studie">🔵 Werk / Studie</option>
+            <option value="Privé / Thuis">🟢 Privé / Thuis</option>
+          </select>
+          <button class="btn btn-secondary btn-small" onclick="addNewCategoryPrompt()">+ Cat</button>
+        </div>
+
+        <button class="btn btn-secondary" onclick="addIdea()">Prik op het Bord 📌</button>
+
+        <div id="main-ideas-postit-grid" class="postit-grid"></div>
+
+        <button class="btn btn-secondary" style="margin-top: 14px;" onclick="openAllIdeasModal()">📂 Bekijk Alle Post-its in Kluis Modal</button>
+      </div>
+
+      <div class="card">
+        <h2>
+          🚀 Projecten
+          <button class="btn btn-secondary btn-small" onclick="toggleAddProjectForm()">+ Nieuw Project</button>
+        </h2>
+        <p class="subtitle">Zet spontane Post-its of wilde ideeën om in gestructureerde projecten op jouw eigen tempo.</p>
+
+        <div id="add-project-form" class="hidden" style="background: var(--item-bg); padding: 14px; border-radius: 12px; margin-bottom: 14px; border: 1.5px solid var(--input-border);">
+          <strong style="display:block; font-size: 0.88rem; margin-bottom: 8px;">Nieuw Project Aanmaken</strong>
+          <input type="text" id="project-title-input" placeholder="🚀 Titel van het project...">
+          <textarea id="project-desc-input" rows="2" placeholder="Omschrijving of doel van dit project..."></textarea>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-small" onclick="saveNewProject()">Project Opslaan</button>
+            <button class="btn btn-secondary btn-small" onclick="toggleAddProjectForm()">Annuleren</button>
+          </div>
+        </div>
+
+        <div id="projects-compact-list" class="item-list"></div>
+
+        <button id="show-all-projects-btn" class="btn btn-secondary hidden" style="margin-top: 12px;" onclick="openAllProjectsModal()">📂 Bekijk Alle Projecten Modal</button>
       </div>
 
     </div>
@@ -1439,9 +1440,9 @@
       if (viewName === 'today') { renderTodayDashboard(); renderMarbleJar(); renderBuddyGrid(); }
       if (viewName === 'plan') { renderTasks(); renderCompassGoals(); renderContacts(); renderPact(); }
       if (viewName === 'vitality') renderVitalityView();
+      if (viewName === 'money') renderMoneyView();
       if (viewName === 'hacks') renderHacksView();
       if (viewName === 'ideas') { renderIdeas(); renderProjects(); }
-      if (viewName === 'money') renderMoneyView();
     }
 
     function triggerConfetti() {
@@ -2471,7 +2472,6 @@
 
     function closeGrabbeltonModal() { document.getElementById('grabbelton-modal').classList.add('hidden'); }
 
-    // DYNAMISCHE UPDATE VAN ALLE VERSTREKTE REIS-STATISTIEKEN
     function updateStats() {
       document.getElementById('stat-starts').innerText = localStorage.getItem('voldaan_stat_starts') || '0';
       document.getElementById('stat-pacts').innerText = localStorage.getItem('voldaan_stat_pacts') || '0';
