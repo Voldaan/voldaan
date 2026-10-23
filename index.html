@@ -481,15 +481,6 @@
       line-height: 1.4;
     }
 
-    .buddy-pulse {
-      background-color: var(--soft-purple);
-      border: 1.5px solid var(--purple-border);
-      color: var(--purple-text);
-      padding: 16px;
-      border-radius: 14px;
-      text-align: center;
-    }
-
     .filter-bar {
       display: flex;
       gap: 8px;
@@ -698,10 +689,17 @@
         </div>
       </div>
 
-      <div class="buddy-pulse" style="margin-bottom: 18px;">
-        <strong style="font-size: 0.9rem;">💜 Zachte Buddy-Pulse</strong>
-        <p style="font-size: 0.82rem; margin-top: 4px; opacity: 0.9;">Er zijn nu 54 anderen ook rustig op hun eigen tempo bezig.</p>
-        <button class="btn" style="margin-top: 10px; background-color: var(--purple-text); color: white; font-size: 0.82rem; padding: 8px 14px;" onclick="triggerConfetti(); alert('❤️ Signaal verzonden! Je hebt anoniem een schouderklopje gestuurd naar een lotgenoot.');">Stuur een anoniem schouderklopje</button>
+      <!-- ZACHTE BUDDY-LIJN (PREVENTIE & EERLIJKHEID - LAAG OP VANDAAG PAGINA) -->
+      <div class="card" style="margin-bottom: 18px; border: 1.5px solid var(--purple-border); background: var(--soft-purple);">
+        <h2>
+          💜 Zachte Buddy-Lijn
+          <button class="btn btn-secondary btn-small" onclick="openBuddySettingsModal()">⚙️ Beheer 4 Buddy's</button>
+        </h2>
+        <p class="subtitle" style="color: var(--purple-text); margin-bottom: 10px;">Lichte, snelle WhatsApp-signalen om op tijd eerlijk te zijn zonder het zwaar te maken.</p>
+
+        <div id="buddy-quick-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+          <!-- Knoppen worden dynamisch geladen -->
+        </div>
       </div>
 
       <!-- GEGEVENSBEHEER & BACKUP CARD -->
@@ -1138,6 +1136,49 @@
 
   <!-- ==================== MODALS ==================== -->
 
+  <!-- BUDDY SELECTIE & ACTIE MODAL -->
+  <div id="buddy-action-modal" class="modal-overlay hidden" onclick="closeBuddyActionModal()">
+    <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 480px;">
+      <div class="modal-header">
+        <h2 id="buddy-modal-title">💜 Signaal sturen naar...</h2>
+        <button class="btn btn-secondary btn-small" onclick="closeBuddyActionModal()">✕ Sluiten</button>
+      </div>
+      <p class="subtitle">Kies een subtiel signaal. WhatsApp opent direct met de tekst voor je uitgetypt.</p>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button class="btn" style="background-color: #ED8936; text-align: left; font-size: 0.88rem; padding: 12px;" onclick="sendBuddySignal('yellow')">
+          🟧 <strong>Code Geel (Preventie):</strong><br>
+          <span style="font-size: 0.78rem; font-weight: normal; opacity: 0.9;">"Ik voel wat onrust/neiging opkomen. Even eerlijk droppen voor afleiding."</span>
+        </button>
+
+        <button class="btn" style="background-color: #319795; text-align: left; font-size: 0.88rem; padding: 12px;" onclick="sendBuddySignal('green')">
+          🟩 <strong>Code Groen (Eerlijke Update):</strong><br>
+          <span style="font-size: 0.78rem; font-weight: normal; opacity: 0.9;">"Net even de fout in gegaan. Ik wil er meteen open over zijn."</span>
+        </button>
+
+        <button class="btn" style="background-color: var(--accent-primary); text-align: left; font-size: 0.88rem; padding: 12px;" onclick="sendBuddySignal('purple')">
+          🟪 <strong>Lichte Check-in:</strong><br>
+          <span style="font-size: 0.78rem; font-weight: normal; opacity: 0.9;">"Zin in een korte rustige check-in of een kop koffie?"</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BUDDY INSTELLINGEN MODAL -->
+  <div id="buddy-settings-modal" class="modal-overlay hidden" onclick="closeBuddySettingsModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2>⚙️ Beheer jouw 4 Buddy's</h2>
+        <button class="btn btn-secondary btn-small" onclick="closeBuddySettingsModal()">✕ Sluiten</button>
+      </div>
+      <p class="subtitle">Vul de namen en 06-nummers in van de 4 mensen die je vertrouwt.</p>
+
+      <div id="buddy-inputs-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
+      
+      <button class="btn" style="margin-top: 14px;" onclick="saveBuddySettings()">Opslaan</button>
+    </div>
+  </div>
+
   <!-- TAKEN ARCHIEF MODAL -->
   <div id="task-archive-modal" class="modal-overlay hidden" onclick="closeTaskArchiveModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
@@ -1334,7 +1375,7 @@
       document.getElementById(`view-${viewName}`).classList.remove('hidden');
       document.getElementById(`tab-${viewName}`).classList.add('active');
 
-      if (viewName === 'today') { renderTodayDashboard(); renderMarbleJar(); }
+      if (viewName === 'today') { renderTodayDashboard(); renderMarbleJar(); renderBuddyGrid(); }
       if (viewName === 'plan') { renderTasks(); renderCompassGoals(); renderContacts(); renderPact(); }
       if (viewName === 'vitality') renderVitalityView();
       if (viewName === 'ideas') { renderIdeas(); renderProjects(); }
@@ -1380,6 +1421,105 @@
         else ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
       render();
+    }
+
+    // --- ZACHTE BUDDY-LIJN LOGICA ---
+    let activeBuddyForSignal = null;
+
+    function getBuddies() {
+      const defaultBuddies = [
+        { id: 1, name: "Buddy 1", phone: "" },
+        { id: 2, name: "Buddy 2", phone: "" },
+        { id: 3, name: "Buddy 3", phone: "" },
+        { id: 4, name: "Buddy 4", phone: "" }
+      ];
+      return JSON.parse(localStorage.getItem('voldaan_buddies') || JSON.stringify(defaultBuddies));
+    }
+
+    function renderBuddyGrid() {
+      const buddies = getBuddies();
+      const container = document.getElementById('buddy-quick-grid');
+      if (!container) return;
+      container.innerHTML = '';
+
+      buddies.forEach(b => {
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-secondary';
+        btn.style.cssText = 'padding: 10px; font-size: 0.85rem; border-color: var(--purple-border); color: var(--purple-text); background: var(--card-bg); text-align: center;';
+        btn.innerHTML = `💬 ${b.name}`;
+        btn.onclick = () => openBuddyActionModal(b);
+        container.appendChild(btn);
+      });
+    }
+
+    function openBuddyActionModal(buddy) {
+      activeBuddyForSignal = buddy;
+      document.getElementById('buddy-modal-title').innerText = `💬 Signaal naar ${buddy.name}`;
+      document.getElementById('buddy-action-modal').classList.remove('hidden');
+    }
+
+    function closeBuddyActionModal() {
+      document.getElementById('buddy-action-modal').classList.add('hidden');
+    }
+
+    function sendBuddySignal(type) {
+      if (!activeBuddyForSignal) return;
+
+      let msg = "";
+      if (type === 'yellow') {
+        msg = `Hey ${activeBuddyForSignal.name}! Ik voel even wat onrust/neigingen opkomen. Ik wilde het even eerlijk bij je droppen om de spanning te breken. Geen paniek, later vandaag even appen/bellen? ☕`;
+      } else if (type === 'green') {
+        msg = `Hey ${activeBuddyForSignal.name}, even een eerlijke update: ik ben net even de fout in gegaan / het ging even mis. Ik wilde er meteen open over zijn naar jou. Laten we snel even sparren! 🍃`;
+      } else {
+        msg = `Hey ${activeBuddyForSignal.name}! Ik zoek even een zacht momentje van afleiding/check-in. Hoe is jouw dag? ☕`;
+      }
+
+      const cleanPhone = activeBuddyForSignal.phone ? activeBuddyForSignal.phone.replace(/[^0-9]/g, '') : '';
+      const url = cleanPhone 
+        ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}` 
+        : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+
+      window.open(url, '_blank');
+      
+      addMarble(`Eerlijk signaal gestuurd naar ${activeBuddyForSignal.name}`, 'Contacten');
+      triggerConfetti();
+      closeBuddyActionModal();
+    }
+
+    function openBuddySettingsModal() {
+      const buddies = getBuddies();
+      const container = document.getElementById('buddy-inputs-list');
+      container.innerHTML = '';
+
+      buddies.forEach((b, index) => {
+        container.innerHTML += `
+          <div style="background: var(--item-bg); padding: 10px; border-radius: 10px; border: 1px solid var(--input-border);">
+            <strong style="font-size: 0.8rem; color: var(--text-muted);">BUDDY ${index + 1}</strong>
+            <div style="display: flex; gap: 6px; margin-top: 4px;">
+              <input type="text" id="buddy-name-${index}" value="${b.name}" placeholder="Naam" style="margin-bottom:0; flex:1;">
+              <input type="text" id="buddy-phone-${index}" value="${b.phone || ''}" placeholder="06-nummer" style="margin-bottom:0; flex:1;">
+            </div>
+          </div>
+        `;
+      });
+
+      document.getElementById('buddy-settings-modal').classList.remove('hidden');
+    }
+
+    function closeBuddySettingsModal() {
+      document.getElementById('buddy-settings-modal').classList.add('hidden');
+    }
+
+    function saveBuddySettings() {
+      let buddies = [];
+      for (let i = 0; i < 4; i++) {
+        const name = document.getElementById(`buddy-name-${i}`).value.trim() || `Buddy ${i+1}`;
+        const phone = document.getElementById(`buddy-phone-${i}`).value.trim();
+        buddies.push({ id: i + 1, name, phone });
+      }
+      localStorage.setItem('voldaan_buddies', JSON.stringify(buddies));
+      closeBuddySettingsModal();
+      renderBuddyGrid();
     }
 
     // --- AGENDA (.ICS) EXPORT VOOR TAKEN & PACTEN ---
@@ -1927,6 +2067,7 @@
 
     function renderTodayDashboard() {
       renderMoodTrackerUI();
+      renderBuddyGrid();
 
       const savedPact = localStorage.getItem('voldaan_pact');
       const pactBox = document.getElementById('today-pact-box');
@@ -2115,7 +2256,6 @@
       document.getElementById('stat-pacts').innerText = localStorage.getItem('voldaan_stat_pacts') || '0';
       document.getElementById('stat-tasks').innerText = localStorage.getItem('voldaan_stat_tasks') || '0';
       
-      // Exacte Geld-Zeges Koppeling met Trots & KomPAS
       let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
       let paidBills = bills.filter(b => b.paid).length;
       let anchors = JSON.parse(localStorage.getItem('voldaan_future_anchors') || '[]');
