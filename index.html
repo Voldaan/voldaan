@@ -360,6 +360,45 @@
       padding-top: 6px;
     }
 
+    .postit-menu-btn {
+      background: none;
+      border: none;
+      font-size: 1.1rem;
+      cursor: pointer;
+      color: inherit;
+      padding: 0 4px;
+    }
+
+    .postit-menu {
+      position: absolute;
+      bottom: 30px;
+      right: 10px;
+      background: var(--card-bg);
+      border: 1.5px solid var(--input-border);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 6px;
+      z-index: 20;
+    }
+
+    .postit-menu button {
+      background: none;
+      border: none;
+      text-align: left;
+      padding: 6px 10px;
+      font-size: 0.78rem;
+      color: var(--text-main);
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    .postit-menu button:hover {
+      background: var(--item-bg);
+    }
+
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -490,7 +529,6 @@
       <button class="theme-toggle-btn" onclick="toggleTheme()" id="theme-btn">🌙 Nacht</button>
     </header>
 
-    <!-- GEWIJZIGDE VOLGORDE TABBLADEN: GELD IS NU 4E -->
     <nav class="nav-tabs">
       <button class="tab-btn active" onclick="switchView('today')" id="tab-today">🏠 Vandaag</button>
       <button class="tab-btn" onclick="switchView('plan')" id="tab-plan">🎯 Plannen</button>
@@ -505,7 +543,6 @@
     <!-- ==================== PAGINA 1: VANDAAG ==================== -->
     <div id="view-today">
 
-      <!-- DYNAMISCHE MOOD-CHECK-IN -->
       <div class="card" id="start-card" style="margin-bottom: 18px;">
         <h2>
           <span id="mood-card-title">☀️ Mijn Dag Begint Nu</span>
@@ -653,7 +690,6 @@
         </div>
       </div>
 
-      <!-- ZACHTE BUDDY-LIJN -->
       <div class="card" style="margin-bottom: 18px; border: 1.5px solid var(--purple-border); background: var(--soft-purple);">
         <h2>
           💜 Zachte Buddy-Lijn
@@ -662,11 +698,9 @@
         <p class="subtitle" style="color: var(--purple-text); margin-bottom: 10px;">Lichte, snelle WhatsApp-signalen om op tijd eerlijk te zijn zonder het zwaar te maken.</p>
 
         <div id="buddy-quick-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
-          <!-- Knoppen worden dynamisch geladen -->
         </div>
       </div>
 
-      <!-- GEGEVENSBEHEER & BACKUP CARD -->
       <div class="card">
         <h2>💾 Gegevensbeheer & Backup</h2>
         <p class="subtitle">Bewaar jouw opgebouwde progressie veilig op je eigen toestel.</p>
@@ -909,7 +943,7 @@
 
     </div>
 
-    <!-- ==================== PAGINA 4: GELD-KOMPAS (NU ALS 4E TABBLAD) ==================== -->
+    <!-- ==================== PAGINA 4: GELD-KOMPAS ==================== -->
     <div id="view-money" class="hidden">
       
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
@@ -1087,14 +1121,10 @@
 
         <textarea id="idea-input" rows="2" placeholder="Typ een willekeurig idee of wilde gedachte..."></textarea>
         
-        <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-          <select id="idea-category-select" style="margin-bottom: 0; flex: 1;">
-            <option value="Algemeen">🟡 Algemeen</option>
-            <option value="Creatief">🌸 Creatief</option>
-            <option value="Werk / Studie">🔵 Werk / Studie</option>
-            <option value="Privé / Thuis">🟢 Privé / Thuis</option>
-          </select>
+        <div style="display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap;">
+          <select id="idea-category-select" style="margin-bottom: 0; flex: 1 1 180px;"></select>
           <button class="btn btn-secondary btn-small" onclick="addNewCategoryPrompt()">+ Cat</button>
+          <button class="btn btn-secondary btn-small" onclick="openManageCategoriesModal()">✏️ Beheer</button>
         </div>
 
         <button class="btn btn-secondary" onclick="addIdea()">Prik op het Bord 📌</button>
@@ -1128,7 +1158,7 @@
 
     </div>
 
-    <!-- ==================== PAGINA 7: LUCHTIG (VOORBEREIDING) ==================== -->
+    <!-- ==================== PAGINA 7: LUCHTIG ==================== -->
     <div id="view-fun" class="hidden">
       <div class="card">
         <h2>☕ Luchtig & Passies</h2>
@@ -1141,7 +1171,7 @@
       </div>
     </div>
 
-    <!-- ==================== PAGINA 8: INZICHTEN (VOORBEREIDING) ==================== -->
+    <!-- ==================== PAGINA 8: INZICHTEN ==================== -->
     <div id="view-insights" class="hidden">
       <div class="card">
         <h2>📊 Visuele Inzichten & Trends</h2>
@@ -1157,6 +1187,24 @@
   </div>
 
   <!-- ==================== MODALS ==================== -->
+
+  <!-- CATEGORIEEN BEHEREN MODAL -->
+  <div id="manage-categories-modal" class="modal-overlay hidden" onclick="closeManageCategoriesModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2>✏️ Categorieën Beheren</h2>
+        <button class="btn btn-secondary btn-small" onclick="closeManageCategoriesModal()">✕ Sluiten</button>
+      </div>
+      <p class="subtitle">Pas bestaande namen aan of voeg nieuwe toe. Hernoemde categorieën worden automatisch bij je bestaande Post-its bijgewerkt!</p>
+
+      <div id="categories-manage-list" class="item-list" style="margin-bottom: 14px;"></div>
+
+      <div style="display:flex; gap:8px;">
+        <input type="text" id="new-category-input" placeholder="Nieuwe categorie naam..." style="margin-bottom:0; flex:1;">
+        <button class="btn btn-small" style="width:auto;" onclick="saveCategoryFromModal()">Toevoegen</button>
+      </div>
+    </div>
+  </div>
 
   <!-- BEWAARDE TIPS MODAL -->
   <div id="saved-tips-modal" class="modal-overlay hidden" onclick="closeSavedTipsModal()">
@@ -1362,12 +1410,11 @@
       <div id="add-ruimte-form" class="hidden" style="background: var(--item-bg); padding: 14px; border-radius: 12px; margin-bottom: 14px; border: 1.5px solid var(--input-border);">
         <strong style="display:block; font-size: 0.88rem; margin-bottom: 8px;" id="ruimte-form-title">Nieuw Familie-Project Toevoegen</strong>
         <input type="hidden" id="ruimte-edit-id" value="">
-        <input type="text" id="ruimte-title-input" placeholder="🤝 Naam...">
+        <input type="text" id="ruimte-title-input" placeholder="🤝 Naam van het project...">
         <div style="display:flex; gap:8px;">
           <input type="number" id="ruimte-amount-input" placeholder="💶 Bedrag (€)">
           <input type="number" id="ruimte-monthly-input" placeholder="🗓️ Maanddoel (€)">
         </div>
-        <input type="date" id="ruimte-targetdate-input">
         <div style="display:flex; gap:8px;">
           <button class="btn btn-small" onclick="saveRuimteProject()">Opslaan</button>
           <button class="btn btn-secondary btn-small" onclick="toggleAddRuimteForm()">Annuleren</button>
@@ -1385,16 +1432,6 @@
         <button class="btn btn-secondary btn-small" onclick="closeRuimteTotalDetailsModal()">✕ Sluiten</button>
       </div>
       <div id="ruimte-total-details-content"></div>
-    </div>
-  </div>
-
-  <div id="ruimte-details-modal" class="modal-overlay hidden" onclick="closeRuimteDetailsModal()">
-    <div class="modal-content" onclick="event.stopPropagation()">
-      <div class="modal-header">
-        <h2 id="modal-ruimte-title">🤝 Project Details</h2>
-        <button class="btn btn-secondary btn-small" onclick="closeRuimteDetailsModal()">✕ Sluiten</button>
-      </div>
-      <div id="modal-ruimte-content"></div>
     </div>
   </div>
 
@@ -1744,7 +1781,7 @@
       renderBuddyGrid();
     }
 
-    // --- AGENDA (.ICS) EXPORT VOOR TAKEN & PACTEN ---
+    // --- AGENDA EXPORT ---
     function pushTaskToCalendar(title) {
       const start = new Date();
       start.setHours(start.getHours() + 1);
@@ -1779,7 +1816,7 @@
       if (pactText) pushTaskToCalendar(pactText);
     }
 
-    // --- BACKUP & EXPORT/IMPORT LOGICA ---
+    // --- BACKUP LOGICA ---
     function exportBackupData() {
       let backup = {};
       for (let i = 0; i < localStorage.length; i++) {
@@ -1988,7 +2025,6 @@
     function renderVitalityView() {
       const todayStr = new Date().toLocaleDateString('nl-NL');
 
-      // Slaap
       let sleepLogs = JSON.parse(localStorage.getItem('voldaan_sleep_logs') || '{}');
       if (sleepLogs[todayStr]) {
         document.getElementById('sleep-checkin-box').classList.add('hidden');
@@ -2008,7 +2044,6 @@
         patternText.innerText = "Log zowel je nachtrust als je dagstart om patronen te ontdekken!";
       }
 
-      // Stappen
       let stepsLogs = JSON.parse(localStorage.getItem('voldaan_steps_logs') || '{}');
       if (stepsLogs[todayStr]) {
         document.getElementById('steps-checkin-box').classList.add('hidden');
@@ -2019,7 +2054,6 @@
         document.getElementById('steps-logged-status').classList.add('hidden');
       }
 
-      // Fitness Activiteiten
       let fitnessLogs = JSON.parse(localStorage.getItem('voldaan_fitness_logs') || '[]');
       const fitnessContainer = document.getElementById('fitness-activity-list');
       fitnessContainer.innerHTML = '';
@@ -2031,12 +2065,10 @@
         fitnessContainer.appendChild(div);
       });
 
-      // Rookbalans
       let smokeLogs = JSON.parse(localStorage.getItem('voldaan_smoke_logs') || '{}');
       const currentSmoke = smokeLogs[todayStr] || 0;
       document.getElementById('smoke-count-text').innerText = `${currentSmoke} / 5`;
 
-      // Snaai Wachtkamer
       let snacks = JSON.parse(localStorage.getItem('voldaan_snack_waits') || '[]');
       const snackContainer = document.getElementById('snack-wait-list');
       snackContainer.innerHTML = '';
@@ -2053,7 +2085,6 @@
         snackContainer.appendChild(div);
       });
 
-      // Stats
       const goodSleepCount = Object.values(sleepLogs).filter(s => s.status.includes('Goed')).length;
       const goodStepsCount = Object.values(stepsLogs).filter(s => s.achieved).length;
       document.getElementById('vitality-stat-sleep').innerText = goodSleepCount;
@@ -2926,7 +2957,8 @@
 
     const categoryColors = {
       'Algemeen': { light: '#FEF08A', dark: '#B45309', textLight: '#1E293B', textDark: '#FFFBEB' },
-      'Creatief': { light: '#FBCFE8', dark: '#9D174D', textLight: '#1E293B', textDark: '#FFFBEB' },
+      'Voldaan': { light: '#FBCFE8', dark: '#9D174D', textLight: '#1E293B', textDark: '#FFFBEB' },
+      'Creatief': { light: '#FED7AA', dark: '#C2410C', textLight: '#1E293B', textDark: '#FFFBEB' },
       'Werk / Studie': { light: '#BAE6FD', dark: '#0369A1', textLight: '#1E293B', textDark: '#FFFBEB' },
       'Privé / Thuis': { light: '#BBF7D0', dark: '#15803D', textLight: '#1E293B', textDark: '#FFFBEB' }
     };
@@ -2940,8 +2972,35 @@
       return `background-color: ${isDark ? '#4A5568' : '#EDF2F7'}; color: ${isDark ? '#FFFBEB' : '#1E293B'};`;
     }
 
+    // --- CATEGORIEEN & INITIALISATIE MET MIGRATIE ---
     function getCategories() {
-      return JSON.parse(localStorage.getItem('voldaan_categories') || '["Algemeen", "Creatief", "Werk / Studie", "Privé / Thuis"]');
+      let cats = JSON.parse(localStorage.getItem('voldaan_categories') || 'null');
+      if (!cats) {
+        cats = ["Algemeen", "Voldaan", "Creatief", "Werk / Studie", "Privé / Thuis"];
+        localStorage.setItem('voldaan_categories', JSON.stringify(cats));
+      } else {
+        if (cats.includes("Creatief") && !cats.includes("Voldaan")) {
+          const idx = cats.indexOf("Creatief");
+          cats[idx] = "Voldaan";
+          cats.push("Creatief");
+          localStorage.setItem('voldaan_categories', JSON.stringify(cats));
+        }
+      }
+      return cats;
+    }
+
+    function migrateCreatiefToVoldaan() {
+      let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
+      let updated = false;
+      ideas.forEach(i => {
+        if (i.category === 'Creatief') {
+          i.category = 'Voldaan';
+          updated = true;
+        }
+      });
+      if (updated) {
+        localStorage.setItem('voldaan_ideas', JSON.stringify(ideas));
+      }
     }
 
     function addNewCategoryPrompt() {
@@ -2953,6 +3012,86 @@
           localStorage.setItem('voldaan_categories', JSON.stringify(cats));
           updateCategoryDropdowns();
         }
+      }
+    }
+
+    function openManageCategoriesModal() {
+      document.getElementById('manage-categories-modal').classList.remove('hidden');
+      renderManageCategoriesModal();
+    }
+
+    function closeManageCategoriesModal() {
+      document.getElementById('manage-categories-modal').classList.add('hidden');
+    }
+
+    function renderManageCategoriesModal() {
+      const container = document.getElementById('categories-manage-list');
+      const cats = getCategories();
+      container.innerHTML = '';
+
+      cats.forEach((c) => {
+        const div = document.createElement('div');
+        div.className = 'item-card';
+        div.innerHTML = `
+          <strong>🏷️ ${c}</strong>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-secondary btn-small" style="font-size:0.75rem; padding:3px 8px;" onclick="renameCategoryPrompt('${c.replace(/'/g, "\\'")}')">✏️ Hernoemen</button>
+            <button class="btn btn-secondary btn-small" style="font-size:0.75rem; color:#E53E3E; padding:3px 8px;" onclick="deleteCategory('${c.replace(/'/g, "\\'")}')">🗑️ Wis</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function saveCategoryFromModal() {
+      const input = document.getElementById('new-category-input');
+      const name = input.value.trim();
+      if (!name) return;
+
+      let cats = getCategories();
+      if (!cats.includes(name)) {
+        cats.push(name);
+        localStorage.setItem('voldaan_categories', JSON.stringify(cats));
+        updateCategoryDropdowns();
+        renderManageCategoriesModal();
+      }
+      input.value = '';
+    }
+
+    function renameCategoryPrompt(oldName) {
+      const newName = prompt(`Geef categorie "${oldName}" een nieuwe naam:`, oldName);
+      if (!newName || !newName.trim() || newName.trim() === oldName) return;
+
+      let cats = getCategories();
+      const idx = cats.indexOf(oldName);
+      if (idx !== -1) {
+        cats[idx] = newName.trim();
+        localStorage.setItem('voldaan_categories', JSON.stringify(cats));
+      }
+
+      let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
+      ideas.forEach(i => { if (i.category === oldName) i.category = newName.trim(); });
+      localStorage.setItem('voldaan_ideas', JSON.stringify(ideas));
+
+      updateCategoryDropdowns();
+      renderManageCategoriesModal();
+      renderIdeas();
+    }
+
+    function deleteCategory(catName) {
+      let cats = getCategories();
+      if (cats.length <= 1) { alert("Je moet minimaal 1 categorie overhouden."); return; }
+      if (confirm(`Wil je de categorie "${catName}" verwijderen? Ideeën in deze categorie worden verplaatst naar Algemeen.`)) {
+        cats = cats.filter(c => c !== catName);
+        localStorage.setItem('voldaan_categories', JSON.stringify(cats));
+
+        let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
+        ideas.forEach(i => { if (i.category === catName) i.category = 'Algemeen'; });
+        localStorage.setItem('voldaan_ideas', JSON.stringify(ideas));
+
+        updateCategoryDropdowns();
+        renderManageCategoriesModal();
+        renderIdeas();
       }
     }
 
@@ -3209,6 +3348,7 @@
     function closeAllProjectsModal() { document.getElementById('all-projects-modal').classList.add('hidden'); }
     function renderAllProjectsModal() { renderProjects(); }
 
+    // --- RUIMTE-KOMPAS & FAMILIE PROJECTEN LOGICA ---
     function initDefaultRuimteData() {
       if (!localStorage.getItem('voldaan_ruimte_projects')) {
         localStorage.setItem('voldaan_ruimte_projects', JSON.stringify([
@@ -3217,11 +3357,50 @@
       }
     }
 
-    function openRuimteProjectsModal() { document.getElementById('ruimte-projects-modal').classList.remove('hidden'); renderRuimteKompas(); }
-    function closeRuimteProjectsModal() { document.getElementById('ruimte-projects-modal').classList.add('hidden'); }
-    function toggleAddRuimteForm() { document.getElementById('add-ruimte-form').classList.toggle('hidden'); }
+    function openRuimteProjectsModal() { 
+      document.getElementById('ruimte-projects-modal').classList.remove('hidden'); 
+      resetRuimteForm();
+      renderRuimteKompas(); 
+    }
+
+    function closeRuimteProjectsModal() { 
+      document.getElementById('ruimte-projects-modal').classList.add('hidden'); 
+    }
+
+    function toggleAddRuimteForm() { 
+      const form = document.getElementById('add-ruimte-form');
+      if (form.classList.contains('hidden')) {
+        resetRuimteForm();
+        form.classList.remove('hidden');
+      } else {
+        form.classList.add('hidden');
+      }
+    }
+
+    function resetRuimteForm() {
+      document.getElementById('ruimte-edit-id').value = '';
+      document.getElementById('ruimte-title-input').value = '';
+      document.getElementById('ruimte-amount-input').value = '';
+      document.getElementById('ruimte-monthly-input').value = '';
+      document.getElementById('ruimte-form-title').innerText = 'Nieuw Familie-Project Toevoegen';
+    }
+
+    function editRuimteProject(id) {
+      let projects = JSON.parse(localStorage.getItem('voldaan_ruimte_projects') || '[]');
+      const p = projects.find(item => item.id === id);
+      if (!p) return;
+
+      document.getElementById('ruimte-edit-id').value = p.id;
+      document.getElementById('ruimte-title-input').value = p.title;
+      document.getElementById('ruimte-amount-input').value = p.totalAmount;
+      document.getElementById('ruimte-monthly-input').value = p.monthlyTarget || '';
+      document.getElementById('ruimte-form-title').innerText = '✏️ Familie-Project Bewerken';
+
+      document.getElementById('add-ruimte-form').classList.remove('hidden');
+    }
 
     function saveRuimteProject() {
+      const editId = document.getElementById('ruimte-edit-id').value;
       const title = document.getElementById('ruimte-title-input').value;
       const amount = parseFloat(document.getElementById('ruimte-amount-input').value) || 0;
       const monthly = parseFloat(document.getElementById('ruimte-monthly-input').value) || 0;
@@ -3229,10 +3408,21 @@
       if (!title.trim() || amount <= 0) return;
 
       let projects = JSON.parse(localStorage.getItem('voldaan_ruimte_projects') || '[]');
-      projects.unshift({ id: Date.now(), title: title.trim(), totalAmount: amount, repaidAmount: 0, monthlyTarget: monthly, createdDate: getNowDateTimeStr(), history: [] });
+
+      if (editId) {
+        const idx = projects.findIndex(p => p.id === parseInt(editId));
+        if (idx !== -1) {
+          projects[idx].title = title.trim();
+          projects[idx].totalAmount = amount;
+          projects[idx].monthlyTarget = monthly;
+        }
+      } else {
+        projects.unshift({ id: Date.now(), title: title.trim(), totalAmount: amount, repaidAmount: 0, monthlyTarget: monthly, createdDate: getNowDateTimeStr(), history: [] });
+      }
 
       localStorage.setItem('voldaan_ruimte_projects', JSON.stringify(projects));
-      toggleAddRuimteForm();
+      resetRuimteForm();
+      document.getElementById('add-ruimte-form').classList.add('hidden');
       renderRuimteKompas();
     }
 
@@ -3259,16 +3449,17 @@
     }
 
     function removeRuimteProject(id) {
-      let projects = JSON.parse(localStorage.getItem('voldaan_ruimte_projects') || '[]');
-      projects = projects.filter(p => p.id !== id);
-      localStorage.setItem('voldaan_ruimte_projects', JSON.stringify(projects));
-      renderRuimteKompas();
-      updateStats();
+      if (confirm("Wil je dit familie-project verwijderen?")) {
+        let projects = JSON.parse(localStorage.getItem('voldaan_ruimte_projects') || '[]');
+        projects = projects.filter(p => p.id !== id);
+        localStorage.setItem('voldaan_ruimte_projects', JSON.stringify(projects));
+        renderRuimteKompas();
+        updateStats();
+      }
     }
 
     function openRuimteTotalDetailsModal() { document.getElementById('ruimte-total-details-modal').classList.remove('hidden'); }
     function closeRuimteTotalDetailsModal() { document.getElementById('ruimte-total-details-modal').classList.add('hidden'); }
-    function closeRuimteDetailsModal() { document.getElementById('ruimte-details-modal').classList.add('hidden'); }
 
     function renderRuimteKompas() {
       let projects = JSON.parse(localStorage.getItem('voldaan_ruimte_projects') || '[]');
@@ -3293,8 +3484,14 @@
 
         card.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-            <div><strong>🤝 ${p.title}</strong><div style="font-size:0.78rem; color:var(--text-muted);">Vrijgemaakt: €${repaid} van €${total}</div></div>
-            <button style="background:none; border:none; color:#E53E3E; cursor:pointer;" onclick="removeRuimteProject(${p.id})">✕</button>
+            <div>
+              <strong>🤝 ${p.title}</strong>
+              <div style="font-size:0.78rem; color:var(--text-muted);">Vrijgemaakt: €${repaid} van €${total} ${p.monthlyTarget ? `(Maanddoel: €${p.monthlyTarget})` : ''}</div>
+            </div>
+            <div style="display:flex; gap:4px;">
+              <button class="btn btn-secondary btn-small" style="font-size:0.72rem; padding:2px 6px;" onclick="editRuimteProject(${p.id})">✏️</button>
+              <button style="background:none; border:none; color:#E53E3E; cursor:pointer;" onclick="removeRuimteProject(${p.id})">✕</button>
+            </div>
           </div>
           <div style="display:flex; gap:6px; align-items:center;">
             <input type="number" id="ruimte-pay-input-${p.id}" placeholder="€" value="${p.monthlyTarget || ''}" style="margin-bottom:0; width:80px; font-size:0.8rem; padding:4px 6px;">
@@ -3464,6 +3661,7 @@
 
     // --- INIT ---
     initTheme();
+    migrateCreatiefToVoldaan();
     initDefaultCompassGoals();
     initDefaultMoneyData();
     initDefaultContacts();
