@@ -33,7 +33,7 @@
       --green-border: #C6F6D5;
       --green-text: #22543D;
       --input-bg: #FFFFFF;
-      --input-border: #E2E8F0;
+      --input-border: #CBD5E0; /* Subtiel iets meer contrast voor strakke randen */
       --item-bg: #F7FAFC;
       --radius: 16px;
       --shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
@@ -126,7 +126,7 @@
       background: var(--card-bg);
       padding: 6px;
       border-radius: 14px;
-      border: 1px solid var(--input-border);
+      border: 1.5px solid var(--input-border);
       box-shadow: var(--shadow);
       gap: 4px;
       margin-bottom: 6px;
@@ -156,7 +156,7 @@
 
     .theme-toggle-btn {
       background: var(--card-bg);
-      border: 1px solid var(--input-border);
+      border: 1.5px solid var(--input-border);
       color: var(--text-main);
       padding: 8px 12px;
       border-radius: 20px;
@@ -165,13 +165,14 @@
       box-shadow: var(--shadow);
     }
 
+    /* UNIFORME RANDEN ROND ALLE KAARTEN */
     .card {
       background: var(--card-bg);
       border-radius: var(--radius);
       padding: 20px;
       box-shadow: var(--shadow);
-      border: 1px solid rgba(0,0,0,0.03);
-      transition: background-color 0.3s ease;
+      border: 1.5px solid var(--input-border);
+      transition: background-color 0.3s ease, border-color 0.3s ease;
     }
 
     .card h2 {
@@ -209,7 +210,8 @@
     }
 
     .btn-secondary {
-      background-color: var(--input-border);
+      background-color: var(--item-bg);
+      border: 1.5px solid var(--input-border);
       color: var(--text-main);
     }
 
@@ -229,7 +231,7 @@
 
     .energy-btn {
       background: var(--item-bg);
-      border: 2px solid var(--input-border);
+      border: 1.5px solid var(--input-border);
       color: var(--text-main);
       border-radius: 10px;
       padding: 10px;
@@ -249,7 +251,7 @@
       width: 100%;
       background: var(--input-bg);
       color: var(--text-main);
-      border: 1px solid var(--input-border);
+      border: 1.5px solid var(--input-border);
       border-radius: 10px;
       padding: 10px 12px;
       font-size: 0.9rem;
@@ -268,15 +270,16 @@
       margin-top: 10px;
     }
 
+    /* UNIFORME RANDEN ROND ALLE ITEM CARDS */
     .item-card {
       background: var(--item-bg);
       padding: 12px;
-      border-radius: 10px;
+      border-radius: 12px;
       font-size: 0.9rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border: 1px solid var(--input-border);
+      border: 1.5px solid var(--input-border);
     }
 
     .item-card.done {
@@ -315,10 +318,11 @@
     }
 
     .postit {
-      border-radius: 6px;
+      border-radius: 8px;
       padding: 16px 14px 12px 14px;
-      box-shadow: 2px 4px 12px rgba(0,0,0,0.12);
+      box-shadow: 2px 4px 12px rgba(0,0,0,0.08);
       position: relative;
+      border: 1.5px solid rgba(0,0,0,0.08);
       transform: rotate(-1deg);
       transition: all 0.2s ease;
       display: flex;
@@ -354,7 +358,7 @@
       margin-top: 10px;
       font-size: 0.75rem;
       opacity: 0.9;
-      border-top: 1px dashed rgba(0,0,0,0.15);
+      border-top: 1px dashed rgba(0,0,0,0.18);
       padding-top: 6px;
     }
 
@@ -374,7 +378,7 @@
       right: 10px;
       background: var(--card-bg);
       color: var(--text-main);
-      border: 1px solid var(--input-border);
+      border: 1.5px solid var(--input-border);
       box-shadow: var(--shadow);
       border-radius: 8px;
       padding: 8px;
@@ -396,7 +400,7 @@
       border-radius: 4px;
     }
 
-    .postit-menu button:hover { background-color: var(--input-border); }
+    .postit-menu button:hover { background-color: var(--item-bg); }
 
     .modal-overlay {
       position: fixed;
@@ -421,6 +425,7 @@
       max-width: 620px;
       border-radius: var(--radius);
       padding: 22px;
+      border: 1.5px solid var(--input-border);
       box-shadow: var(--shadow);
       margin-top: 20px;
       margin-bottom: 40px;
@@ -444,7 +449,7 @@
       background: var(--item-bg);
       padding: 12px 6px;
       border-radius: 12px;
-      border: 1px solid var(--input-border);
+      border: 1.5px solid var(--input-border);
     }
 
     .stat-number {
@@ -461,7 +466,7 @@
 
     .tip-box {
       background-color: var(--soft-warm);
-      border: 1px solid var(--warm-border);
+      border: 1.5px solid var(--warm-border);
       color: var(--warm-text);
       padding: 16px;
       border-radius: 14px;
@@ -469,7 +474,7 @@
 
     .insight-card {
       background-color: var(--soft-teal);
-      border: 1px solid var(--teal-border);
+      border: 1.5px solid var(--teal-border);
       color: var(--teal-text);
       padding: 14px;
       border-radius: 12px;
@@ -480,7 +485,7 @@
 
     .buddy-pulse {
       background-color: var(--soft-purple);
-      border: 1px solid var(--purple-border);
+      border: 1.5px solid var(--purple-border);
       color: var(--purple-text);
       padding: 16px;
       border-radius: 14px;
@@ -547,7 +552,7 @@
     <!-- ==================== PAGINA 1: VANDAAG ==================== -->
     <div id="view-today">
 
-      <!-- DYNAMISCHE MOOD-CHECK-IN (COMPACT & EVOLUEREND) -->
+      <!-- DYNAMISCHE MOOD-CHECK-IN -->
       <div class="card" id="start-card" style="margin-bottom: 18px;">
         <h2>
           <span id="mood-card-title">☀️ Mijn Dag Begint Nu</span>
@@ -568,8 +573,7 @@
           </div>
         </div>
 
-        <!-- BEKNOPT TREND OVERZICHT VANDAAG -->
-        <div id="today-mood-trend-box" class="hidden" style="margin-top: 10px; background: var(--item-bg); padding: 8px 12px; border-radius: 10px; border: 1px solid var(--input-border); font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center;">
+        <div id="today-mood-trend-box" class="hidden" style="margin-top: 10px; background: var(--item-bg); padding: 8px 12px; border-radius: 10px; border: 1.5px solid var(--input-border); font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center;">
           <div>
             <span style="color: var(--text-muted);">Verloop vandaag:</span>
             <strong id="today-mood-trend-text" style="color: var(--accent-primary); margin-left: 4px;"></strong>
@@ -615,7 +619,7 @@
           📋 Actie-Hub voor Vandaag
           <span style="font-size: 0.75rem; background: var(--accent-primary); color: white; padding: 3px 8px; border-radius: 10px;">Direct Afvinken</span>
         </h2>
-        <p class="subtitle">Hier verzamelen we de belangrijkste zaken van jouw andere tabbladen. Vink ze hier direct af, het synchroniseert automatisch!</p>
+        <p class="subtitle">Hier verzamelen we de belangrijkste zaken van jouw andere tabbladen. Vink ze hier direct af!</p>
 
         <div style="margin-bottom: 14px;">
           <strong style="font-size: 0.82rem; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 6px;">🌙 Jouw Avond-Pact voor Vandaag:</strong>
@@ -624,7 +628,7 @@
 
         <div style="margin-bottom: 14px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-            <strong style="font-size: 0.82rem; color: var(--text-muted); text-transform: uppercase;">🎯 Focus-Taken voor Vandaag:</strong>
+            <strong style="font-size: 0.82rem; color: var(--text-muted); text-transform: uppercase;">🎯 Focus-Taken (Nieuwste Eerst):</strong>
             <button class="btn btn-secondary btn-small" style="font-size: 0.72rem; padding: 2px 8px;" onclick="switchView('plan')">Beheer op Plannen-tab ➔</button>
           </div>
           <div id="today-tasks-list" class="item-list"></div>
@@ -639,14 +643,14 @@
         </div>
       </div>
 
-      <div class="card" style="margin-bottom: 18px; background: linear-gradient(135deg, var(--card-bg) 0%, var(--soft-warm) 100%); border: 1px solid var(--warm-border);">
+      <div class="card" style="margin-bottom: 18px; background: linear-gradient(135deg, var(--card-bg) 0%, var(--soft-warm) 100%); border: 1.5px solid var(--warm-border);">
         <h2>
           💡 Idee van de Dag
           <button class="btn btn-small" style="background-color: #ED8936; color: white;" onclick="openGrabbeltonModal()">🎲 Grabbelen</button>
         </h2>
         <p class="subtitle">Een willekeurige gedachte uit jouw Ideeënkluis ter inspiratie.</p>
         
-        <div id="today-random-idea-box" style="background: var(--card-bg); padding: 12px 14px; border-radius: 12px; border: 1px solid var(--input-border); font-size: 0.9rem;">
+        <div id="today-random-idea-box" style="background: var(--card-bg); padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--input-border); font-size: 0.9rem;">
           Laden van een mooi idee...
         </div>
       </div>
@@ -715,7 +719,7 @@
         <p class="subtitle">Zet één piepkleine micro-stap klaar voor morgen. Zo hoef je 's ochtends niet na te denken.</p>
 
         <div id="pact-display" class="hidden">
-          <div style="background: var(--item-bg); padding: 14px; border-radius: 10px; border-left: 4px solid var(--accent-primary); border: 1px solid var(--input-border);">
+          <div style="background: var(--item-bg); padding: 14px; border-radius: 12px; border-left: 4px solid var(--accent-primary); border: 1.5px solid var(--input-border);">
             <strong style="display:block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">JOUW AFSPRAAK:</strong>
             <span id="current-pact-text" style="font-size: 1rem; font-weight: 500;"></span>
           </div>
@@ -735,7 +739,7 @@
           <button class="btn" onclick="savePact()">Leg vast voor morgen</button>
         </div>
 
-        <div id="pact-history-box" class="hidden" style="margin-top: 14px; background: var(--item-bg); padding: 12px; border-radius: 10px; border: 1px solid var(--input-border);">
+        <div id="pact-history-box" class="hidden" style="margin-top: 14px; background: var(--item-bg); padding: 12px; border-radius: 12px; border: 1.5px solid var(--input-border);">
           <strong style="font-size: 0.85rem;">📜 Jouw Pacten Historie</strong>
           <div id="pact-history-list" class="item-list"></div>
         </div>
@@ -744,9 +748,9 @@
       <div class="card" style="margin-bottom: 18px;">
         <h2>
           🎯 Zacht Planbord
-          <button class="btn btn-secondary btn-small" onclick="toggleTaskArchive()">📜 Taken Archief</button>
+          <button class="btn btn-secondary btn-small" onclick="openTaskArchiveModal()">📜 Taken Archief Pop-up</button>
         </h2>
-        <p class="subtitle">Kies maximaal 2 of 3 behapbare acties voor nu.</p>
+        <p class="subtitle">Kies behapbare acties voor nu (nieuwste taken automatisch bovenaan).</p>
 
         <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;">
           <input type="text" id="task-input" placeholder="Kleine actie voor nu..." style="margin-bottom: 0; flex: 1 1 200px;">
@@ -777,11 +781,6 @@
         </div>
 
         <div id="tasks-list" class="item-list"></div>
-
-        <div id="task-archive-box" class="hidden" style="margin-top: 14px; background: var(--item-bg); padding: 12px; border-radius: 10px; border: 1px solid var(--input-border);">
-          <strong style="font-size: 0.85rem;">📜 Voltooide Taken Archief</strong>
-          <div id="task-archive-list" class="item-list"></div>
-        </div>
       </div>
 
       <div class="card" style="margin-bottom: 18px;">
@@ -791,7 +790,7 @@
         </h2>
         <p class="subtitle">Langetermijn voornemens met een ingebouwd veiligheidsnet.</p>
 
-        <div id="add-goal-form" class="hidden" style="background: var(--item-bg); padding: 14px; border-radius: 12px; margin-bottom: 14px; border: 1px solid var(--input-border);">
+        <div id="add-goal-form" class="hidden" style="background: var(--item-bg); padding: 14px; border-radius: 12px; margin-bottom: 14px; border: 1.5px solid var(--input-border);">
           <strong style="display:block; font-size: 0.88rem; margin-bottom: 8px;">Nieuw Doel Toevoegen</strong>
           <input type="text" id="goal-title-input" placeholder="🎯 Wat wil je opbouwen?">
           <input type="text" id="goal-pitfall-input" placeholder="🕳️ Bekende valkuil?">
@@ -831,7 +830,7 @@
           </div>
         </div>
 
-        <div id="sleep-logged-status" class="hidden" style="margin-top: 10px; background: var(--item-bg); padding: 12px; border-radius: 10px; border: 1px solid var(--input-border);">
+        <div id="sleep-logged-status" class="hidden" style="margin-top: 10px; background: var(--item-bg); padding: 12px; border-radius: 12px; border: 1.5px solid var(--input-border);">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
               <strong style="font-size: 0.88rem;">Vandaag vastgelegd:</strong>
@@ -858,7 +857,7 @@
           </div>
         </div>
 
-        <div id="steps-logged-status" class="hidden" style="margin-top: 10px; background: var(--item-bg); padding: 12px; border-radius: 10px; border: 1px solid var(--input-border);">
+        <div id="steps-logged-status" class="hidden" style="margin-top: 10px; background: var(--item-bg); padding: 12px; border-radius: 12px; border: 1.5px solid var(--input-border);">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
               <strong style="font-size: 0.88rem;">Stappen-stempel vandaag:</strong>
@@ -885,7 +884,7 @@
         <h2>🍎 Voeding & Balans GewoONTES</h2>
         <p class="subtitle">Geen strenge regels. Alleen zachte stempels voor de gewoONTES die je bewust in balans wilt houden.</p>
 
-        <div style="background: var(--item-bg); padding: 12px; border-radius: 10px; border: 1px solid var(--input-border); margin-bottom: 12px;">
+        <div style="background: var(--item-bg); padding: 12px; border-radius: 12px; border: 1.5px solid var(--input-border); margin-bottom: 12px;">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
               <strong style="font-size: 0.88rem;">🚬 Rook-Balans (Max 5 per dag):</strong>
@@ -899,11 +898,11 @@
         </div>
 
         <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;">
-          <button class="btn btn-secondary btn-small" style="flex: 1; border: 1px solid var(--green-border);" onclick="logBalanceHabit('Alcoholvrije Dag 🍷❌', 'Gezondheid')">🍷 Alcoholvrije Dag</button>
-          <button class="btn btn-secondary btn-small" style="flex: 1; border: 1px solid var(--green-border);" onclick="logBalanceHabit('Gezonde Voeding / Fruit 🥗', 'Gezondheid')">🥗 Gezond Gegeten</button>
+          <button class="btn btn-secondary btn-small" style="flex: 1; border: 1.5px solid var(--green-border);" onclick="logBalanceHabit('Alcoholvrije Dag 🍷❌', 'Gezondheid')">🍷 Alcoholvrije Dag</button>
+          <button class="btn btn-secondary btn-small" style="flex: 1; border: 1.5px solid var(--green-border);" onclick="logBalanceHabit('Gezonde Voeding / Fruit 🥗', 'Gezondheid')">🥗 Gezond Gegeten</button>
         </div>
 
-        <div style="background: var(--soft-warm); padding: 12px; border-radius: 10px; border: 1px solid var(--warm-border);">
+        <div style="background: var(--soft-warm); padding: 12px; border-radius: 12px; border: 1.5px solid var(--warm-border);">
           <strong style="font-size: 0.85rem; color: var(--warm-text); display: block; margin-bottom: 4px;">🛑 Snaai-Wachtkamer (15 Minuten Pauze)</strong>
           <p style="font-size: 0.78rem; color: var(--warm-text); margin-bottom: 8px;">Trek in een ondoordachte snack? Zet het even 15 minuten op pauze en kijk of de trek wegzakt.</p>
 
@@ -944,9 +943,12 @@
       <div class="card" style="margin-bottom: 18px;">
         <h2>
           📌 Ideeënkluis
-          <button class="btn btn-secondary btn-small" onclick="openGrabbeltonModal()">🎲 Grabbelton</button>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-secondary btn-small" onclick="openIdeasArchiveModal()">📜 Archief</button>
+            <button class="btn btn-secondary btn-small" onclick="openGrabbeltonModal()">🎲 Grabbelton</button>
+          </div>
         </h2>
-        <p class="subtitle">Schrijf je gedachten direct van je af. Hier tonen we altijd de 3 nieuwste Post-its.</p>
+        <p class="subtitle">Schrijf je gedachten van je af. Hier tonen we de 3 nieuwste Post-its.</p>
 
         <textarea id="idea-input" rows="2" placeholder="Typ een willekeurig idee of wilde gedachte..."></textarea>
         
@@ -974,7 +976,7 @@
         </h2>
         <p class="subtitle">Zet spontane Post-its of wilde ideeën om in gestructureerde projecten op jouw eigen tempo.</p>
 
-        <div id="add-project-form" class="hidden" style="background: var(--item-bg); padding: 14px; border-radius: 12px; margin-bottom: 14px; border: 1px solid var(--input-border);">
+        <div id="add-project-form" class="hidden" style="background: var(--item-bg); padding: 14px; border-radius: 12px; margin-bottom: 14px; border: 1.5px solid var(--input-border);">
           <strong style="display:block; font-size: 0.88rem; margin-bottom: 8px;">Nieuw Project Aanmaken</strong>
           <input type="text" id="project-title-input" placeholder="🚀 Titel van het project...">
           <textarea id="project-desc-input" rows="2" placeholder="Omschrijving of doel van dit project..."></textarea>
@@ -1006,7 +1008,7 @@
         </h2>
         <p class="subtitle">Herstel en breng familie-afspraken rustig in balans.</p>
 
-        <div style="background: var(--item-bg); padding: 14px; border-radius: 12px; border: 1px solid var(--input-border);">
+        <div style="background: var(--item-bg); padding: 14px; border-radius: 12px; border: 1.5px solid var(--input-border);">
           <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; font-weight:600;">
             <span>🌱 Totaal Vrijgemaakt:</span>
             <span id="ruimte-total-repaid-text" style="color:#38A169; font-size:1.05rem;">€0</span>
@@ -1032,7 +1034,7 @@
         </div>
       </div>
 
-      <div class="card" style="margin-bottom: 18px; border: 1px solid #38A169; padding: 14px; background: linear-gradient(135deg, var(--card-bg) 0%, var(--soft-green) 100%);">
+      <div class="card" style="margin-bottom: 18px; border: 1.5px solid #38A169; padding: 14px; background: linear-gradient(135deg, var(--card-bg) 0%, var(--soft-green) 100%);">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <div style="display: flex; align-items: center; gap: 8px;">
             <span style="font-size: 1.2rem;">💶</span>
@@ -1042,7 +1044,7 @@
             </div>
           </div>
 
-          <div id="payday-countdown-box" style="display: flex; gap: 4px; font-weight: 700; font-size: 0.85rem; color: #38A169; background: var(--card-bg); padding: 6px 10px; border-radius: 10px; border: 1px solid var(--green-border);">
+          <div id="payday-countdown-box" style="display: flex; gap: 4px; font-weight: 700; font-size: 0.85rem; color: #38A169; background: var(--card-bg); padding: 6px 10px; border-radius: 10px; border: 1.5px solid var(--green-border);">
             <span id="pd-days">00</span>d <span id="pd-hours">00</span>u <span id="pd-mins">00</span>m <span id="pd-secs">00</span>s
           </div>
         </div>
@@ -1126,7 +1128,33 @@
 
   <!-- ==================== MODALS ==================== -->
 
-  <!-- MOOD HISTORIE MODAL MET SLIMME FILTERS -->
+  <!-- TAKEN ARCHIEF MODAL (MET TERUGZET OPTIE) -->
+  <div id="task-archive-modal" class="modal-overlay hidden" onclick="closeTaskArchiveModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2>📜 Voltooide Taken Archief</h2>
+        <button class="btn btn-secondary btn-small" onclick="closeTaskArchiveModal()">✕ Sluiten</button>
+      </div>
+      <p class="subtitle">Hier staan alle afgevinkte taken. Herstel een taak als je deze opnieuw wilt oppakken.</p>
+      
+      <div id="task-archive-modal-list" class="item-list" style="max-height: 380px; overflow-y: auto;"></div>
+    </div>
+  </div>
+
+  <!-- IDEEËN ARCHIEF MODAL (MET TERUGZET OPTIE) -->
+  <div id="ideas-archive-modal" class="modal-overlay hidden" onclick="closeIdeasArchiveModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2>📜 Gearchiveerde Ideeën</h2>
+        <button class="btn btn-secondary btn-small" onclick="closeIdeasArchiveModal()">✕ Sluiten</button>
+      </div>
+      <p class="subtitle">Ideeën die als niet meer relevant zijn gemarkeerd. Zet ze eenvoudig terug in de actieve kluis!</p>
+      
+      <div id="ideas-archive-modal-grid" class="postit-grid" style="max-height: 400px; overflow-y: auto; padding: 4px;"></div>
+    </div>
+  </div>
+
+  <!-- MOOD HISTORIE MODAL -->
   <div id="mood-history-modal" class="modal-overlay hidden" onclick="closeMoodHistoryModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
@@ -1157,7 +1185,7 @@
   <div id="all-ideas-modal" class="modal-overlay hidden" onclick="closeAllIdeasModal()">
     <div class="modal-content" onclick="event.stopPropagation()" style="max-width:750px;">
       <div class="modal-header">
-        <h2>📌 Volledige Ideeënkluis</h2>
+        <h2>📌 Volledige Ideeënkluis (Nieuwste Eerst)</h2>
         <button class="btn btn-secondary btn-small" onclick="closeAllIdeasModal()">✕ Sluiten</button>
       </div>
 
@@ -1167,7 +1195,7 @@
           <option value="ALL">📂 Alle categorieën</option>
         </select>
         <select id="ideas-modal-sort-select" onchange="renderAllIdeasModal()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 6px;">
-          <option value="NEWEST">⏱️ Nieuwste eerst</option>
+          <option value="NEWEST" selected>⏱️ Nieuwste eerst</option>
           <option value="OLDEST">⏳ Oudste eerst</option>
           <option value="SHUFFLE">🎲 Alles door elkaar</option>
         </select>
@@ -1222,7 +1250,7 @@
 
       <button class="btn btn-secondary btn-small" style="margin-bottom: 12px;" onclick="toggleAddRuimteForm()">+ Nieuw Familie-Project</button>
 
-      <div id="add-ruimte-form" class="hidden" style="background: var(--item-bg); padding: 14px; border-radius: 12px; margin-bottom: 14px; border: 1px solid var(--input-border);">
+      <div id="add-ruimte-form" class="hidden" style="background: var(--item-bg); padding: 14px; border-radius: 12px; margin-bottom: 14px; border: 1.5px solid var(--input-border);">
         <strong style="display:block; font-size: 0.88rem; margin-bottom: 8px;" id="ruimte-form-title">Nieuw Familie-Project Toevoegen</strong>
         <input type="hidden" id="ruimte-edit-id" value="">
         <input type="text" id="ruimte-title-input" placeholder="🤝 Naam...">
@@ -1264,7 +1292,7 @@
   <div id="money-archive-modal" class="modal-overlay hidden" onclick="closeMoneyArchiveModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
-        <h2>📜 Geld-Kompas Archief</h2>
+        <h2>📜 Geld-KomPAS Archief</h2>
         <button class="btn btn-secondary btn-small" onclick="closeMoneyArchiveModal()">✕ Sluiten</button>
       </div>
       <div class="filter-bar">
@@ -1524,12 +1552,11 @@
         document.getElementById('sleep-logged-status').classList.add('hidden');
       }
 
-      // Slaap x Mood Patroon Analysis
       let energyLogs = JSON.parse(localStorage.getItem('voldaan_energy_logs') || '[]');
       const todayEnergy = energyLogs.find(l => l.dateStr === todayStr);
       const patternText = document.getElementById('sleep-mood-pattern-text');
       if (sleepLogs[todayStr] && todayEnergy) {
-        patternText.innerText = `Vandaag geslapen als: '${sleepLogs[todayStr].status}' en je dag gestart met mood '${todayEnergy.energy}'. Goed bezig met je balans!`;
+        patternText.innerText = `Vandaag geslapen als: '${sleepLogs[todayStr].status}' en je dag gestart met mood '${todayEnergy.energy}'. Goed bezig!`;
       } else {
         patternText.innerText = "Log zowel je nachtrust als je dagstart om patronen te ontdekken!";
       }
@@ -1587,7 +1614,7 @@
       document.getElementById('vitality-stat-balance').innerText = fitnessLogs.length;
     }
 
-    // --- MOOD TRACKER LOGICA (EVOLUEREND & DYNAMISCH) ---
+    // --- MOOD TRACKER LOGICA ---
     let selectedEnergyState = '';
 
     function selectEnergy(el, energy) {
@@ -1832,7 +1859,9 @@
       let tasks = JSON.parse(localStorage.getItem('voldaan_tasks') || '[]');
       const todayTasksBox = document.getElementById('today-tasks-list');
       todayTasksBox.innerHTML = '';
-      const activeTasks = tasks.filter(t => !t.done);
+      
+      // Sorteer actief: nieuwste eerst
+      const activeTasks = tasks.filter(t => !t.done).sort((a,b) => b.id - a.id);
 
       if (activeTasks.length === 0) {
         todayTasksBox.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted);">Geen actieve focus-taken voor vandaag. Rustig aan! 🎉</span>';
@@ -1882,33 +1911,97 @@
     }
 
     function renderTodayRandomIdea() {
-      let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
+      let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]').filter(i => !i.archived);
       const container = document.getElementById('today-random-idea-box');
       if (ideas.length === 0) {
-        container.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted);">Geen Post-its in je kluis. Prik er een op het Ideeën-tabblad!</span>';
+        container.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted);">Geen actieve Post-its in je kluis. Prik er een op het Ideeën-tabblad!</span>';
         return;
       }
-      if (!currentGrabbelIdea) { currentGrabbelIdea = ideas[Math.floor(Math.random() * ideas.length)]; }
+      if (!currentGrabbelIdea || currentGrabbelIdea.archived) { 
+        currentGrabbelIdea = ideas[Math.floor(Math.random() * ideas.length)]; 
+      }
       container.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
           <div>
             <strong style="font-size:0.95rem;">"${currentGrabbelIdea.text}"</strong>
             <span class="time-badge">🏷️ Categorie: ${currentGrabbelIdea.category}</span>
           </div>
-          <button class="btn btn-secondary btn-small" style="font-size:0.75rem;" onclick="moveIdeaToPlanbord(${currentGrabbelIdea.id})">🎯 Naar Planbord</button>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-secondary btn-small" style="font-size:0.75rem;" onclick="moveIdeaToPlanbord(${currentGrabbelIdea.id})">🎯 Naar Planbord</button>
+            <button class="btn btn-secondary btn-small" style="font-size:0.75rem; color:#E53E3E;" onclick="archiveIdea(${currentGrabbelIdea.id})">🍃 Niet meer relevant</button>
+          </div>
         </div>
       `;
     }
 
-    function openGrabbeltonModal() {
+    function archiveIdea(id) {
       let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
-      if (ideas.length === 0) { alert("Je Ideeënkluis is leeg!"); return; }
+      const idx = ideas.findIndex(i => i.id === id);
+      if (idx !== -1) {
+        ideas[idx].archived = true;
+        localStorage.setItem('voldaan_ideas', JSON.stringify(ideas));
+        currentGrabbelIdea = null;
+        renderTodayRandomIdea();
+        renderIdeas();
+      }
+    }
+
+    function restoreIdea(id) {
+      let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
+      const idx = ideas.findIndex(i => i.id === id);
+      if (idx !== -1) {
+        ideas[idx].archived = false;
+        localStorage.setItem('voldaan_ideas', JSON.stringify(ideas));
+        renderIdeas();
+        renderIdeasArchiveModal();
+      }
+    }
+
+    function openIdeasArchiveModal() {
+      document.getElementById('ideas-archive-modal').classList.remove('hidden');
+      renderIdeasArchiveModal();
+    }
+
+    function closeIdeasArchiveModal() {
+      document.getElementById('ideas-archive-modal').classList.add('hidden');
+    }
+
+    function renderIdeasArchiveModal() {
+      let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
+      const archivedIdeas = ideas.filter(i => i.archived).sort((a,b) => b.id - a.id);
+      const grid = document.getElementById('ideas-archive-modal-grid');
+      grid.innerHTML = '';
+
+      if (archivedIdeas.length === 0) {
+        grid.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted); grid-column: 1/-1;">Geen gearchiveerde ideeën.</span>';
+        return;
+      }
+
+      archivedIdeas.forEach(idea => {
+        const postit = document.createElement('div');
+        postit.className = 'postit';
+        postit.style.cssText = getPostitStyle(idea.category);
+        postit.innerHTML = `
+          <div class="postit-pin">📌</div>
+          <div class="postit-content">${idea.text}</div>
+          <div class="postit-footer">
+            <span>🏷️ <strong>${idea.category}</strong></span>
+            <button class="btn btn-small" style="font-size:0.72rem; background-color:#38A169; color:white; padding:3px 6px;" onclick="restoreIdea(${idea.id})">🔄 Terugzetten</button>
+          </div>
+        `;
+        grid.appendChild(postit);
+      });
+    }
+
+    function openGrabbeltonModal() {
+      let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]').filter(i => !i.archived);
+      if (ideas.length === 0) { alert("Je Ideeënkluis heeft geen actieve Post-its!"); return; }
       grabNewRandomIdea();
       document.getElementById('grabbelton-modal').classList.remove('hidden');
     }
 
     function grabNewRandomIdea() {
-      let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
+      let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]').filter(i => !i.archived);
       if (ideas.length === 0) return;
       
       currentGrabbelIdea = ideas[Math.floor(Math.random() * ideas.length)];
@@ -2051,7 +2144,7 @@
       if (!input.trim()) return;
 
       let tasks = JSON.parse(localStorage.getItem('voldaan_tasks') || '[]');
-      tasks.push({ id: Date.now(), text: input.trim(), category: categorySelect || 'Privé', done: false, created: getNowDateTimeStr(), doneAt: null });
+      tasks.unshift({ id: Date.now(), text: input.trim(), category: categorySelect || 'Privé', done: false, created: getNowDateTimeStr(), doneAt: null });
 
       localStorage.setItem('voldaan_tasks', JSON.stringify(tasks));
       if (!textInput) document.getElementById('task-input').value = '';
@@ -2087,6 +2180,7 @@
         localStorage.setItem('voldaan_tasks', JSON.stringify(tasks));
         renderTasks();
         renderTodayDashboard();
+        if (!document.getElementById('task-archive-modal').classList.contains('hidden')) renderTaskArchiveModal();
       }
     }
 
@@ -2096,46 +2190,80 @@
       localStorage.setItem('voldaan_tasks', JSON.stringify(tasks));
       renderTasks();
       renderTodayDashboard();
+      if (!document.getElementById('task-archive-modal').classList.contains('hidden')) renderTaskArchiveModal();
     }
 
-    function toggleTaskArchive() {
-      document.getElementById('task-archive-box').classList.toggle('hidden');
-      renderTasks();
+    // TAKEN ARCHIEF MODAL MET TERUGZET OPTIE
+    function openTaskArchiveModal() {
+      document.getElementById('task-archive-modal').classList.remove('hidden');
+      renderTaskArchiveModal();
+    }
+
+    function closeTaskArchiveModal() {
+      document.getElementById('task-archive-modal').classList.add('hidden');
+    }
+
+    function renderTaskArchiveModal() {
+      let tasks = JSON.parse(localStorage.getItem('voldaan_tasks') || '[]');
+      const doneTasks = tasks.filter(t => t.done).sort((a,b) => b.id - a.id);
+      const container = document.getElementById('task-archive-modal-list');
+      container.innerHTML = '';
+
+      if (doneTasks.length === 0) {
+        container.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted);">Nog geen voltooide taken in het archief.</span>';
+        return;
+      }
+
+      doneTasks.forEach(task => {
+        const cat = task.category || 'Privé';
+        const icon = taskCatIcons[cat] || '🏷️';
+        const div = document.createElement('div');
+        div.className = 'item-card done';
+        div.innerHTML = `
+          <div>
+            <span>✅ <strong>[${icon} ${cat}]</strong> ${task.text}</span>
+            <span class="time-badge">Voltooid: ${task.doneAt || 'Eerder'}</span>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-small" style="font-size:0.75rem; background-color:#38A169; color:white;" onclick="toggleTask(${task.id})">🔄 Terugzetten</button>
+            <button style="background:none; border:none; color:#E53E3E; cursor:pointer;" onclick="removeTask(${task.id})">✕</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
     }
 
     function renderTasks() {
       let tasks = JSON.parse(localStorage.getItem('voldaan_tasks') || '[]');
       const container = document.getElementById('tasks-list');
-      const archiveContainer = document.getElementById('task-archive-list');
-      if (!container || !archiveContainer) return;
+      if (!container) return;
 
       container.innerHTML = '';
-      archiveContainer.innerHTML = '';
 
       const filterCat = document.getElementById('tasks-filter-category') ? document.getElementById('tasks-filter-category').value : 'ALL';
       let filteredTasks = filterCat !== 'ALL' ? tasks.filter(t => (t.category || 'Privé') === filterCat) : tasks;
 
-      const activeTasks = filteredTasks.filter(t => !t.done);
-      const doneTasks = filteredTasks.filter(t => t.done).sort((a,b) => b.id - a.id);
+      // NIEUWSTE EERST WEERGEVEN
+      const activeTasks = filteredTasks.filter(t => !t.done).sort((a,b) => b.id - a.id);
 
-      const mainBoardTasks = [...activeTasks, ...doneTasks.slice(0, 1)];
-
-      if (mainBoardTasks.length === 0) {
-        container.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted);">Geen actieve taken. Neem rust!</span>';
+      if (activeTasks.length === 0) {
+        container.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted);">Geen actieve taken. Neem heerlijk rust!</span>';
+        return;
       }
 
-      mainBoardTasks.forEach((task) => {
+      activeTasks.forEach((task) => {
         const cat = task.category || 'Privé';
         const icon = taskCatIcons[cat] || '🏷️';
         const div = document.createElement('div');
-        div.className = `item-card ${task.done ? 'done' : ''}`;
+        div.className = 'item-card';
         div.innerHTML = `
           <div>
-            <span style="cursor:pointer;" onclick="toggleTask(${task.id})">${task.done ? '✅' : '⚪'} <strong style="font-size:0.78rem; opacity:0.85;">[${icon} ${cat}]</strong> ${task.text}</span>
-            <span class="time-badge">${task.done ? 'Voltooid: ' + task.doneAt : 'Aangemaakt: ' + task.created}</span>
+            <span style="cursor:pointer;" onclick="toggleTask(${task.id})">⚪ <strong style="font-size:0.78rem; opacity:0.85;">[${icon} ${cat}]</strong> ${task.text}</span>
+            <span class="time-badge">Aangemaakt: ${task.created}</span>
           </div>
           <div style="display:flex; gap:6px; align-items:center;">
-            ${!task.done ? `<button class="btn btn-secondary btn-small" style="font-size:0.75rem; padding:4px 6px;" onclick="editTask(${task.id})">✏️</button>` : ''}
+            <button class="btn btn-secondary btn-small" style="font-size:0.75rem; padding:4px 6px;" onclick="editTask(${task.id})">✏️</button>
+            <button class="btn btn-small" style="font-size:0.75rem; padding:4px 6px; background-color:#38A169;" onclick="toggleTask(${task.id})">✅</button>
             <button style="background:none; border:none; color:#E53E3E; cursor:pointer;" onclick="removeTask(${task.id})">✕</button>
           </div>
         `;
@@ -2236,7 +2364,7 @@
       if (!title.trim()) return;
 
       let goals = JSON.parse(localStorage.getItem('voldaan_compass_goals') || '[]');
-      goals.push({ id: Date.now(), title, pitfall, shield, lastLoggedDate: null, lastStatus: null });
+      goals.unshift({ id: Date.now(), title, pitfall, shield, lastLoggedDate: null, lastStatus: null });
 
       localStorage.setItem('voldaan_compass_goals', JSON.stringify(goals));
       document.getElementById('goal-title-input').value = '';
@@ -2312,7 +2440,7 @@
         if (isToday) {
           let label = goal.lastStatus === 'full' ? '✅ Volledig gelukt vandaag! 🎉' : goal.lastStatus === 'shield' ? '🛡️ Zacht Schild ingezet! 💜' : '🍃 Rustdag genomen.';
           statusHtml = `
-            <div style="display:flex; justify-content:space-between; align-items:center; background:var(--input-bg); padding:8px 10px; border-radius:8px; border:1px solid var(--input-border);">
+            <div style="display:flex; justify-content:space-between; align-items:center; background:var(--input-bg); padding:8px 10px; border-radius:8px; border:1.5px solid var(--input-border);">
               <span style="font-size:0.85rem; font-weight:600;">${label}</span>
               <button class="btn btn-secondary btn-small" style="font-size:0.75rem; padding:2px 6px;" onclick="resetGoalLog(${goal.id})">Wijzigen</button>
             </div>
@@ -2397,7 +2525,7 @@
       if (!input.value.trim()) return;
 
       let ideas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
-      ideas.unshift({ id: Date.now(), text: input.value.trim(), category: catSelect.value || 'Algemeen', created: getNowDateTimeStr() });
+      ideas.unshift({ id: Date.now(), text: input.value.trim(), category: catSelect.value || 'Algemeen', created: getNowDateTimeStr(), archived: false });
       localStorage.setItem('voldaan_ideas', JSON.stringify(ideas));
       input.value = '';
       renderIdeas();
@@ -2473,6 +2601,7 @@
             <button onclick="moveIdeaToPlanbord(${idea.id})">🎯 Naar Planbord</button>
             <button onclick="convertIdeaToProject(${idea.id})">🚀 Maak Project</button>
             <button onclick="editIdeaText(${idea.id})">✏️ Tekst bewerken</button>
+            <button onclick="archiveIdea(${idea.id})">🍃 Niet meer relevant</button>
             <button onclick="removeIdea(${idea.id})" style="color:#E53E3E;">🗑️ Verwijderen</button>
           </div>
         ` : ''}
@@ -2480,18 +2609,19 @@
       return postit;
     }
 
-    // TOONT ALTIJD DE 3 NIEUWSTE POST-ITS OP DE HOOFDPAGINA VAN IDEEËN
+    // TOONT ALTIJD DE 3 NIEUWSTE ACTIEVE POST-ITS
     function renderIdeas() {
       let allIdeas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
       const grid = document.getElementById('main-ideas-postit-grid');
       if (!grid) return;
       grid.innerHTML = '';
 
-      // Sorteren op nieuwste eerst & pak de eerste 3
-      const newestIdeas = [...allIdeas].sort((a,b) => b.id - a.id).slice(0, 3);
+      // Sorteren op nieuwste eerst & filter niet-gearchiveerd
+      const activeIdeas = allIdeas.filter(i => !i.archived).sort((a,b) => b.id - a.id);
+      const newestIdeas = activeIdeas.slice(0, 3);
 
       if (newestIdeas.length === 0) {
-        grid.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted); grid-column: 1/-1;">Geen Post-its in je kluis. Prik er een op!</span>';
+        grid.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted); grid-column: 1/-1;">Geen actieve Post-its in je kluis. Prik er een op!</span>';
       } else {
         newestIdeas.forEach(idea => grid.appendChild(createPostitElement(idea)));
       }
@@ -2503,12 +2633,25 @@
     function renderAllIdeasModal() {
       let allIdeas = JSON.parse(localStorage.getItem('voldaan_ideas') || '[]');
       const grid = document.getElementById('modal-ideas-postit-grid');
+      const searchVal = document.getElementById('ideas-modal-search-input') ? document.getElementById('ideas-modal-search-input').value.toLowerCase() : '';
+      const catVal = document.getElementById('ideas-modal-filter-category') ? document.getElementById('ideas-modal-filter-category').value : 'ALL';
+      const sortVal = document.getElementById('ideas-modal-sort-select') ? document.getElementById('ideas-modal-sort-select').value : 'NEWEST';
+
       grid.innerHTML = '';
 
-      if (allIdeas.length === 0) {
+      let filtered = allIdeas.filter(i => !i.archived);
+
+      if (searchVal) filtered = filtered.filter(i => i.text.toLowerCase().includes(searchVal));
+      if (catVal !== 'ALL') filtered = filtered.filter(i => i.category === catVal);
+
+      if (sortVal === 'NEWEST') filtered.sort((a,b) => b.id - a.id);
+      else if (sortVal === 'OLDEST') filtered.sort((a,b) => a.id - b.id);
+      else if (sortVal === 'SHUFFLE') filtered.sort(() => Math.random() - 0.5);
+
+      if (filtered.length === 0) {
         grid.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted); grid-column: 1/-1;">Geen ideeën gevonden.</span>';
       } else {
-        allIdeas.forEach(idea => grid.appendChild(createPostitElement(idea)));
+        filtered.forEach(idea => grid.appendChild(createPostitElement(idea)));
       }
     }
 
@@ -2537,7 +2680,7 @@
       const p = projects.find(item => item.id === projectId);
       if (p) {
         if (!p.tasks) p.tasks = [];
-        p.tasks.push({ id: Date.now(), text: text.trim(), done: false });
+        p.tasks.unshift({ id: Date.now(), text: text.trim(), done: false });
         localStorage.setItem('voldaan_projects', JSON.stringify(projects));
         renderProjects();
       }
@@ -2572,7 +2715,7 @@
       if (!container) return;
       container.innerHTML = '';
 
-      const activeProjects = projects.filter(p => !p.archived).slice(0, 3);
+      const activeProjects = projects.filter(p => !p.archived).sort((a,b) => b.id - a.id).slice(0, 3);
 
       if (activeProjects.length === 0) {
         container.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted);">Nog geen actieve projecten.</span>';
@@ -2587,7 +2730,7 @@
         card.style.gap = '8px';
 
         let subtasksHtml = (p.tasks && p.tasks.length > 0) ? p.tasks.map(t => `
-          <div style="display:flex; justify-content:space-between; align-items:center; background:var(--input-bg); padding:6px 8px; border-radius:6px; font-size:0.8rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; background:var(--input-bg); padding:6px 8px; border-radius:6px; font-size:0.8rem; border: 1px solid var(--input-border);">
             <span style="${t.done ? 'text-decoration:line-through; opacity:0.7;' : ''}" onclick="toggleProjectSubTask(${p.id}, ${t.id})">${t.done ? '✅' : '⚪'} ${t.text}</span>
           </div>
         `).join('') : '<span style="font-size:0.75rem; color:var(--text-muted);">Geen sub-taken.</span>';
@@ -2600,7 +2743,7 @@
             </div>
             <button style="background:none; border:none; color:#E53E3E; cursor:pointer;" onclick="deleteProject(${p.id})">✕</button>
           </div>
-          <div style="background:var(--item-bg); padding:8px; border-radius:8px; border:1px solid var(--input-border);">
+          <div style="background:var(--item-bg); padding:8px; border-radius:8px; border:1.5px solid var(--input-border);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
               <strong style="font-size:0.78rem; color:var(--text-muted); text-transform:uppercase;">Sub-taken:</strong>
               <button class="btn btn-secondary btn-small" style="font-size:0.7rem; padding:2px 6px;" onclick="addProjectSubTask(${p.id})">+ Sub-taak</button>
@@ -2636,7 +2779,7 @@
       if (!title.trim() || amount <= 0) return;
 
       let projects = JSON.parse(localStorage.getItem('voldaan_ruimte_projects') || '[]');
-      projects.push({ id: Date.now(), title: title.trim(), totalAmount: amount, repaidAmount: 0, monthlyTarget: monthly, createdDate: getNowDateTimeStr(), history: [] });
+      projects.unshift({ id: Date.now(), title: title.trim(), totalAmount: amount, repaidAmount: 0, monthlyTarget: monthly, createdDate: getNowDateTimeStr(), history: [] });
 
       localStorage.setItem('voldaan_ruimte_projects', JSON.stringify(projects));
       toggleAddRuimteForm();
@@ -2761,7 +2904,7 @@
       const name = prompt("Naam van de vaste last:");
       if (name && name.trim()) {
         let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
-        bills.push({ id: Date.now(), name: name.trim(), paid: false });
+        bills.unshift({ id: Date.now(), name: name.trim(), paid: false });
         localStorage.setItem('voldaan_fixed_bills', JSON.stringify(bills));
         renderMoneyView();
       }
@@ -2791,7 +2934,7 @@
       const amount = prompt("Streefbedrag €:");
 
       let anchors = JSON.parse(localStorage.getItem('voldaan_future_anchors') || '[]');
-      anchors.push({ id: Date.now(), name: name.trim(), amount: amount || '0', targetMonth: 'Z.A.P.', saved: false });
+      anchors.unshift({ id: Date.now(), name: name.trim(), amount: amount || '0', targetMonth: 'Z.A.P.', saved: false });
       localStorage.setItem('voldaan_future_anchors', JSON.stringify(anchors));
       renderMoneyView();
     }
