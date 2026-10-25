@@ -3,6 +3,8 @@ import { initTodayModule } from './today.js';
 import { initPlanModule } from './plan.js';
 import { initVitalityModule } from './vitality.js';
 import { initMoneyModule } from './money.js';
+import { initIdeasModule } from './ideas.js';
+import { initHacksModule } from './hacks.js';
 
 window.VoldaanApp = {
   state: null,
@@ -47,6 +49,18 @@ function initializeApp() {
     initMoneyModule();
   }
 
+  if (typeof window.initIdeasModule === 'function') {
+    window.initIdeasModule();
+  } else {
+    initIdeasModule();
+  }
+
+  if (typeof window.initHacksModule === 'function') {
+    window.initHacksModule();
+  } else {
+    initHacksModule();
+  }
+
   console.log('Voldaan modular scaffold geladen');
 }
 
@@ -55,3 +69,5 @@ window.initTodayModule = initTodayModule;
 window.initPlanModule = initPlanModule;
 window.initVitalityModule = initVitalityModule;
 window.initMoneyModule = initMoneyModule;
+window.initIdeasModule = initIdeasModule;
+window.initHacksModule = initHacksModule;
