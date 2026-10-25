@@ -255,13 +255,15 @@
         <p class="subtitle">Elke kleine overwinning vult jouw virtuele glazen pot. Filter op periode en categorie!</p>
 
         <div class="filter-bar" style="margin-top:0;">
-          <select id="marble-filter-time" onchange="renderMarbleJar()" style="margin-bottom:0; width: auto; font-size: 0.78rem; padding: 4px 8px;">
-            <option value="ALL">🗓️ Totaal alle tijd</option>
-            <option value="TODAY">☀️ Vandaag</option>
+          <select id="marble-filter-mode" onchange="renderMarbleJar()" style="margin-bottom:0; width: auto; font-size: 0.78rem; padding: 4px 8px;">
+            <option value="ALL">🗓️ Alle tijd</option>
+            <option value="DAY">☀️ Specifieke Dag</option>
             <option value="WEEK">📅 Deze Week</option>
             <option value="MONTH">🗓️ Deze Maand</option>
             <option value="YEAR">🚀 Dit Jaar</option>
           </select>
+
+          <input type="date" id="marble-filter-date" class="hidden" onchange="renderMarbleJar()" style="margin-bottom:0; width: auto; font-size: 0.78rem; padding: 2px 6px;">
 
           <select id="marble-filter-cat" onchange="renderMarbleJar()" style="margin-bottom:0; width: auto; font-size: 0.78rem; padding: 4px 8px;">
             <option value="ALL">📂 Alle Categorieën</option>
@@ -534,6 +536,9 @@
           <button class="btn btn-secondary btn-small" onclick="logFitnessActivity('Wandeling gemaakt 🚶')">🚶 Wandelen</button>
           <button class="btn btn-secondary btn-small" onclick="logFitnessActivity('Gefietst 🚲')">🚲 Fietsen</button>
           <button class="btn btn-secondary btn-small" onclick="logFitnessActivity('Sport / Workout 🏋️')">🏋️ Sport / Workout</button>
+          <button class="btn btn-secondary btn-small" onclick="logFitnessActivity('Voetbal ⚽')">⚽ Voetbal</button>
+          <button class="btn btn-secondary btn-small" onclick="logFitnessActivity('Zaalvoetbal 👟⚽')">👟⚽ Zaalvoetbal</button>
+          <button class="btn btn-secondary btn-small" onclick="logFitnessActivity('Hardlopen 🏃')">🏃 Hardlopen</button>
           <button class="btn btn-secondary btn-small" onclick="logFitnessActivity('Rekken / Yoga 🧘')">🧘 Rekken / Yoga</button>
         </div>
 
@@ -596,16 +601,6 @@
         <button class="btn btn-secondary btn-small" onclick="openMoneyArchiveModal()">📜 Geld-Archief</button>
       </div>
 
-      <!-- SECTIE: STUDIESCHULD KOMPAS -->
-      <div class="card" style="margin-bottom: 18px; border: 1.5px solid #3182CE; background: linear-gradient(135deg, var(--card-bg) 0%, var(--soft-purple) 100%);">
-        <h2>
-          🎓 Studieschuld KomPAS
-          <button class="btn btn-secondary btn-small" onclick="openStudyDebtModal()">✏️ Instellen / Bewerken</button>
-        </h2>
-        <p class="subtitle">Houd in jouw eigen tempo overzicht op je studieschuld en aflossing.</p>
-        <div id="study-debt-display-box" style="background: var(--card-bg); padding: 14px; border-radius: 12px; border: 1.5px solid var(--input-border);"></div>
-      </div>
-
       <!-- SECTIE: RUIMTE-KOMPAS -->
       <div class="card" style="margin-bottom: 18px; border: 2px solid var(--accent-primary);">
         <h2>
@@ -638,6 +633,16 @@
           <button class="btn btn-small" onclick="openRuimteProjectsModal()">📂 Bekijk & Beheer Projecten</button>
           <button class="btn btn-secondary btn-small" onclick="openRuimteTotalDetailsModal()">📊 Totale Details & Historie</button>
         </div>
+      </div>
+
+      <!-- SECTIE: STUDIESCHULD KOMPAS (DIREKT ONDER RUIMTE-KOMPAS) -->
+      <div class="card" style="margin-bottom: 18px; border: 1.5px solid #3182CE; background: linear-gradient(135deg, var(--card-bg) 0%, var(--soft-purple) 100%);">
+        <h2>
+          🎓 Studieschuld KomPAS
+          <button class="btn btn-secondary btn-small" onclick="openStudyDebtModal()">✏️ Instellen / Bewerken</button>
+        </h2>
+        <p class="subtitle">Houd in jouw eigen tempo overzicht op je studieschuld en aflossing.</p>
+        <div id="study-debt-display-box" style="background: var(--card-bg); padding: 14px; border-radius: 12px; border: 1.5px solid var(--input-border);"></div>
       </div>
 
       <!-- SECTIE: PAYDAY RADAR -->
@@ -914,6 +919,15 @@
       <input type="number" id="study-total-input" placeholder="Totale Studieschuld (€)">
       <input type="number" id="study-repaid-input" placeholder="Reeds afgelost (€)">
       <input type="number" id="study-monthly-input" placeholder="Maandelijkse aflossing (€)">
+      
+      <div style="margin-top: 10px; margin-bottom: 12px; background: var(--item-bg); padding: 10px; border-radius: 10px; border: 1px solid var(--input-border);">
+        <strong style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 6px;">⚡ Snelle Extra Aflossing Registreren:</strong>
+        <div style="display: flex; gap: 6px;">
+          <input type="number" id="study-quick-pay-input" placeholder="Bedrag (€)" style="margin-bottom:0; flex:1; font-size:0.85rem;">
+          <button class="btn btn-small" style="background-color: #38A169; width:auto;" onclick="quickRepayStudyDebt()">💶 Aflossen</button>
+        </div>
+      </div>
+
       <div style="display:flex; gap:8px; margin-top:10px;">
         <button class="btn btn-small" onclick="saveStudyDebt()">Opslaan</button>
         <button class="btn btn-secondary btn-small" style="color:#E53E3E;" onclick="deleteStudyDebt()">🗑️ Verwijderen</button>
@@ -1072,27 +1086,30 @@
   <div id="mood-history-modal" class="modal-overlay hidden" onclick="closeMoodHistoryModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
-        <h2>📜 Mood Historie & Trends</h2>
+        <h2>📈 Mood Trend & Historie</h2>
         <button class="btn btn-secondary btn-small" onclick="closeMoodHistoryModal()">✕ Sluiten</button>
       </div>
-      <p class="subtitle">Bekijk hoe je gevoelswereld zich over langere tijd positief ontwikkelt.</p>
 
-      <div class="filter-bar">
-        <label style="font-size:0.78rem; color:var(--text-muted);">Tijdsbestek:</label>
-        <select id="mood-history-filter-time" onchange="renderMoodHistory()" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:4px 8px;">
-          <option value="TODAY">☀️ Vandaag</option>
+      <div class="filter-bar" style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
+        <select id="mood-history-filter-mode" onchange="renderMoodHistory()" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:6px 10px;">
           <option value="WEEK" selected>📅 Deze Week</option>
+          <option value="DAY">☀️ Specifieke Dag</option>
           <option value="MONTH">🗓️ Deze Maand</option>
           <option value="YEAR">🚀 Dit Jaar</option>
+          <option value="ALL">🗓️ Alle tijd</option>
         </select>
+        <input type="date" id="mood-history-filter-date" class="hidden" onchange="renderMoodHistory()" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:4px 8px;">
       </div>
 
-      <div class="insight-card" id="mood-trend-positive-box" style="margin-top:10px; margin-bottom:14px; background:var(--soft-green); border-color:var(--green-border); color:var(--green-text);">
-        <strong>🌱 Positieve Trend-Analyse:</strong>
-        <span id="mood-trend-positive-text">Je overzicht laat een constante groei naar meer rust zien!</span>
+      <!-- Visuele Trend Grafiek -->
+      <div class="chart-box" style="background:var(--item-bg); border:1.5px solid var(--input-border); border-radius:12px; padding:12px; margin-bottom:12px;">
+        <strong style="font-size:0.82rem; color:var(--text-muted); display:block; margin-bottom:6px;">📈 Energie-Verloop Grafiek</strong>
+        <div id="mood-chart-bars" class="chart-container" style="width:100%; height:130px; display:flex; align-items:flex-end; gap:6px; padding-top:18px; border-bottom:1px solid var(--input-border);"></div>
       </div>
 
-      <div id="mood-history-list" class="item-list" style="max-height:280px; overflow-y:auto;"></div>
+      <div id="mood-trend-positive-text" style="font-size: 0.82rem; color: var(--accent-primary); font-weight: 600; margin-bottom: 10px;"></div>
+
+      <div id="mood-history-list" class="item-list" style="max-height:220px; overflow-y:auto;"></div>
     </div>
   </div>
 
@@ -1641,27 +1658,39 @@
       const badge = document.getElementById('marble-count-badge');
       if (!container || !badge) return;
 
-      const timeFilter = document.getElementById('marble-filter-time') ? document.getElementById('marble-filter-time').value : 'ALL';
+      const modeSelect = document.getElementById('marble-filter-mode');
+      const dateInput = document.getElementById('marble-filter-date');
       const catFilter = document.getElementById('marble-filter-cat') ? document.getElementById('marble-filter-cat').value : 'ALL';
 
+      const mode = modeSelect ? modeSelect.value : 'ALL';
+      if (mode === 'DAY') { 
+        if (dateInput) dateInput.classList.remove('hidden'); 
+      } else { 
+        if (dateInput) dateInput.classList.add('hidden'); 
+      }
+
       const now = new Date();
-      const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-      const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay())).getTime();
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-      const startOfYear = new Date(now.getFullYear(), 0, 1).getTime();
-
       let filteredMarbles = marbles.filter(m => {
-        let matchTime = true;
         const ts = m.timestamp || m.id;
-        if (timeFilter === 'TODAY') matchTime = ts >= startOfToday;
-        else if (timeFilter === 'WEEK') matchTime = ts >= startOfWeek;
-        else if (timeFilter === 'MONTH') matchTime = ts >= startOfMonth;
-        else if (timeFilter === 'YEAR') matchTime = ts >= startOfYear;
+        const itemDate = new Date(ts);
 
-        let matchCat = true;
-        if (catFilter !== 'ALL') matchCat = m.category === catFilter;
+        let matchPeriod = true;
+        if (mode === 'DAY') {
+          const selDateStr = (dateInput && dateInput.value) ? new Date(dateInput.value).toLocaleDateString('nl-NL') : now.toLocaleDateString('nl-NL');
+          matchPeriod = itemDate.toLocaleDateString('nl-NL') === selDateStr;
+        } else if (mode === 'WEEK') {
+          const startOfWeek = new Date();
+          startOfWeek.setDate(now.getDate() - now.getDay());
+          startOfWeek.setHours(0,0,0,0);
+          matchPeriod = ts >= startOfWeek.getTime();
+        } else if (mode === 'MONTH') {
+          matchPeriod = itemDate.getMonth() === now.getMonth() && itemDate.getFullYear() === now.getFullYear();
+        } else if (mode === 'YEAR') {
+          matchPeriod = itemDate.getFullYear() === now.getFullYear();
+        }
 
-        return matchTime && matchCat;
+        let matchCat = (catFilter === 'ALL') || (m.category === catFilter);
+        return matchPeriod && matchCat;
       });
 
       badge.innerText = `${filteredMarbles.length} Knikker${filteredMarbles.length === 1 ? '' : 's'}`;
@@ -1934,41 +1963,65 @@
     function renderMoodHistory() {
       let energyLogs = JSON.parse(localStorage.getItem('voldaan_energy_logs') || '[]');
       const container = document.getElementById('mood-history-list');
-      const timeFilter = document.getElementById('mood-history-filter-time') ? document.getElementById('mood-history-filter-time').value : 'WEEK';
+      const chartContainer = document.getElementById('mood-chart-bars');
+      const modeSelect = document.getElementById('mood-history-filter-mode');
+      const dateInput = document.getElementById('mood-history-filter-date');
       const trendTextEl = document.getElementById('mood-trend-positive-text');
-      container.innerHTML = '';
 
-      if (energyLogs.length === 0) {
-        container.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted);">Nog geen stemmingen vastgelegd.</span>';
-        if (trendTextEl) trendTextEl.innerText = "Begin met inchecken om je positieve trend te ontdekken!";
-        return;
+      if (!container || !chartContainer) return;
+
+      container.innerHTML = '';
+      chartContainer.innerHTML = '';
+
+      const mode = modeSelect ? modeSelect.value : 'WEEK';
+      if (mode === 'DAY') { 
+        if (dateInput) dateInput.classList.remove('hidden'); 
+      } else { 
+        if (dateInput) dateInput.classList.add('hidden'); 
       }
 
       const now = new Date();
-      const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-      const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay())).getTime();
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-      const startOfYear = new Date(now.getFullYear(), 0, 1).getTime();
-
       let filteredLogs = energyLogs.filter(item => {
         const ts = item.timestamp || item.id;
-        if (timeFilter === 'TODAY') return ts >= startOfToday;
-        if (timeFilter === 'WEEK') return ts >= startOfWeek;
-        if (timeFilter === 'MONTH') return ts >= startOfMonth;
-        if (timeFilter === 'YEAR') return ts >= startOfYear;
+        const itemDate = new Date(ts);
+
+        if (mode === 'DAY') {
+          const selDateStr = (dateInput && dateInput.value) ? new Date(dateInput.value).toLocaleDateString('nl-NL') : now.toLocaleDateString('nl-NL');
+          return itemDate.toLocaleDateString('nl-NL') === selDateStr;
+        } else if (mode === 'WEEK') {
+          const startOfWeek = new Date();
+          startOfWeek.setDate(now.getDate() - now.getDay());
+          startOfWeek.setHours(0,0,0,0);
+          return ts >= startOfWeek.getTime();
+        } else if (mode === 'MONTH') {
+          return itemDate.getMonth() === now.getMonth() && itemDate.getFullYear() === now.getFullYear();
+        } else if (mode === 'YEAR') {
+          return itemDate.getFullYear() === now.getFullYear();
+        }
         return true;
       });
 
-      if (trendTextEl) {
-        if (timeFilter === 'YEAR') trendTextEl.innerText = `Over het hele jaar zie je dat je pieken van drukte steeds sneller transformeren naar rust & herstel! (${filteredLogs.length} Check-ins)`;
-        else if (timeFilter === 'MONTH') trendTextEl.innerText = `Deze maand laat een duidelijke stijgende lijn zien in je balans en bewustzijn! (${filteredLogs.length} Check-ins)`;
-        else if (timeFilter === 'WEEK') trendTextEl.innerText = `Deze week heb je al ${filteredLogs.length}x bewust stilgestaan bij je energie. Dat geeft grip!`;
-        else trendTextEl.innerText = `Vandaag heb je ${filteredLogs.length} waardevolle stempels gezet op je dag.`;
+      const moodValues = { 'Wazig / Moe': 1, 'Chaotisch': 2, 'Oké': 3, 'Gefocust': 4 };
+      if (filteredLogs.length > 0) {
+        const displayLogs = filteredLogs.slice(0, 10).reverse();
+        displayLogs.forEach(l => {
+          const val = moodValues[l.energy] || 2;
+          const pct = (val / 4) * 100;
+          const wrapper = document.createElement('div');
+          wrapper.className = 'chart-bar-wrapper';
+          wrapper.style.cssText = 'flex:1; display:flex; flex-direction:column; align-items:center; height:100%; justify-content:flex-end;';
+          wrapper.innerHTML = `
+            <div class="chart-bar" style="width:100%; max-width:24px; height: ${pct}%; background-color: var(--accent-primary); border-radius:4px 4px 0 0;" title="${l.energy}"></div>
+            <span class="chart-label" style="font-size:0.68rem; color:var(--text-muted); margin-top:4px;">${l.displayTime ? l.displayTime.slice(0,5) : (l.dateStr || '')}</span>
+          `;
+          chartContainer.appendChild(wrapper);
+        });
+      } else {
+        chartContainer.innerHTML = '<span style="font-size:0.78rem; color:var(--text-muted); margin:auto;">Geen stemmingen vastgelegd in deze periode.</span>';
       }
 
-      if (filteredLogs.length === 0) {
-        container.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted);">Geen check-ins gevonden voor deze periode.</span>';
-        return;
+      if (trendTextEl) {
+        trendTextEl.innerText = `In deze periode heb je ${filteredLogs.length} check-in(s) vastgelegd!`;
       }
 
       filteredLogs.forEach(item => {
@@ -3260,9 +3313,15 @@
         container.appendChild(card);
       });
 
+      const totalRemaining = Math.max(0, totalOriginal - totalRepaid);
+      const totalPct = totalOriginal > 0 ? Math.min(100, Math.round((totalRepaid / totalOriginal) * 100)) : 0;
+
       document.getElementById('ruimte-total-repaid-text').innerText = `€${totalRepaid}`;
-      document.getElementById('ruimte-total-remaining-text').innerText = `€${Math.max(0, totalOriginal - totalRepaid)}`;
+      document.getElementById('ruimte-total-remaining-text').innerText = `€${totalRemaining}`;
       document.getElementById('ruimte-total-original-text').innerText = `€${totalOriginal}`;
+
+      const barEl = document.getElementById('ruimte-total-progress-bar');
+      if (barEl) barEl.style.width = `${totalPct}%`;
     }
 
     // --- 🎓 STUDIESCHULD KOMPAS LOGICA ---
@@ -3288,6 +3347,27 @@
       localStorage.setItem('voldaan_study_debt', JSON.stringify({ total, repaid, monthly, updated: getNowDateTimeStr() }));
       closeStudyDebtModal();
       renderStudyDebtDisplay();
+    }
+
+    function quickRepayStudyDebt() {
+      const input = document.getElementById('study-quick-pay-input');
+      const val = parseFloat(input ? input.value : 0);
+      if (!val || val <= 0) return;
+
+      let debt = JSON.parse(localStorage.getItem('voldaan_study_debt') || 'null');
+      if (!debt) {
+        debt = { total: val, repaid: val, monthly: 0, updated: getNowDateTimeStr() };
+      } else {
+        debt.repaid = (debt.repaid || 0) + val;
+        debt.updated = getNowDateTimeStr();
+      }
+
+      localStorage.setItem('voldaan_study_debt', JSON.stringify(debt));
+      if (input) input.value = '';
+      addMarble(`Extra aflossing Studieschuld (€${val})`, 'Geld & Aflossingen');
+      triggerConfetti();
+      renderStudyDebtDisplay();
+      updateStats();
     }
 
     function deleteStudyDebt() {
@@ -3320,7 +3400,10 @@
           <span>Resterend: <strong>€${remaining}</strong></span>
         </div>
         <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: ${pct}%;"></div></div>
-        <div style="font-size:0.8rem; color:var(--accent-primary); text-align:center; margin-top:8px;">${mLeftText}</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+          <div style="font-size:0.8rem; color:var(--accent-primary);">${mLeftText}</div>
+          <button class="btn btn-small" style="font-size:0.72rem; padding:3px 8px; background-color:#38A169;" onclick="openStudyDebtModal()">+ Aflossing</button>
+        </div>
       `;
     }
 
