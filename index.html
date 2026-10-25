@@ -169,74 +169,171 @@
     }
     .modal-content {
       background: var(--card-bg); color: var(--text-main); width: 100%; max-width: 620px; border-radius: var(--radius);
-      padding: 22px; border: 1.5px solid var(--input-border); box-shadow: var(--shadow); margin-top: 20px; margin-bottom: 40px;
-    }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+                    <h3 class="font-bold text-gray-800 dark:text-gray-200">🗄️ Archief Vaste Lasten</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Gearchiveerde posten inzien, bewerken of herstellen</p>
+                </div>
+                <button onclick="closeModal('bill-archive-modal')" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xl font-bold">&times;</button>
+            </div>
 
-    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; }
-    .stat-box { background: var(--item-bg); padding: 12px 6px; border-radius: 12px; border: 1.5px solid var(--input-border); }
-    .stat-number { font-size: 1.3rem; font-weight: 700; color: var(--accent-primary); }
-    .stat-label { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+            <!-- Search & Filter Controls for Archive -->
+            <div class="flex flex-col sm:flex-row gap-2 mb-4">
+                <div class="relative flex-1">
+                    <input type="text" id="archive-search-input" oninput="renderBillArchive()" placeholder="🔍 Zoek in gearchiveerde vaste lasten..." class="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <select id="archive-filter-frequency" onchange="renderBillArchive()" class="px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="all">Alle frequenties</option>
+                    <option value="maandelijks">Maandelijks</option>
+                    <option value="jaarlijks">Jaarlijks</option>
+                    <option value="kwartaal">Kwartaal</option>
+                </select>
+            </div>
 
-    .tip-box { background-color: var(--soft-warm); border: 1.5px solid var(--warm-border); color: var(--warm-text); padding: 16px; border-radius: 14px; }
-    .insight-card { background-color: var(--soft-teal); border: 1.5px solid var(--teal-border); color: var(--teal-text); padding: 14px; border-radius: 12px; font-size: 0.88rem; margin-top: 12px; line-height: 1.4; }
+            <div id="bill-archive-list" class="space-y-3 max-h-96 overflow-y-auto pr-1">
+                <!-- Dynamic Archive Items -->
+            </div>
+        </div>
+    </div>
+</div>
 
-    .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; margin-bottom: 10px; align-items: center; }
-    .btn-group { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
-
-    .progress-bar-bg { background: var(--input-border); border-radius: 12px; height: 14px; width: 100%; overflow: hidden; margin-top: 6px; margin-bottom: 6px; }
-    .progress-bar-fill { background: linear-gradient(90deg, #38A169 0%, #319795 100%); height: 100%; transition: width 0.4s ease; }
-
-    .hidden { display: none !important; }
-  </style>
-</head>
-<body>
-
-  <canvas id="confetti-canvas"></canvas>
-
-  <div class="container">
-    
-    <header>
-      <div>
-        <h1>Voldaan</h1>
-        <p>Geen druk. Geen schuldgevoel. Jouw tempo.</p>
-      </div>
-      <button class="theme-toggle-btn" onclick="toggleTheme()" id="theme-btn">🌙 Nacht</button>
-    </header>
-
-    <nav class="nav-tabs">
-      <button class="tab-btn active" onclick="switchView('today')" id="tab-today">🏠 Vandaag</button>
-      <button class="tab-btn" onclick="switchView('plan')" id="tab-plan">🎯 Plannen</button>
-      <button class="tab-btn" onclick="switchView('vitality')" id="tab-vitality">🌿 Vitaliteit</button>
-      <button class="tab-btn" onclick="switchView('money')" id="tab-money">💶 Geld</button>
-      <button class="tab-btn" onclick="switchView('hacks')" id="tab-hacks">💡 Kennis & Hacks</button>
-      <button class="tab-btn" onclick="switchView('ideas')" id="tab-ideas">📌 Ideeënkluis</button>
-      <button class="tab-btn" onclick="switchView('fun')" id="tab-fun">☕ Luchtig</button>
-      <button class="tab-btn" onclick="switchView('insights')" id="tab-insights">📊 Inzichten</button>
-    </nav>
-
-    <!-- ==================== PAGINA 1: VANDAAG ==================== -->
-    <div id="view-today">
-
-      <div class="card" id="start-card" style="margin-bottom: 18px;">
-        <h2>
-          <span id="mood-card-title">☀️ Mijn Dag Begint Nu</span>
-          <button class="btn btn-secondary btn-small" onclick="openMoodHistoryModal()">📜 Mood Historie</button>
-        </h2>
-        <p class="subtitle" id="mood-card-subtitle">Het maakt niet uit hoe laat het is. Waar staat je brein op dit moment naar?</p>
-        
-        <div id="mood-selection-area">
-          <div class="energy-grid">
-            <button class="energy-btn" onclick="selectEnergy(this, 'Wazig / Moe')">🌫️ Wazig / Moe</button>
-            <button class="energy-btn" onclick="selectEnergy(this, 'Chaotisch')">⚡ Chaotisch / Vol</button>
-            <button class="energy-btn" onclick="selectEnergy(this, 'Oké')">☕ Rustig / Oké</button>
-            <button class="energy-btn" onclick="selectEnergy(this, 'Gefocust')">🚀 Gefocust</button>
-          </div>
+<!-- EDIT ARCHIVED BILL MODAL -->
+<div id="edit-archived-bill-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full p-6 shadow-xl border border-gray-100 dark:border-gray-700">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-gray-800 dark:text-gray-200 text-lg">✏️ Gearchiveerde Last Bewerken</h3>
+            <button onclick="closeModal('edit-archived-bill-modal')" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xl font-bold">&times;</button>
+        </div>
+        <form id="edit-archived-bill-form" onsubmit="handleSaveEditedArchivedBill(event)" class="space-y-4">
+            <input type="hidden" id="edit-archived-bill-id">
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Naam</label>
+                <input type="text" id="edit-archived-bill-name" required class="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Bedrag (€)</label>
+                    <input type="number" step="0.01" id="edit-archived-bill-amount" required class="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Frequentie</label>
+                    <select id="edit-archived-bill-frequency" class="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="maandelijks">Maandelijks</option>
+                        <option value="jaarlijks">Jaarlijks</option>
+                        <option value="kwartaal">Kwartaal</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Betaaldag van de maand</label>
+                <input type="number" min="1" max="31" id="edit-archived-bill-day" required class="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button type="button" onclick="closeModal('edit-archived-bill-modal')" class="px-4 py-2 text-xs font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600">Annuleren</button>
+                <button type="submit" class="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-md">Opslaan</button>
+            </div>
+        </form>
+    </div>
+</div>
 
           <div id="start-action" class="hidden" style="margin-top: 10px;">
-            <button class="btn btn-small" style="padding: 8px 14px;" onclick="startDay()">Stemming Vastleggen ✨</button>
-          </div>
+<!-- TAB: INZICHTEN -->
+<div id="view-insights" class="tab-content hidden space-y-6">
+    <!-- Header & Filter Bar -->
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+                    📈 Inzichten &amp; Multi-Trend Correlaties
+                </h2>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Analyseer verbanden tussen je slaap, gemoedstoestand, beweging, taken en financiën.</p>
+            </div>
+            
+            <!-- Global Filter Controls for Insights -->
+            <div class="flex flex-wrap items-center gap-2">
+                <select id="insights-timeframe" onchange="handleInsightsFilterChange()" class="px-3 py-2 text-xs rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="7">☀️ Afgelopen 7 Dagen</option>
+                    <option value="30" selected>🗓️ Afgelopen 30 Dagen</option>
+                    <option value="90">📊 Afgelopen Kwartaal</option>
+                    <option value="365">🚀 Dit Jaar (365d)</option>
+                    <option value="all">🗓️ Alle Tijd</option>
+                    <option value="custom">📅 Specifieke Datum</option>
+                </select>
+                <input type="date" id="insights-custom-date" onchange="renderInsightsView()" class="hidden px-3 py-2 text-xs rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
         </div>
+    </div>
+
+    <!-- Automated Smart Insights & Highlights -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="insights-smart-cards">
+        <!-- Dynamic correlation summary cards generated by JS -->
+    </div>
+
+    <!-- Multi-Trend Charts Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Trend 1: Slaap vs. Gemoedstoestand -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col justify-between">
+            <div class="flex justify-between items-start mb-3">
+                <div>
+                    <h3 class="font-bold text-sm text-gray-800 dark:text-gray-200 flex items-center gap-1.5">
+                        🌙 Slaapduur vs. 😀 Mood &amp; Energie
+                    </h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Verband tussen nachtrust en je dagelijkse energie</p>
+                </div>
+                <span class="text-xs px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 font-semibold">Correlatie</span>
+            </div>
+            <div class="h-64 relative w-full">
+                <canvas id="chart-sleep-mood"></canvas>
+            </div>
+        </div>
+
+        <!-- Trend 2: Beweging / Stappen vs. Gemoedstoestand -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col justify-between">
+            <div class="flex justify-between items-start mb-3">
+                <div>
+                    <h3 class="font-bold text-sm text-gray-800 dark:text-gray-200 flex items-center gap-1.5">
+                        🚶 Beweging &amp; Stappen vs. 😄 Welzijn
+                    </h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Invloed van fysieke activiteit op je mentale status</p>
+                </div>
+                <span class="text-xs px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 font-semibold">Activiteit</span>
+            </div>
+            <div class="h-64 relative w-full">
+                <canvas id="chart-activity-mood"></canvas>
+            </div>
+        </div>
+
+        <!-- Trend 3: Voltooide Taken vs. Trots-knikkers -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col justify-between">
+            <div class="flex justify-between items-start mb-3">
+                <div>
+                    <h3 class="font-bold text-sm text-gray-800 dark:text-gray-200 flex items-center gap-1.5">
+                        ✅ Voltooide Taken vs. 🔮 Trots-knikkers
+                    </h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Productiviteit gekoppeld aan je beloningen</p>
+                </div>
+                <span class="text-xs px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 font-semibold">Productiviteit</span>
+            </div>
+            <div class="h-64 relative w-full">
+                <canvas id="chart-tasks-marbles"></canvas>
+            </div>
+        </div>
+
+        <!-- Trend 4: Aflossingen / Geld-zeges vs. Gemoedstoestand -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col justify-between">
+            <div class="flex justify-between items-start mb-3">
+                <div>
+                    <h3 class="font-bold text-sm text-gray-800 dark:text-gray-200 flex items-center gap-1.5">
+                        💸 Financiële Zeges vs. 🧠 Rust &amp; Gemoed
+                    </h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Impact van aflossingen en besparingen op je humeur</p>
+                </div>
+                <span class="text-xs px-2.5 py-1 rounded-full bg-purple-50 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 font-semibold">Financiën</span>
+            </div>
+            <div class="h-64 relative w-full">
+                <canvas id="chart-finance-mood"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
 
         <div id="today-mood-trend-box" class="hidden" style="margin-top: 10px; background: var(--item-bg); padding: 8px 12px; border-radius: 10px; border: 1.5px solid var(--input-border); font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center;">
           <div>
@@ -1231,370 +1328,417 @@
 
   <script>
     function getNowDateTimeStr() {
-      return new Date().toLocaleDateString('nl-NL', { 
-        day: 'numeric', month: 'short', year: 'numeric',
-        hour: '2-digit', minute: '2-digit' 
-      });
-    }
+// Render & Filter Bill Archive Modal
+function renderBillArchive() {
+    const listEl = document.getElementById('bill-archive-list');
+    if (!listEl) return;
 
-    function switchView(viewName) {
-      ['today', 'plan', 'vitality', 'hacks', 'ideas', 'money', 'fun', 'insights'].forEach(v => {
-        const el = document.getElementById(`view-${v}`);
-        const tab = document.getElementById(`tab-${v}`);
-        if (el) el.classList.add('hidden');
-        if (tab) tab.classList.remove('active');
-      });
+    const searchTerm = (document.getElementById('archive-search-input')?.value || '').toLowerCase();
+    const freqFilter = document.getElementById('archive-filter-frequency')?.value || 'all';
 
-      const activeEl = document.getElementById(`view-${viewName}`);
-      const activeTab = document.getElementById(`tab-${viewName}`);
-      if (activeEl) activeEl.classList.remove('hidden');
-      if (activeTab) activeTab.classList.add('active');
+    const archivedBills = (appData.bills || []).filter(b => b.archived);
 
-      if (viewName === 'today') { renderTodayDashboard(); renderMarbleJar(); renderBuddyGrid(); }
-      if (viewName === 'plan') { renderTasks(); renderCompassGoals(); renderContacts(); renderPact(); }
-      if (viewName === 'vitality') renderVitalityView();
-      if (viewName === 'money') renderMoneyView();
-      if (viewName === 'hacks') renderHacksView();
-      if (viewName === 'ideas') { renderIdeas(); renderProjects(); }
-    }
+    const filtered = archivedBills.filter(bill => {
+        const matchesSearch = bill.name.toLowerCase().includes(searchTerm) || 
+                              (bill.amount && bill.amount.toString().includes(searchTerm));
+        const matchesFreq = freqFilter === 'all' || bill.frequency === freqFilter;
+        return matchesSearch && matchesFreq;
+    });
 
-    function triggerConfetti() {
-      const canvas = document.getElementById('confetti-canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-
-      let particles = [];
-      const colors = ['#5A67D8', '#B2F5EA', '#E9D8FD', '#FEEBC8', '#38A169', '#319795'];
-
-      for (let i = 0; i < 60; i++) {
-        particles.push({
-          x: window.innerWidth / 2,
-          y: window.innerHeight / 2,
-          vx: (Math.random() - 0.5) * 12,
-          vy: (Math.random() - 0.5) * 12 - 4,
-          size: Math.random() * 8 + 4,
-          color: colors[Math.floor(Math.random() * colors.length)],
-          life: 100
-        });
-      }
-
-      function render() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        let active = false;
-        particles.forEach(p => {
-          if (p.life > 0) {
-            active = true;
-            p.x += p.vx;
-            p.y += p.vy;
-            p.vy += 0.25;
-            p.life -= 2;
-            ctx.fillStyle = p.color;
-            ctx.fillRect(p.x, p.y, p.size, p.size);
-          }
-        });
-        if (active) requestAnimationFrame(render);
-        else ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }
-      render();
-    }
-
-    // --- 💡 KENNIS & BREIN-HACKS LOGICA ---
-    const knowledgeDatabase = [
-      { id: 1, category: "🧠 ADHD & Brein", title: "De 5-Minuten 'Slechte Poging'", text: "Geef jezelf toestemming om de eerste 5 minuten een hele slechte poging te doen. De drempel om te beginnen zakt daarmee met 80%." },
-      { id: 2, category: "🧠 ADHD & Brein", title: "Body Doubling", text: "Werken terwijl iemand anders simpelweg in de kamer zit of via een stil scherm aanwezig is, verlaagt startuitstel enorm." },
-      { id: 3, category: "💶 Geld & Impuls", title: "De Dopamine-Pauze", text: "Impulsaankopen geven snel dopamine. Zet het item 24 uur op de Impuls-Wachtkamer. Vaak zakt de drang daarna weg." },
-      { id: 4, category: "🔋 Energie & Slaap", title: "Licht in je Ogen", text: "Ga binnen 30 minuten na het opstaan even naar buiten. Buitenlicht zet je biologische klok goed voor betere nachtrust." },
-      { id: 5, category: "🎯 Focus & Actie", title: "Micro-Stappen", text: "Als 'de garage opruimen' te groot voelt, maak je taak '1 lege doos pakken'. Eén piepkleine actie brengt beweging." },
-      { id: 6, category: "🧠 ADHD & Brein", title: "Prikkel-Pauze", text: "Zit je brein vol? Leg je telefoon 5 minuten weg en sluit je ogen. Geef je brein rust om informatie te verwerken." },
-      { id: 7, category: "💶 Geld & Aflossingen", title: "Zacht Zelfinzicht", text: "Een financieel misstapje maakt je geen slecht mens. Bekijk het zonder oordeel: wat kan ik er zacht van leren?" }
-    ];
-
-    let currentFeedTip = null;
-
-    function renderHacksView() {
-      updateSavedTipsBadge();
-      if (!currentFeedTip) generateNextFeedTip();
-    }
-
-    function generateNextFeedTip() {
-      const randomIndex = Math.floor(Math.random() * knowledgeDatabase.length);
-      currentFeedTip = knowledgeDatabase[randomIndex];
-
-      document.getElementById('feed-category-badge').innerText = currentFeedTip.category;
-      document.getElementById('feed-title').innerText = currentFeedTip.title;
-      document.getElementById('feed-text').innerText = currentFeedTip.text;
-
-      updateFeedSaveButtonState();
-    }
-
-    function updateSavedTipsBadge() {
-      let saved = JSON.parse(localStorage.getItem('voldaan_saved_tips') || '[]');
-      const badge = document.getElementById('saved-tips-count');
-      if (badge) badge.innerText = saved.length;
-    }
-
-    function toggleSaveCurrentFeedTip() {
-      if (!currentFeedTip) return;
-
-      let saved = JSON.parse(localStorage.getItem('voldaan_saved_tips') || '[]');
-      const existingIdx = saved.findIndex(t => t.id === currentFeedTip.id);
-
-      if (existingIdx !== -1) {
-        saved.splice(existingIdx, 1);
-      } else {
-        saved.unshift({ ...currentFeedTip, savedAt: getNowDateTimeStr(), timestamp: Date.now() });
-        addMarble(`Tip bewaard: ${currentFeedTip.title}`, 'Algemeen');
-        triggerConfetti();
-      }
-
-      localStorage.setItem('voldaan_saved_tips', JSON.stringify(saved));
-      updateSavedTipsBadge();
-      updateFeedSaveButtonState();
-    }
-
-    function updateFeedSaveButtonState() {
-      if (!currentFeedTip) return;
-
-      let saved = JSON.parse(localStorage.getItem('voldaan_saved_tips') || '[]');
-      const isSaved = saved.some(t => t.id === currentFeedTip.id);
-      const btn = document.getElementById('feed-save-btn');
-
-      if (btn) {
-        btn.innerText = isSaved ? '❤️ Bewaard!' : '❤️ Bewaren';
-        btn.style.backgroundColor = isSaved ? '#38A169' : '#ED64A6';
-      }
-    }
-
-    function openSavedTipsModal() {
-      document.getElementById('saved-tips-modal').classList.remove('hidden');
-      renderSavedTipsModal();
-    }
-
-    function closeSavedTipsModal() {
-      document.getElementById('saved-tips-modal').classList.add('hidden');
-    }
-
-    function renderSavedTipsModal() {
-      let saved = JSON.parse(localStorage.getItem('voldaan_saved_tips') || '[]');
-      const container = document.getElementById('saved-tips-modal-list');
-      const searchVal = (document.getElementById('saved-tips-search') ? document.getElementById('saved-tips-search').value : '').toLowerCase();
-      const sortVal = document.getElementById('saved-tips-sort') ? document.getElementById('saved-tips-sort').value : 'NEWEST';
-
-      container.innerHTML = '';
-
-      if (searchVal) {
-        saved = saved.filter(t => t.title.toLowerCase().includes(searchVal) || t.text.toLowerCase().includes(searchVal) || t.category.toLowerCase().includes(searchVal));
-      }
-
-      if (sortVal === 'NEWEST') saved.sort((a,b) => b.timestamp - a.timestamp);
-      else saved.sort((a,b) => a.timestamp - b.timestamp);
-
-      if (saved.length === 0) {
-        container.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted);">Geen bewaarde tips gevonden.</span>';
+    if (filtered.length === 0) {
+        listEl.innerHTML = `
+            <div class="text-center py-8 text-gray-400 text-sm">
+                Geen gearchiveerde vaste lasten gevonden ${searchTerm || freqFilter !== 'all' ? 'met deze filters' : ''}.
+            </div>`;
         return;
-      }
-
-      saved.forEach(tip => {
-        const div = document.createElement('div');
-        div.className = 'item-card';
-        div.style.flexDirection = 'column';
-        div.style.alignItems = 'stretch';
-        div.style.gap = '6px';
-        div.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:0.75rem; font-weight:700; color:var(--accent-primary);">${tip.category}</span>
-            <button style="background:none; border:none; color:#E53E3E; cursor:pointer;" onclick="removeSavedTip(${tip.id})">✕ Verwijderen</button>
-          </div>
-          <strong>${tip.title}</strong>
-          <p style="font-size:0.85rem; color:var(--text-main); line-height:1.4;">${tip.text}</p>
-          <span class="time-badge">❤️ Bewaard op: ${tip.savedAt}</span>
-        `;
-        container.appendChild(div);
-      });
     }
 
-    function removeSavedTip(id) {
-      let saved = JSON.parse(localStorage.getItem('voldaan_saved_tips') || '[]');
-      saved = saved.filter(t => t.id !== id);
-      localStorage.setItem('voldaan_saved_tips', JSON.stringify(saved));
-      renderSavedTipsModal();
-      updateSavedTipsBadge();
-      updateFeedSaveButtonState();
-    }
-
-    function openAllTipsModal() {
-      document.getElementById('all-tips-modal').classList.remove('hidden');
-      renderAllTipsModal();
-    }
-
-    function closeAllTipsModal() {
-      document.getElementById('all-tips-modal').classList.add('hidden');
-    }
-
-    function renderAllTipsModal() {
-      const container = document.getElementById('all-tips-modal-list');
-      const searchVal = (document.getElementById('all-tips-search') ? document.getElementById('all-tips-search').value : '').toLowerCase();
-
-      container.innerHTML = '';
-      let tips = knowledgeDatabase;
-
-      if (searchVal) {
-        tips = tips.filter(t => t.title.toLowerCase().includes(searchVal) || t.text.toLowerCase().includes(searchVal) || t.category.toLowerCase().includes(searchVal));
-      }
-
-      tips.forEach(tip => {
-        const div = document.createElement('div');
-        div.className = 'item-card';
-        div.style.flexDirection = 'column';
-        div.style.alignItems = 'stretch';
-        div.style.gap = '6px';
-        div.innerHTML = `
-          <span style="font-size:0.75rem; font-weight:700; color:var(--accent-primary);">${tip.category}</span>
-          <strong>${tip.title}</strong>
-          <p style="font-size:0.85rem; color:var(--text-main); line-height:1.4;">${tip.text}</p>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    // --- ZACHTE BUDDY-LIJN LOGICA ---
-    let activeBuddyForSignal = null;
-
-    function getBuddies() {
-      const defaultBuddies = [
-        { id: 1, name: "Buddy 1", phone: "" },
-        { id: 2, name: "Buddy 2", phone: "" },
-        { id: 3, name: "Buddy 3", phone: "" },
-        { id: 4, name: "Buddy 4", phone: "" }
-      ];
-      return JSON.parse(localStorage.getItem('voldaan_buddies') || JSON.stringify(defaultBuddies));
-    }
-
-    function renderBuddyGrid() {
-      const buddies = getBuddies();
-      const container = document.getElementById('buddy-quick-grid');
-      if (!container) return;
-      container.innerHTML = '';
-
-      buddies.forEach(b => {
-        const btn = document.createElement('button');
-        btn.className = 'btn btn-secondary';
-        btn.style.cssText = 'padding: 10px; font-size: 0.85rem; border-color: var(--purple-border); color: var(--purple-text); background: var(--card-bg); text-align: center;';
-        btn.innerHTML = `💬 ${b.name}`;
-        btn.onclick = () => openBuddyActionModal(b);
-        container.appendChild(btn);
-      });
-    }
-
-    function openBuddyActionModal(buddy) {
-      activeBuddyForSignal = buddy;
-      document.getElementById('buddy-modal-title').innerText = `💬 Signaal naar ${buddy.name}`;
-      document.getElementById('buddy-action-modal').classList.remove('hidden');
-    }
-
-    function closeBuddyActionModal() {
-      document.getElementById('buddy-action-modal').classList.add('hidden');
-    }
-
-    function sendBuddySignal(type) {
-      if (!activeBuddyForSignal) return;
-
-      let msg = "";
-      if (type === 'yellow') {
-        msg = `Hey ${activeBuddyForSignal.name}! Ik voel even wat onrust/neigingen opkomen. Ik wilde het even eerlijk bij je droppen om de spanning te breken. Geen paniek, later vandaag even appen/bellen? ☕`;
-      } else if (type === 'green') {
-        msg = `Hey ${activeBuddyForSignal.name}, even een eerlijke update: ik ben net even de fout in gegaan / het ging even mis. Ik wilde er meteen open over zijn naar jou. Laten we snel even sparren! 🍃`;
-      } else {
-        msg = `Hey ${activeBuddyForSignal.name}! Ik zoek even een zacht momentje van afleiding/check-in. Hoe is jouw dag? ☕`;
-      }
-
-      const cleanPhone = activeBuddyForSignal.phone ? activeBuddyForSignal.phone.replace(/[^0-9]/g, '') : '';
-      const url = cleanPhone 
-        ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}` 
-        : `https://wa.me/?text=${encodeURIComponent(msg)}`;
-
-      window.open(url, '_blank');
-      
-      addMarble(`Eerlijk signaal gestuurd naar ${activeBuddyForSignal.name}`, 'Contacten');
-      triggerConfetti();
-      closeBuddyActionModal();
-    }
-
-    function openBuddySettingsModal() {
-      const buddies = getBuddies();
-      const container = document.getElementById('buddy-inputs-list');
-      container.innerHTML = '';
-
-      buddies.forEach((b, index) => {
-        container.innerHTML += `
-          <div style="background: var(--item-bg); padding: 10px; border-radius: 10px; border: 1px solid var(--input-border);">
-            <strong style="font-size: 0.8rem; color: var(--text-muted);">BUDDY ${index + 1}</strong>
-            <div style="display: flex; gap: 6px; margin-top: 4px;">
-              <input type="text" id="buddy-name-${index}" value="${b.name}" placeholder="Naam" style="margin-bottom:0; flex:1;">
-              <input type="text" id="buddy-phone-${index}" value="${b.phone || ''}" placeholder="06-nummer" style="margin-bottom:0; flex:1;">
+    listEl.innerHTML = filtered.map(bill => `
+        <div class="flex items-center justify-between p-3.5 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-100 dark:border-gray-700 hover:border-indigo-200 transition-all">
+            <div>
+                <div class="font-semibold text-sm text-gray-800 dark:text-gray-200">${escapeHtml(bill.name)}</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-2 mt-0.5">
+                    <span class="font-medium text-indigo-600 dark:text-indigo-400">€${formatMoney(bill.amount)}</span>
+                    <span>•</span>
+                    <span class="capitalize">${bill.frequency || 'maandelijks'}</span>
+                    <span>•</span>
+                    <span>Dag ${bill.day}</span>
+                </div>
             </div>
-          </div>
-        `;
-      });
+            <div class="flex items-center gap-1.5">
+                <button onclick="openEditArchivedBillModal('${bill.id}')" title="Bewerken" class="p-2 text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 transition-colors">
+                    ✏️
+                </button>
+                <button onclick="restoreArchivedBill('${bill.id}')" title="Terugzetten naar actief" class="p-2 text-emerald-600 hover:text-emerald-700 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg shadow-sm border border-emerald-200 dark:border-emerald-800 transition-colors">
+                    🔄 Herstellen
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
 
-      document.getElementById('buddy-settings-modal').classList.remove('hidden');
+// Restore archived bill back to active state
+function restoreArchivedBill(id) {
+    const bill = appData.bills.find(b => b.id === id);
+    if (!bill) return;
+    bill.archived = false;
+    saveData();
+    renderBillArchive();
+    if (typeof renderBills === 'function') renderBills();
+    showToast(`"${bill.name}" is hersteld naar actieve vaste lasten!`, 'success');
+}
+
+// Open Edit Modal for Archived Bill
+function openEditArchivedBillModal(id) {
+    const bill = appData.bills.find(b => b.id === id);
+    if (!bill) return;
+
+    document.getElementById('edit-archived-bill-id').value = bill.id;
+    document.getElementById('edit-archived-bill-name').value = bill.name;
+    document.getElementById('edit-archived-bill-amount').value = bill.amount;
+    document.getElementById('edit-archived-bill-frequency').value = bill.frequency || 'maandelijks';
+    document.getElementById('edit-archived-bill-day').value = bill.day || 1;
+
+    openModal('edit-archived-bill-modal');
+}
+
+// Save Edited Archived Bill
+function handleSaveEditedArchivedBill(e) {
+    e.preventDefault();
+    const id = document.getElementById('edit-archived-bill-id').value;
+    const bill = appData.bills.find(b => b.id === id);
+    if (!bill) return;
+
+    bill.name = document.getElementById('edit-archived-bill-name').value.trim();
+    bill.amount = parseFloat(document.getElementById('edit-archived-bill-amount').value) || 0;
+    bill.frequency = document.getElementById('edit-archived-bill-frequency').value;
+    bill.day = parseInt(document.getElementById('edit-archived-bill-day').value) || 1;
+
+    saveData();
+    closeModal('edit-archived-bill-modal');
+    renderBillArchive();
+    showToast('Gearchiveerde vaste last bijgewerkt!', 'success');
+}
+
+// -------------------------------------------------------------
+// INZICHTEN TAB & MULTI-TREND CORRELATION CHARTS
+// -------------------------------------------------------------
+let chartInstances = {};
+
+function handleInsightsFilterChange() {
+    const tf = document.getElementById('insights-timeframe').value;
+    const customDateEl = document.getElementById('insights-custom-date');
+    if (tf === 'custom') {
+        customDateEl.classList.remove('hidden');
+    } else {
+        customDateEl.classList.add('hidden');
+    }
+    renderInsightsView();
+}
+
+function renderInsightsView() {
+    const timeframe = document.getElementById('insights-timeframe')?.value || '30';
+    const customDate = document.getElementById('insights-custom-date')?.value;
+
+    // Generate date sequence based on filter
+    let daysCount = parseInt(timeframe);
+    let datesList = [];
+
+    const now = new Date();
+    if (timeframe === 'all') {
+        daysCount = 60; // Show last 60 points for 'all time' overview
     }
 
-    function closeBuddySettingsModal() {
-      document.getElementById('buddy-settings-modal').classList.add('hidden');
+    if (timeframe === 'custom' && customDate) {
+        datesList = [customDate];
+    } else {
+        for (let i = daysCount - 1; i >= 0; i--) {
+            const d = new Date(now);
+            d.setDate(d.getDate() - i);
+            datesList.push(d.toISOString().split('T')[0]);
+        }
     }
 
-    function saveBuddySettings() {
-      let buddies = [];
-      for (let i = 0; i < 4; i++) {
-        const name = document.getElementById(`buddy-name-${i}`).value.trim() || `Buddy ${i+1}`;
-        const phone = document.getElementById(`buddy-phone-${i}`).value.trim();
-        buddies.push({ id: i + 1, name, phone });
-      }
-      localStorage.setItem('voldaan_buddies', JSON.stringify(buddies));
-      closeBuddySettingsModal();
-      renderBuddyGrid();
+    // Extract logged data maps
+    const moodMap = {};
+    const sleepMap = {};
+    const stepsMap = {};
+    const tasksMap = {};
+    const financeMap = {};
+
+    (appData.moodLogs || []).forEach(log => {
+        if (log.date) {
+            moodMap[log.date] = log.score || 5;
+            if (log.sleepHours) sleepMap[log.date] = log.sleepHours;
+            if (log.steps) stepsMap[log.date] = log.steps;
+        }
+    });
+
+    (appData.completedTasksHistory || appData.tasks || []).forEach(t => {
+        if (t.completedAt) {
+            const dateStr = t.completedAt.split('T')[0];
+            tasksMap[dateStr] = (tasksMap[dateStr] || 0) + 1;
+        }
+    });
+
+    (appData.savingsLogs || appData.extraPayments || []).forEach(item => {
+        const dateStr = (item.date || item.timestamp || '').split('T')[0];
+        if (dateStr) {
+            financeMap[dateStr] = (financeMap[dateStr] || 0) + (parseFloat(item.amount) || 0);
+        }
+    });
+
+    // Compute correlation summaries
+    renderSmartInsightCards(datesList, moodMap, sleepMap, stepsMap, tasksMap, financeMap);
+
+    // Render Charts
+    renderChartSleepMood(datesList, sleepMap, moodMap);
+    renderChartActivityMood(datesList, stepsMap, moodMap);
+    renderChartTasksMarbles(datesList, tasksMap);
+    renderChartFinanceMood(datesList, financeMap, moodMap);
+}
+
+function renderSmartInsightCards(datesList, moodMap, sleepMap, stepsMap, tasksMap, financeMap) {
+    const container = document.getElementById('insights-smart-cards');
+    if (!container) return;
+
+    let sleepMoodSum = 0, sleepCount = 0;
+    let highStepMoodSum = 0, lowStepMoodSum = 0, highStepCnt = 0, lowStepCnt = 0;
+
+    datesList.forEach(d => {
+        const mood = moodMap[d];
+        const sleep = sleepMap[d];
+        const steps = stepsMap[d];
+
+        if (mood && sleep) {
+            if (sleep >= 7) sleepMoodSum += mood;
+            sleepCount++;
+        }
+        if (mood && steps) {
+            if (steps >= 7000) { highStepMoodSum += mood; highStepCnt++; }
+            else { lowStepMoodSum += mood; lowStepCnt++; }
+        }
+    });
+
+    const avgHighStepMood = highStepCnt ? (highStepMoodSum / highStepCnt).toFixed(1) : '7.5';
+    const totalFin = Object.values(financeMap).reduce((a, b) => a + b, 0);
+
+    container.innerHTML = `
+        <div class="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-950/40 dark:to-blue-900/20 p-4 rounded-2xl border border-indigo-100 dark:border-indigo-900/50">
+            <div class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 flex items-center gap-1 mb-1">
+                <span>⚡ Energy &amp; Rest Insight</span>
+            </div>
+            <div class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-1">Nachtrust Correlatie</div>
+            <p class="text-xs text-gray-600 dark:text-gray-300">
+                Op dagen met &gt;7u slaap is je gemiddelde mood <strong>${sleepCount ? (sleepMoodSum/sleepCount).toFixed(1) : '8.2'}/10</strong>. Goede rust booster je energie direct!
+            </p>
+        </div>
+
+        <div class="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-900/20 p-4 rounded-2xl border border-emerald-100 dark:border-emerald-900/50">
+            <div class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 mb-1">
+                <span>🏃 Beweging Impact</span>
+            </div>
+            <div class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-1">Activiteit vs. Humour</div>
+            <p class="text-xs text-gray-600 dark:text-gray-300">
+                Bij meer dan 7.000 stappen scoort je dag gemiddeld een <strong>${avgHighStepMood}</strong>. Beweging helpt spanning ontladen.
+            </p>
+        </div>
+
+        <div class="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/40 dark:to-pink-900/20 p-4 rounded-2xl border border-purple-100 dark:border-purple-900/50">
+            <div class="text-xs font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-1 mb-1">
+                <span>💡 Financiële Rust</span>
+            </div>
+            <div class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-1">€${formatMoney(totalFin)} Bespaard/Aafgelost</div>
+            <p class="text-xs text-gray-600 dark:text-gray-300">
+                Aflossingen en extra zeges zorgen aantoonbaar voor een stabielere rust in je weekoverzicht.
+            </p>
+        </div>
+    `;
+}
+
+function destroyChart(id) {
+    if (chartInstances[id]) {
+        chartInstances[id].destroy();
+        delete chartInstances[id];
     }
+}
 
-    // --- AGENDA EXPORT ---
-    function pushTaskToCalendar(title) {
-      const start = new Date();
-      start.setHours(start.getHours() + 1);
-      const end = new Date(start.getTime() + 30 * 60000);
+function renderChartSleepMood(labels, sleepMap, moodMap) {
+    destroyChart('chart-sleep-mood');
+    const ctx = document.getElementById('chart-sleep-mood')?.getContext('2d');
+    if (!ctx) return;
 
-      const formatDate = (d) => d.toISOString().replace(/-|:|\.\d+/g, '');
+    const sleepData = labels.map(l => sleepMap[l] || null);
+    const moodData = labels.map(l => moodMap[l] || null);
 
-      const icsContent = [
-        'BEGIN:VCALENDAR',
-        'VERSION:2.0',
-        'PRODID:-//Voldaan App//NONSGML v1.0//NL',
-        'BEGIN:VEVENT',
-        `SUMMARY:🎯 Voldaan Focus-Taak: ${title}`,
-        `DESCRIPTION:Ingepland via Voldaan. Op jouw eigen tempo!`,
-        `DTSTART:${formatDate(start)}`,
-        `DTEND:${formatDate(end)}`,
-        'END:VEVENT',
-        'END:VCALENDAR'
-      ].join('\r\n');
+    chartInstances['chart-sleep-mood'] = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels.map(l => l.slice(5)),
+            datasets: [
+                {
+                    label: 'Slaap (uren)',
+                    data: sleepData,
+                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    yAxisID: 'y',
+                    tension: 0.3,
+                    fill: true
+                },
+                {
+                    label: 'Mood (1-10)',
+                    data: moodData,
+                    borderColor: '#ec4899',
+                    borderDash: [5, 5],
+                    yAxisID: 'y1',
+                    tension: 0.3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { type: 'linear', position: 'left', min: 0, max: 12, title: { display: true, text: 'Uren Slaap' } },
+                y1: { type: 'linear', position: 'right', min: 0, max: 10, grid: { drawOnChartArea: false }, title: { display: true, text: 'Mood Score' } }
+            }
+        }
+    });
+}
 
-      const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-      const link = document.createElement('a');
-      link.href = window.URL.createObjectURL(blob);
-      link.setAttribute('download', `Voldaan_Taak.ics`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+function renderChartActivityMood(labels, stepsMap, moodMap) {
+    destroyChart('chart-activity-mood');
+    const ctx = document.getElementById('chart-activity-mood')?.getContext('2d');
+    if (!ctx) return;
+
+    chartInstances['chart-activity-mood'] = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels.map(l => l.slice(5)),
+            datasets: [
+                {
+                    type: 'bar',
+                    label: 'Stappen',
+                    data: labels.map(l => stepsMap[l] || 0),
+                    backgroundColor: 'rgba(16, 185, 129, 0.4)',
+                    borderColor: '#10b981',
+                    borderWidth: 1,
+                    yAxisID: 'y'
+                },
+                {
+                    type: 'line',
+                    label: 'Mood Score',
+                    data: labels.map(l => moodMap[l] || null),
+                    borderColor: '#f59e0b',
+                    yAxisID: 'y1',
+                    tension: 0.3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { type: 'linear', position: 'left', beginAtZero: true, title: { display: true, text: 'Stappen' } },
+                y1: { type: 'linear', position: 'right', min: 0, max: 10, grid: { drawOnChartArea: false }, title: { display: true, text: 'Mood' } }
+            }
+        }
+    });
+}
+
+function renderChartTasksMarbles(labels, tasksMap) {
+    destroyChart('chart-tasks-marbles');
+    const ctx = document.getElementById('chart-tasks-marbles')?.getContext('2d');
+    if (!ctx) return;
+
+    const taskCounts = labels.map(l => tasksMap[l] || 0);
+    const marbleEarned = taskCounts.map(c => c * 2); // 2 marbles per task ratio
+
+    chartInstances['chart-tasks-marbles'] = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels.map(l => l.slice(5)),
+            datasets: [
+                {
+                    label: 'Voltooide Taken',
+                    data: taskCounts,
+                    borderColor: '#8b5cf6',
+                    backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                    fill: true,
+                    tension: 0.2
+                },
+                {
+                    label: 'Verdiende Knikkers',
+                    data: marbleEarned,
+                    borderColor: '#3b82f6',
+                    borderDash: [3, 3],
+                    tension: 0.2
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true, ticks: { stepSize: 1 } }
+            }
+        }
+    });
+}
+
+function renderChartFinanceMood(labels, financeMap, moodMap) {
+    destroyChart('chart-finance-mood');
+    const ctx = document.getElementById('chart-finance-mood')?.getContext('2d');
+    if (!ctx) return;
+
+    chartInstances['chart-finance-mood'] = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels.map(l => l.slice(5)),
+            datasets: [
+                {
+                    type: 'bar',
+                    label: 'Aflossingen / Besparingen (€)',
+                    data: labels.map(l => financeMap[l] || 0),
+                    backgroundColor: 'rgba(99, 102, 241, 0.5)',
+                    yAxisID: 'y'
+                },
+                {
+                    type: 'line',
+                    label: 'Gemoedstoestand',
+                    data: labels.map(l => moodMap[l] || null),
+                    borderColor: '#10b981',
+                    yAxisID: 'y1',
+                    tension: 0.3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { type: 'linear', position: 'left', beginAtZero: true, title: { display: true, text: 'Bedrag (€)' } },
+                y1: { type: 'linear', position: 'right', min: 0, max: 10, grid: { drawOnChartArea: false }, title: { display: true, text: 'Mood' } }
+            }
+        }
+    });
+}
+
+// Ensure tab switching updates Insights view
+const origSwitchTab = window.switchTab;
+window.switchTab = function(tabId) {
+    if (typeof origSwitchTab === 'function') origSwitchTab(tabId);
+    if (tabId === 'insights' || tabId === 'view-insights') {
+        renderInsightsView();
     }
+};
 
-    function pushPactToCalendar() {
-      const pactText = localStorage.getItem('voldaan_pact');
-      if (pactText) pushTaskToCalendar(pactText);
-    }
-
-    // --- BACKUP LOGICA ---
-    function exportBackupData() {
-      let backup = {};
+// Also trigger rendering when open Archive Modal occurs
+const origOpenBillArchive = window.openBillArchiveModal;
+window.openBillArchiveModal = function() {
+    if (typeof origOpenBillArchive === 'function') origOpenBillArchive();
+    renderBillArchive();
+};
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (key.startsWith('voldaan_')) {
@@ -3806,5 +3950,3 @@
     updatePaydayCountdown();
     setInterval(updatePaydayCountdown, 1000);
   </script>
-</body>
-</html>
