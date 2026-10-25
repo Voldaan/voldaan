@@ -1,5 +1,6 @@
 import { loadState, saveState, exportBackupData, importBackupData, hydrateTheme, setTheme } from './storage.js';
 import { initTodayModule } from './today.js';
+import { initPlanModule } from './plan.js';
 
 window.VoldaanApp = {
   state: null,
@@ -26,8 +27,15 @@ function initializeApp() {
     initTodayModule();
   }
 
+  if (typeof window.initPlanModule === 'function') {
+    window.initPlanModule();
+  } else {
+    initPlanModule();
+  }
+
   console.log('Voldaan modular scaffold geladen');
 }
 
 document.addEventListener('DOMContentLoaded', initializeApp);
 window.initTodayModule = initTodayModule;
+window.initPlanModule = initPlanModule;
