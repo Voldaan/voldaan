@@ -1,700 +1,868 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Voldaan — Rust & Structuur op Jouw Tempo</title>
-  
-  <link rel="icon" type="image/jpeg" href="icon.jpg?v=2">
-  <link rel="apple-touch-icon" href="icon.jpg?v=2">
-  <link rel="manifest" href="manifest.json?v=2">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voldaan - Jouw Persoonlijke Dashboard</title>
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlZvbGRhYW4iLAogICJzaG9ydF9uYW1lIjogIlZvbGRhYW4iLAogICJzdGFydF91cmwiOiAiLi8iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmOGY5ZmEiLAogICJ0aGVtZV9jb2xvciIjogIiM0YTY5YmQiCn0=">
+    <style>
+        :root {
+            --bg-color: #f4f6f8;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --text-muted: #7f8c8d;
+            --primary: #4a69bd;
+            --primary-hover: #3c5496;
+            --accent: #6a89cc;
+            --success: #78e08f;
+            --warning: #f6b93b;
+            --danger: #e55039;
+            --border-color: #e1e8ed;
+            --shadow: 0 4px 6px rgba(0,0,0,0.05);
+            --radius: 12px;
+        }
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
-  <!-- Koppeling naar het losse CSS-bestand -->
-  <link rel="stylesheet" href="style.css">
+        body.dark-theme {
+            --bg-color: #1a1a2e;
+            --card-bg: #16213e;
+            --text-color: #e9ecef;
+            --text-muted: #a0aec0;
+            --primary: #0f3460;
+            --primary-hover: #16425b;
+            --accent: #e94560;
+            --border-color: #2a2a4a;
+            --shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); padding-bottom: 70px; transition: background-color 0.3s, color 0.3s; }
+        
+        header { background: var(--card-bg); padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); }
+        header h1 { font-size: 1.5rem; color: var(--primary); }
+        .header-actions { display: flex; gap: 0.5rem; align-items: center; }
+        .btn-icon { background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 0.4rem; border-radius: 50%; color: var(--text-color); }
+        .btn-icon:hover { background: rgba(0,0,0,0.05); }
+
+        nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding: 0.5rem 0; z-index: 1000; }
+        nav button { background: none; border: none; display: flex; flex-direction: column; align-items: center; font-size: 0.75rem; color: var(--text-muted); cursor: pointer; width: 20%; }
+        nav button.active { color: var(--primary); font-weight: bold; }
+        nav button .icon { font-size: 1.3rem; margin-bottom: 2px; }
+
+        .container { max-width: 800px; margin: 1rem auto; padding: 0 1rem; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .card { background: var(--card-bg); border-radius: var(--radius); padding: 1.2rem; margin-bottom: 1rem; border: 1px solid var(--border-color); box-shadow: var(--shadow); }
+        .card h2 { font-size: 1.1rem; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem; color: var(--primary); }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+
+        input, select, textarea, button { width: 100%; padding: 0.6rem 0.8rem; margin-bottom: 0.5rem; border: 1px solid var(--border-color); border-radius: 6px; background: var(--card-bg); color: var(--text-color); font-size: 0.9rem; }
+        button.btn-primary { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
+        button.btn-primary:hover { background: var(--primary-hover); }
+        button.btn-secondary { background: transparent; border: 1px solid var(--primary); color: var(--primary); font-weight: bold; cursor: pointer; }
+        
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid var(--border-color); }
+        .list-item:last-child { border-bottom: none; }
+        .list-item .actions { display: flex; gap: 0.3rem; }
+        .list-item .actions button { width: auto; padding: 0.2rem 0.5rem; margin-bottom: 0; font-size: 0.8rem; }
+
+        .tag { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: bold; background: var(--border-color); margin-right: 0.3rem; }
+        .progress-bar { width: 100%; height: 10px; background: var(--border-color); border-radius: 5px; overflow: hidden; margin: 0.5rem 0; }
+        .progress-fill { height: 100%; background: var(--primary); transition: width 0.3s; }
+
+        /* Specifieke componenten */
+        .marbles-container { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; }
+        .marble { width: 20px; height: 20px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, var(--warning), #d35400); display: inline-block; }
+        .postit-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.8rem; }
+        .postit { background: #fff9c4; color: #333; padding: 0.8rem; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); position: relative; font-size: 0.85rem; }
+        body.dark-theme .postit { background: #fbc02d; color: #111; }
+        .postit .delete-btn { position: absolute; top: 2px; right: 4px; background: none; border: none; color: #777; cursor: pointer; font-size: 0.9rem; width: auto; }
+    </style>
 </head>
 <body>
 
-  <canvas id="confetti-canvas"></canvas>
-
-  <div class="container">
-    
     <header>
-      <div>
         <h1>Voldaan</h1>
-        <p>Geen druk. Geen schuldgevoel. Jouw tempo.</p>
-      </div>
-      <button class="theme-toggle-btn" onclick="toggleTheme()" id="theme-btn">🌙 Nacht</button>
+        <div class="header-actions">
+            <button class="btn-icon" onclick="toggleTheme()" title="Thema wisselen">🌙</button>
+            <button class="btn-icon" onclick="exportData()" title="Backup Opslaan">💾</button>
+            <button class="btn-icon" onclick="importData()" title="Backup Laden">📂</button>
+            <input type="file" id="importFile" style="display:none" onchange="processImport(event)">
+        </div>
     </header>
 
-    <nav class="nav-tabs">
-      <button class="tab-btn active" onclick="switchView('today')" id="tab-today">🏠 Vandaag</button>
-      <button class="tab-btn" onclick="switchView('plan')" id="tab-plan">🎯 Plannen</button>
-      <button class="tab-btn" onclick="switchView('vitality')" id="tab-vitality">🌿 Vitaliteit</button>
-      <button class="tab-btn" onclick="switchView('money')" id="tab-money">💶 Geld</button>
-      <button class="tab-btn" onclick="switchView('hacks')" id="tab-hacks">💡 Kennis & Hacks</button>
-      <button class="tab-btn" onclick="switchView('ideas')" id="tab-ideas">📌 Ideeënkluis</button>
-      <button class="tab-btn" onclick="switchView('fun')" id="tab-fun">☕ Luchtig</button>
-      <button class="tab-btn" onclick="switchView('insights')" id="tab-insights">📊 Inzichten</button>
+    <div class="container">
+        <!-- TAB 1: VANDAAG -->
+        <div id="tab-vandaag" class="tab-content active">
+            <div class="card">
+                <h2>☀️ Dagelijkse Check-in</h2>
+                <div class="grid-2">
+                    <div>
+                        <label>Stemming (1-10)</label>
+                        <input type="number" id="checkin-mood" min="1" max="10" value="7">
+                    </div>
+                    <div>
+                        <label>Energie (1-10)</label>
+                        <input type="number" id="checkin-energy" min="1" max="10" value="7">
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="saveCheckin()">Check-in Opslaan</button>
+            </div>
+
+            <div class="card">
+                <h2>🔮 Trots-Kluis & Knikkers</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Elke overwinning is een knikker in de pot!</p>
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="text" id="trots-input" placeholder="Waar ben je trots op?">
+                    <button class="btn-primary" style="width: 30%;" onclick="addTrots()">Toevoegen</button>
+                </div>
+                <div class="marbles-container" id="marbles-pot"></div>
+                <div id="trots-list" style="margin-top: 0.8rem;"></div>
+            </div>
+
+            <div class="card">
+                <h2>⚡ Actie-Hub (Vandaag)</h2>
+                <div id="vandaag-acties-list"></div>
+            </div>
+
+            <div class="card">
+                <h2>🤝 Buddy-Lijn</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Snel een berichtje naar je vast geselecteerde buddy.</p>
+                <input type="text" id="buddy-phone" placeholder="Telefoonnummer buddy (bijv. 31612345678)">
+                <input type="text" id="buddy-msg" placeholder="Berichttekst...">
+                <button class="btn-secondary" onclick="sendBuddyWhatsApp()">Verstuur via WhatsApp 💬</button>
+            </div>
+
+            <div class="card">
+                <h2>🧠 Breinhack van de Dag</h2>
+                <blockquote id="daily-hack" style="font-style: italic; border-left: 3px solid var(--primary); padding-left: 0.5rem; color: var(--text-muted);">
+                    "Breek grote taken op in mini-stappen van maximaal 2 minuten. Beginnen is het lastigste gedeelte."
+                </blockquote>
+            </div>
+        </div>
+
+        <!-- TAB 2: PLANNEN -->
+        <div id="tab-plannen" class="tab-content">
+            <div class="card">
+                <h2>🌙 Avond-Pact</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Sluit je dag bewust af voor een rustige nacht.</p>
+                <input type="text" id="pact-morgen" placeholder="Belangrijkste doel voor morgen...">
+                <textarea id="pact-hoofd" placeholder="Schrijf je hoofd leeg..."></textarea>
+                <button class="btn-primary" onclick="savePact()">Pact Opslaan</button>
+            </div>
+
+            <div class="card">
+                <h2>📌 Zacht Planbord</h2>
+                <input type="text" id="plan-task" placeholder="Nieuwe taak...">
+                <div class="grid-2">
+                    <select id="plan-cat">
+                        <option value="Must">Must (Moet echt)</option>
+                        <option value="Should">Should (Zou fijn zijn)</option>
+                        <option value="Want">Want (Leuk/Wens)</option>
+                    </select>
+                    <button class="btn-primary" onclick="addPlanTask()">Toevoegen</button>
+                </div>
+                <div id="planboard-list"></div>
+            </div>
+
+            <div class="card">
+                <h2>🎯 Langetermijndoelen</h2>
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="text" id="goal-input" placeholder="Nieuw langetermijndoel...">
+                    <button class="btn-primary" style="width: 30%;" onclick="addGoal()">Toevoegen</button>
+                </div>
+                <div id="goals-list" style="margin-top: 0.5rem;"></div>
+            </div>
+
+            <div class="card">
+                <h2>👥 Contact-Herinneringen</h2>
+                <div class="grid-2">
+                    <input type="text" id="contact-name" placeholder="Naam persoon">
+                    <input type="date" id="contact-date">
+                </div>
+                <button class="btn-primary" onclick="addContactRem()">Herinnering Instellen</button>
+                <div id="contact-list" style="margin-top: 0.5rem;"></div>
+            </div>
+        </div>
+
+        <!-- TAB 3: VITALITEIT -->
+        <div id="tab-vitaliteit" class="tab-content">
+            <div class="card">
+                <h2>😴 Slaap & Herstel Logboek</h2>
+                <div class="grid-2">
+                    <div>
+                        <label>Uren geslapen</label>
+                        <input type="number" id="sleep-hours" step="0.5" value="7.5">
+                    </div>
+                    <div>
+                        <label>Kwaliteit (1-10)</label>
+                        <input type="number" id="sleep-quality" min="1" max="10" value="7">
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="saveSleep()">Slaap Opslaan</button>
+            </div>
+
+            <div class="card">
+                <h2>🚶 Stappenteller</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Doel: 8.000 stappen per dag</p>
+                <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                    <input type="number" id="steps-input" placeholder="Aantal stappen vandaag">
+                    <button class="btn-primary" style="width: 30%;" onclick="saveSteps()">Opslaan</button>
+                </div>
+                <div class="progress-bar"><div id="steps-progress" class="progress-fill" style="width: 0%;"></div></div>
+                <p id="steps-text" style="font-size: 0.8rem; text-align: right; color: var(--text-muted);">0 / 8000 stappen</p>
+            </div>
+
+            <div class="card">
+                <h2>🏋️ Sport & Fitheid</h2>
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="text" id="sport-input" placeholder="Oefening/Workout (bijv. 30min Wandelen)">
+                    <button class="btn-primary" style="width: 30%;" onclick="addSport()">Loggen</button>
+                </div>
+                <div id="sport-list" style="margin-top: 0.5rem;"></div>
+            </div>
+
+            <div class="card">
+                <h2>🍪 Snaai-Wachtkamer</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Trek in een snack? Wacht 10 minuten voor je beslist.</p>
+                <button class="btn-secondary" onclick="startSnackTimer()">Start 10-Minuten Pauze ⏱️</button>
+                <p id="snack-timer-display" style="font-weight: bold; text-align: center; margin-top: 0.5rem; display: none; color: var(--accent);"></p>
+            </div>
+
+            <div class="card">
+                <h2>🚭 Rookbalans</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Houd bij hoeveel peuken je vandaag hebt gerookt of vermeden.</p>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>Aantal vandaag: <strong id="smoke-count">0</strong></span>
+                    <div>
+                        <button class="btn-primary" style="width: auto; padding: 0.3rem 0.8rem;" onclick="changeSmoke(1)">+1</button>
+                        <button class="btn-secondary" style="width: auto; padding: 0.3rem 0.8rem;" onclick="changeSmoke(-1)">-1</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: GELD -->
+        <div id="tab-geld" class="tab-content">
+            <div class="card">
+                <h2>🏠 Ruimte-Kompas</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Familieprojecten, afspraken en gezamenlijke doelen.</p>
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="text" id="kompas-input" placeholder="Nieuw project / afspraak...">
+                    <button class="btn-primary" style="width: 30%;" onclick="addKompas()">Toevoegen</button>
+                </div>
+                <div id="kompas-list" style="margin-top: 0.5rem;"></div>
+            </div>
+
+            <div class="card">
+                <h2>🎓 Studieschuld Visualisatie</h2>
+                <div class="grid-2">
+                    <input type="number" id="debt-total" placeholder="Totale Schuld (€)" onchange="saveDebtData()">
+                    <input type="number" id="debt-paid" placeholder="Reeds Afgelost (€)" onchange="saveDebtData()">
+                </div>
+                <div class="progress-bar"><div id="debt-progress" class="progress-fill" style="width: 0%; background: var(--success);"></div></div>
+                <p id="debt-text" style="font-size: 0.8rem; text-align: right; color: var(--text-muted);">0% afgelost</p>
+            </div>
+
+            <div class="card">
+                <h2>🗓️ Payday Radar Countdown</h2>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <label style="width: 50%;">Volgende Betaaldag:</label>
+                    <input type="date" id="payday-date" onchange="updatePayday()">
+                </div>
+                <p id="payday-countdown" style="font-size: 1.1rem; font-weight: bold; text-align: center; margin-top: 0.5rem; color: var(--primary);"></p>
+            </div>
+
+            <div class="card">
+                <h2>🛑 Impuls-Wachtkamer (24 Uur)</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Wil je iets kopen? Zet het hier. Slaap er 24 uur over.</p>
+                <div class="grid-2">
+                    <input type="text" id="impulse-item" placeholder="Productnaam">
+                    <input type="number" id="impulse-price" placeholder="Prijs (€)">
+                </div>
+                <button class="btn-primary" onclick="addImpulse()">In de Wachtkamer Zetten</button>
+                <div id="impulse-list" style="margin-top: 0.5rem;"></div>
+            </div>
+
+            <div class="card">
+                <h2>💸 Vaste Lasten Overzicht</h2>
+                <div class="grid-2">
+                    <input type="text" id="fixed-name" placeholder="Post (bijv. Huur, Zorg)">
+                    <input type="number" id="fixed-amount" placeholder="Bedrag (€)">
+                </div>
+                <button class="btn-primary" onclick="addFixedCost()">Toevoegen</button>
+                <div id="fixed-list" style="margin-top: 0.5rem;"></div>
+                <p id="fixed-total" style="font-weight: bold; text-align: right; margin-top: 0.5rem; font-size: 0.9rem;"></p>
+            </div>
+        </div>
+
+        <!-- TAB 5: KENNIS -->
+        <div id="tab-kennis" class="tab-content">
+            <div class="card">
+                <h2>💡 Breinhacks & Inzichten Livefeed</h2>
+                <input type="text" id="search-kennis" placeholder="Zoek op trefwoord..." onkeyup="filterKennis()">
+                <div id="kennis-feed" style="margin-top: 0.8rem;"></div>
+            </div>
+        </div>
+
+        <!-- TAB 6: IDEEËN -->
+        <div id="tab-ideeen" class="tab-content">
+            <div class="card">
+                <h2>💡 Ideeënkluis (Post-it Bord)</h2>
+                <input type="text" id="idea-title" placeholder="Idee titel...">
+                <textarea id="idea-desc" placeholder="Korte toelichting..."></textarea>
+                <button class="btn-primary" onclick="addIdea()">Post-it Plakken</button>
+            </div>
+
+            <div class="card">
+                <h2>🎲 Grabbelton</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Geen inspiratie? Laat de grabbelton een idee voor je kiezen!</p>
+                <button class="btn-secondary" onclick="grabRandomIdea()">Grabbel een Idee! 🎁</button>
+                <p id="grabbed-idea" style="font-weight: bold; text-align: center; margin-top: 0.8rem; color: var(--primary); font-size: 1.1rem;"></p>
+            </div>
+
+            <div class="postit-grid" id="idea-grid"></div>
+        </div>
+    </div>
+
+    <!-- NAVIGATIE BALK ONDERAAN -->
+    <nav>
+        <button onclick="switchTab('vandaag')" id="nav-vandaag" class="active">
+            <span class="icon">🏠</span>
+            <span>Vandaag</span>
+        </button>
+        <button onclick="switchTab('plannen')" id="nav-plannen">
+            <span class="icon">🎯</span>
+            <span>Plannen</span>
+        </button>
+        <button onclick="switchTab('vitaliteit')" id="nav-vitaliteit">
+            <span class="icon">🌿</span>
+            <span>Vitaliteit</span>
+        </button>
+        <button onclick="switchTab('geld')" id="nav-geld">
+            <span class="icon">💶</span>
+            <span>Geld</span>
+        </button>
+        <button onclick="switchTab('kennis')" id="nav-kennis">
+            <span class="icon">💡</span>
+            <span>Kennis</span>
+        </button>
+        <button onclick="switchTab('ideeen')" id="nav-ideeen">
+            <span class="icon">📌</span>
+            <span>Ideeën</span>
+        </button>
     </nav>
 
-    <!-- ==================== TAB 1: VANDAAG ==================== -->
-    <div id="view-today">
-
-      <div class="card" id="start-card" style="margin-bottom: 18px;">
-        <h2>
-          <span id="mood-card-title">☀️ Mijn Dag Begint Nu</span>
-          <button class="btn btn-secondary btn-small" onclick="openMoodHistoryModal()">📈 Mood Trend & Historie</button>
-        </h2>
-        <p class="subtitle" id="mood-card-subtitle">Het maakt niet uit hoe laat het is. Waar staat je brein op dit moment naar?</p>
-        
-        <div id="mood-selection-area">
-          <div class="energy-grid">
-            <button class="energy-btn" onclick="selectEnergy(this, 'Wazig / Moe')">🌫️ Wazig / Moe</button>
-            <button class="energy-btn" onclick="selectEnergy(this, 'Chaotisch')">⚡ Chaotisch / Vol</button>
-            <button class="energy-btn" onclick="selectEnergy(this, 'Oké')">☕ Rustig / Oké</button>
-            <button class="energy-btn" onclick="selectEnergy(this, 'Gefocust')">🚀 Gefocust</button>
-          </div>
-
-          <div id="start-action" class="hidden" style="margin-top: 10px;">
-            <button class="btn btn-small" style="padding: 8px 14px;" onclick="startDay()">Stemming Vastleggen ✨</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="card" id="trots-card" style="margin-bottom: 18px;">
-        <h2>
-          🏺 De Trots-Kluis
-          <span id="marble-count-badge" style="font-size:0.82rem; background:var(--accent-primary); color:white; padding:3px 10px; border-radius:12px; font-weight:600;">0 Knikkers</span>
-        </h2>
-        <p class="subtitle">Elke kleine overwinning vult jouw virtuele glazen pot. Filter op periode & categorie!</p>
-
-        <div class="filter-bar" style="margin-top:0;">
-          <select id="marble-filter-mode" onchange="renderMarbleJar()" style="margin-bottom:0; width: auto; font-size: 0.78rem; padding: 4px 8px;">
-            <option value="ALL">🗓️ Alle tijd</option>
-            <option value="DAY">☀️ Specifieke Dag</option>
-            <option value="WEEK">📅 Deze Week</option>
-            <option value="MONTH">🗓️ Deze Maand</option>
-            <option value="YEAR">🚀 Dit Jaar</option>
-          </select>
-
-          <input type="date" id="marble-filter-date" class="hidden" onchange="renderMarbleJar()" style="margin-bottom:0; width: auto; font-size: 0.78rem; padding: 2px 6px;">
-
-          <select id="marble-filter-cat" onchange="renderMarbleJar()" style="margin-bottom:0; width: auto; font-size: 0.78rem; padding: 4px 8px;">
-            <option value="ALL">📂 Alle Categorieën</option>
-            <option value="Algemeen">🟡 Algemeen</option>
-            <option value="Taken">🎯 Taken</option>
-            <option value="Doelen">🧭 Doelen</option>
-            <option value="Gezondheid">🍎 Gezondheid</option>
-            <option value="Geld & Aflossingen">💶 Geld & Aflossingen</option>
-            <option value="Contacten">💜 Contacten</option>
-            <option value="Dagstart">☀️ Dagstart</option>
-          </select>
-        </div>
-
-        <div id="marble-jar-visual" style="background:var(--item-bg); border:2px dashed var(--input-border); border-radius:16px; padding:16px 12px; min-height:85px; display:flex; flex-wrap:wrap-reverse; gap:6px; align-items:flex-start; justify-content:center; max-height: 180px; overflow-y: auto;">
-        </div>
-      </div>
-
-      <div class="card" style="margin-bottom: 18px; border: 2px solid var(--accent-primary);">
-        <h2>
-          📋 Actie-Hub voor Vandaag
-          <span style="font-size: 0.75rem; background: var(--accent-primary); color: white; padding: 3px 8px; border-radius: 10px;">Direct Afvinken</span>
-        </h2>
-        <p class="subtitle">Belangrijkste acties van je overige tabbladen direct bij de hand.</p>
-
-        <div style="margin-bottom: 14px;">
-          <strong style="font-size: 0.82rem; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 6px;">🌙 Jouw Avond-Pact voor Vandaag:</strong>
-          <div id="today-pact-box"></div>
-        </div>
-
-        <div style="margin-bottom: 14px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-            <strong style="font-size: 0.82rem; color: var(--text-muted); text-transform: uppercase;">🎯 Focus-Taken (Nieuwste Eerst):</strong>
-            <button class="btn btn-secondary btn-small" style="font-size: 0.72rem; padding: 2px 8px;" onclick="switchView('plan')">Beheer op Plannen ➔</button>
-          </div>
-          <div id="today-tasks-list" class="item-list"></div>
-        </div>
-
-        <div style="margin-bottom: 14px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-            <strong style="font-size: 0.82rem; color: var(--text-muted); text-transform: uppercase;">🧭 Doelen Check-in:</strong>
-            <button class="btn btn-secondary btn-small" style="font-size: 0.72rem; padding: 2px 8px;" onclick="switchView('plan')">Beheer op Plannen ➔</button>
-          </div>
-          <div id="today-goals-list" class="item-list"></div>
-        </div>
-      </div>
-
-      <div class="card" style="margin-bottom: 18px; background: linear-gradient(135deg, var(--card-bg) 0%, var(--soft-warm) 100%); border: 1.5px solid var(--warm-border);">
-        <h2>
-          💡 Idee van de Dag
-          <button class="btn btn-small" style="background-color: #ED8936; color: white;" onclick="openGrabbeltonModal()">🎲 Grabbelen</button>
-        </h2>
-        <p class="subtitle">Een willekeurige gedachte uit jouw Ideeënkluis ter inspiratie.</p>
-        
-        <div id="today-random-idea-box" style="background: var(--card-bg); padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--input-border); font-size: 0.9rem;">
-          Laden van een mooi idee...
-        </div>
-      </div>
-
-      <div class="tip-box" id="brein-hack" style="margin-bottom: 18px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-          <strong style="font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.5px;">💡 Brein & Focus Hack</strong>
-          <button class="btn btn-secondary btn-small" onclick="nextTip()">Andere tip 🔄</button>
-        </div>
-        <p id="tip-text" style="font-size: 0.92rem; line-height: 1.4;"></p>
-      </div>
-
-      <div class="card" style="margin-bottom: 18px;">
-        <h2>📊 Jouw Reis In Cijfers</h2>
-        <p class="subtitle">Overzicht van jouw opgebouwde rust & succes!</p>
-        
-        <div class="stats-grid">
-          <div class="stat-box"><div class="stat-number" id="stat-starts">0</div><div class="stat-label">Zachte Starts</div></div>
-          <div class="stat-box"><div class="stat-number" id="stat-pacts">0</div><div class="stat-label">Pacten Voldaan</div></div>
-          <div class="stat-box"><div class="stat-number" id="stat-tasks">0</div><div class="stat-label">Taken Gelukt</div></div>
-          <div class="stat-box"><div class="stat-number" id="stat-money">0</div><div class="stat-label">Geld-Zeges 💶</div></div>
-          <div class="stat-box"><div class="stat-number" id="stat-contacts">0</div><div class="stat-label">Contacten 💜</div></div>
-          <div class="stat-box"><div class="stat-number" id="stat-marbles">0</div><div class="stat-label">Knikkers 🏺</div></div>
-        </div>
-      </div>
-
-      <div class="card" style="margin-bottom: 18px; border: 1.5px solid var(--purple-border); background: var(--soft-purple);">
-        <h2>
-          💜 Zachte Buddy-Lijn
-          <button class="btn btn-secondary btn-small" onclick="openBuddySettingsModal()">⚙️ Beheer 4 Buddy's</button>
-        </h2>
-        <p class="subtitle" style="color: var(--purple-text); margin-bottom: 10px;">Lichte, snelle WhatsApp-signalen om op tijd eerlijk te zijn.</p>
-        <div id="buddy-quick-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;"></div>
-      </div>
-
-      <div class="card">
-        <h2>💾 Gegevensbeheer & Backup</h2>
-        <p class="subtitle">Bewaar jouw opgebouwde progressie veilig op je eigen toestel.</p>
-
-        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-          <button class="btn btn-secondary btn-small" style="flex: 1;" onclick="exportBackupData()">📥 Exporteer Backup (JSON)</button>
-          <button class="btn btn-secondary btn-small" style="flex: 1;" onclick="document.getElementById('import-file-input').click()">📤 Importeer Backup</button>
-          <input type="file" id="import-file-input" class="hidden" accept=".json" onchange="importBackupData(event)">
-        </div>
-      </div>
-
-    </div>
-
-    <!-- ==================== TAB 2: PLANNEN & DOELEN ==================== -->
-    <div id="view-plan" class="hidden">
-      
-      <div class="card" style="margin-bottom: 18px;">
-        <h2>🌙 Het Avond-Pact</h2>
-        <p class="subtitle">Zet één piepkleine micro-stap klaar voor morgen.</p>
-
-        <div id="pact-display" class="hidden">
-          <div style="background: var(--item-bg); padding: 14px; border-radius: 12px; border-left: 4px solid var(--accent-primary); border: 1.5px solid var(--input-border);">
-            <strong style="display:block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">JOUW AFSPRAAK:</strong>
-            <span id="current-pact-text" style="font-size: 1rem; font-weight: 500;"></span>
-          </div>
-          
-          <div class="btn-group">
-            <button class="btn btn-small" style="background-color: #38A169; color: white;" onclick="completePact()">✅ Voltooid</button>
-            <button class="btn btn-secondary btn-small" style="color: #E53E3E;" onclick="deletePact()">🗑️ Wis</button>
-          </div>
-        </div>
-
-        <div id="pact-form">
-          <input type="text" id="pact-input" placeholder="Bijv: Alleen mijn laptop opendoen & water pakken">
-          <button class="btn" onclick="savePact()">Leg vast voor morgen</button>
-        </div>
-      </div>
-
-      <div class="card" style="margin-bottom: 18px;">
-        <h2>
-          🎯 Zacht Planbord
-          <button class="btn btn-secondary btn-small" onclick="openTaskArchiveModal()">📜 Taken Archief</button>
-        </h2>
-        <p class="subtitle">Kies behapbare acties voor nu.</p>
-
-        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;">
-          <input type="text" id="task-input" placeholder="Kleine actie voor nu..." style="margin-bottom: 0; flex: 1 1 200px;">
-          <select id="task-category-select" style="margin-bottom: 0; flex: 1 1 130px; font-size: 0.85rem;">
-            <option value="Privé">🏠 Privé</option>
-            <option value="Gezin">👨‍👩‍👧‍👦 Gezin</option>
-            <option value="Werk">💼 Werk</option>
-            <option value="Klussen">🔨 Klussen</option>
-            <option value="Vrije tijd">🎨 Vrije tijd</option>
-            <option value="Gezondheid">🍎 Gezondheid</option>
-            <option value="Financieel">💶 Financieel</option>
-          </select>
-          <button class="btn btn-small" style="width: auto;" onclick="addTask()">Toevoegen</button>
-        </div>
-
-        <div id="tasks-list" class="item-list"></div>
-      </div>
-
-      <div class="card" style="margin-bottom: 18px;">
-        <h2>
-          🧭 Het Zachte KomPAS
-          <div style="display:flex; gap:6px;">
-            <button class="btn btn-secondary btn-small" onclick="openGoalArchiveModal()">📜 Archief</button>
-            <button class="btn btn-secondary btn-small" onclick="toggleAddGoalForm()">+ Nieuw Doel</button>
-          </div>
-        </h2>
-        <p class="subtitle">Langetermijn voornemens met een ingebouwd veiligheidsnet.</p>
-
-        <div id="add-goal-form" class="hidden" style="background: var(--item-bg); padding: 14px; border-radius: 12px; margin-bottom: 14px; border: 1.5px solid var(--input-border);">
-          <strong style="display:block; font-size: 0.88rem; margin-bottom: 8px;" id="goal-form-title">Nieuw Doel Toevoegen</strong>
-          <input type="hidden" id="goal-edit-id" value="">
-          <input type="text" id="goal-title-input" placeholder="🎯 Wat wil je opbouwen?">
-          <input type="text" id="goal-pitfall-input" placeholder="🕳️ Bekende valkuil?">
-          <input type="text" id="goal-shield-input" placeholder="🛡️ Zacht Schild op zware dagen?">
-          <div style="display:flex; gap:8px;">
-            <button class="btn btn-small" onclick="saveNewGoal()">Opslaan</button>
-            <button class="btn btn-secondary btn-small" onclick="toggleAddGoalForm()">Annuleren</button>
-          </div>
-        </div>
-
-        <div id="compass-goals-list" class="item-list"></div>
-      </div>
-
-      <div class="card" style="margin-bottom: 18px;">
-        <h2>
-          💜 Contact-KomPAS
-          <button class="btn btn-secondary btn-small" onclick="addContactPrompt()">+ Contact</button>
-        </h2>
-        <p class="subtitle">Geen schuldgevoel meer bij 'uit het oog, uit het hart'.</p>
-        <div id="contacts-list" class="item-list"></div>
-      </div>
-
-    </div>
-
-    <!-- ==================== TAB 3: VITALITEIT ==================== -->
-    <div id="view-vitality" class="hidden">
-
-      <div class="card" style="margin-bottom: 18px;">
-        <h2>🌙 Nachtrust & Herstel</h2>
-        <p class="subtitle">Hoe voelt je herstel vanmorgen?</p>
-
-        <div id="sleep-checkin-box">
-          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button class="btn btn-small" style="background-color: #38A169; flex: 1;" onclick="logSleep('Goed / Voldoende geslapen')">🌙 Ja, goed / voldoende geslapen!</button>
-            <button class="btn btn-secondary btn-small" style="flex: 1;" onclick="logSleep('Onrustig / Korter geslapen')">☁️ Onrustig / Korter geslapen</button>
-          </div>
-        </div>
-
-        <div id="sleep-logged-status" class="hidden" style="margin-top: 10px; background: var(--item-bg); padding: 12px; border-radius: 12px; border: 1.5px solid var(--input-border);">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-              <strong style="font-size: 0.88rem;">Vandaag vastgelegd:</strong>
-              <div id="sleep-logged-text" style="color: var(--accent-primary); font-weight: 600;"></div>
-            </div>
-            <button class="btn btn-secondary btn-small" style="font-size: 0.72rem;" onclick="resetSleepLog()">Wijzigen</button>
-          </div>
-        </div>
-
-        <div class="chart-box">
-          <strong style="font-size:0.82rem; color:var(--text-muted);">📊 Slaap-Trend Overzicht (Laatste 7 Dagen)</strong>
-          <div id="sleep-chart-bars" class="chart-container"></div>
-        </div>
-      </div>
-
-      <div class="card" style="margin-bottom: 18px;">
-        <h2>🚶 Beweging & Stappen-Anker</h2>
-        <p class="subtitle">8.000 stappen is jouw richtlijn.</p>
-
-        <div id="steps-checkin-box">
-          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <button class="btn btn-small" style="background-color: #38A169; flex: 1;" onclick="logSteps(true)">👟 Yes! 8.000+ stappen gehaald</button>
-            <button class="btn btn-secondary btn-small" style="flex: 1;" onclick="logSteps(false)">🍃 Vandaag wat minder stappen</button>
-          </div>
-        </div>
-
-        <div id="steps-logged-status" class="hidden" style="margin-top: 10px; background: var(--item-bg); padding: 12px; border-radius: 12px; border: 1.5px solid var(--input-border);">
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-              <strong style="font-size: 0.88rem;">Stappen-stempel vandaag:</strong>
-              <div id="steps-logged-text" style="color: var(--accent-primary); font-weight: 600;"></div>
-            </div>
-            <button class="btn btn-secondary btn-small" style="font-size: 0.72rem;" onclick="resetStepsLog()">Wijzigen</button>
-          </div>
-        </div>
-
-        <div class="chart-box">
-          <strong style="font-size:0.82rem; color:var(--text-muted);">📊 Stappen-Trend Overzicht (Laatste 7 Dagen)</strong>
-          <div id="steps-chart-bars" class="chart-container"></div>
-        </div>
-
-        <hr style="border: 0; border-top: 1px dashed var(--input-border); margin: 14px 0;">
-
-        <strong style="font-size: 0.88rem; display: block; margin-bottom: 6px;">💪 Fitheid & Sport Log:</strong>
-        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-          <button class="btn btn-secondary btn-small" onclick="logFitnessActivity('Voetbal ⚽')">⚽ Voetbal</button>
-          <button class="btn btn-secondary btn-small" onclick="logFitnessActivity('Zaalvoetbal ⚽')">⚽ Zaalvoetbal</button>
-          <button class="btn btn-secondary btn-small" onclick="logFitnessActivity('Hardlopen 🏃')">🏃 Hardlopen</button>
-          <button class="btn btn-secondary btn-small" onclick="logFitnessActivity('Wandeling gemaakt 🚶')">🚶 Wandelen</button>
-          <button class="btn btn-secondary btn-small" onclick="logFitnessActivity('Gefietst 🚲')">🚲 Fietsen</button>
-          <button class="btn btn-secondary btn-small" onclick="logFitnessActivity('Sport / Workout 🏋️')">🏋️ Workout</button>
-        </div>
-
-        <div id="fitness-activity-list" class="item-list" style="margin-top: 10px;"></div>
-      </div>
-
-    </div>
-
-    <!-- ==================== TAB 4: GELD-KOMPAS ==================== -->
-    <div id="view-money" class="hidden">
-
-      <div class="card" style="margin-bottom: 18px; border: 2px solid var(--accent-primary);">
-        <h2>
-          🌿 Het Ruimte-KomPAS
-          <span id="ruimte-project-count-badge" style="font-size: 0.75rem; background: var(--accent-primary); color: white; padding: 3px 8px; border-radius: 10px;">0 Projecten</span>
-        </h2>
-        <p class="subtitle">Herstel en breng familie-afspraken rustig in balans.</p>
-
-        <div style="background: var(--item-bg); padding: 14px; border-radius: 12px; border: 1.5px solid var(--input-border);">
-          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; font-weight:600;">
-            <span>🌱 Totaal Vrijgemaakt:</span>
-            <span id="ruimte-total-repaid-text" style="color:#38A169; font-size:1.05rem;">€0</span>
-          </div>
-
-          <div class="progress-bar-bg">
-            <div id="ruimte-total-progress-bar" class="progress-bar-fill" style="width: 0%;"></div>
-          </div>
-
-          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.78rem; color:var(--text-muted);">
-            <span>Nog vrij te maken: <strong id="ruimte-total-remaining-text" style="color:var(--text-main);">€0</strong></span>
-            <span>Totaal Doel: <strong id="ruimte-total-original-text">€0</strong></span>
-          </div>
-        </div>
-
-        <div class="btn-group" style="margin-top: 12px;">
-          <button class="btn btn-small" onclick="openRuimteProjectsModal()">📂 Bekijk & Beheer Projecten</button>
-        </div>
-      </div>
-
-      <div class="card" style="margin-bottom: 18px; border: 1.5px solid #3182CE; background: linear-gradient(135deg, var(--card-bg) 0%, var(--soft-purple) 100%);">
-        <h2>
-          🎓 Studieschuld KomPAS
-          <button class="btn btn-secondary btn-small" onclick="openStudyDebtModal()">✏️ Instellen</button>
-        </h2>
-        <p class="subtitle">Overzicht op je studieschuld en maandelijkse aflossingen.</p>
-        
-        <div id="study-debt-display-box" style="background: var(--card-bg); padding: 14px; border-radius: 12px; border: 1.5px solid var(--input-border);"></div>
-
-        <div style="display:flex; gap:6px; margin-top:12px; align-items:center;">
-          <input type="number" id="study-quick-repay-input" placeholder="Aflossing deze maand (€)" style="margin-bottom:0; flex:1; font-size:0.85rem;">
-          <button class="btn btn-small" style="width:auto; background-color:#38A169;" onclick="addQuickStudyRepayment()">💶 Aflossen</button>
-        </div>
-      </div>
-
-      <div class="card" style="margin-bottom: 18px; border: 1.5px solid #38A169; padding: 14px; background: linear-gradient(135deg, var(--card-bg) 0%, var(--soft-green) 100%);">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="font-size: 1.2rem;">💶</span>
-            <div>
-              <strong style="font-size: 0.95rem; display: block;">Payday Radar</strong>
-              <span id="payday-target-date-text" style="font-size: 0.75rem; color: var(--text-muted);">Elke 23e (08:00)</span>
-            </div>
-          </div>
-
-          <div id="payday-countdown-box" style="display: flex; gap: 4px; font-weight: 700; font-size: 0.85rem; color: #38A169; background: var(--card-bg); padding: 6px 10px; border-radius: 10px; border: 1.5px solid var(--green-border);">
-            <span id="pd-days">00</span>d <span id="pd-hours">00</span>u <span id="pd-mins">00</span>m <span id="pd-secs">00</span>s
-          </div>
-        </div>
-      </div>
-
-      <div class="card" style="margin-bottom: 18px;">
-        <h2>🛑 Impuls-Wachtkamer</h2>
-        <p class="subtitle">Zet aankoopwensen 24 uur in de wachtkamer.</p>
-
-        <div style="display: flex; gap: 8px;">
-          <input type="text" id="impulse-name" placeholder="Wat wil je kopen?" style="margin-bottom:0; flex:2;">
-          <input type="number" id="impulse-price" placeholder="Prijs (€)" style="margin-bottom:0; flex:1;">
-          <button class="btn btn-small" onclick="addImpulseItem()">Parkeren</button>
-        </div>
-
-        <div id="impulse-list" class="item-list"></div>
-      </div>
-
-      <div class="card" style="margin-bottom: 18px;">
-        <h2>
-          🛡️ Vaste Lasten Check
-          <div style="display:flex; gap:6px;">
-            <button class="btn btn-secondary btn-small" onclick="openBillArchiveModal()">📜 Archief</button>
-            <button class="btn btn-secondary btn-small" onclick="toggleAddBillForm()">+ Nieuw</button>
-          </div>
-        </h2>
-        <p class="subtitle">Overzicht van je maandlasten gesorteerd op afschrijfdag.</p>
-
-        <div id="add-bill-form" class="hidden" style="background: var(--item-bg); padding: 14px; border-radius: 12px; margin-bottom: 14px; border: 1.5px solid var(--input-border);">
-          <strong style="display:block; font-size: 0.88rem; margin-bottom: 8px;" id="bill-form-title">Vaste Last Toevoegen</strong>
-          <input type="hidden" id="bill-edit-id" value="">
-          <input type="text" id="bill-name-input" placeholder="Dienst / Naam (bijv. Huur, Netflix)...">
-          <div style="display:flex; gap:8px;">
-            <select id="bill-type-select" style="margin-bottom:10px; flex:1;">
-              <option value="Automatische Incasso">💳 Automatische Incasso</option>
-              <option value="Handmatige Overboeking">🏛️ Handmatige Overboeking</option>
-            </select>
-            <input type="number" id="bill-amount-input" placeholder="Bedrag (€)" style="flex:1;">
-          </div>
-          <input type="number" id="bill-day-input" min="1" max="31" placeholder="Afschrijfdag (1 - 31)">
-          <div style="display:flex; gap:8px;">
-            <button class="btn btn-small" onclick="saveFixedBill()">Opslaan</button>
-            <button class="btn btn-secondary btn-small" onclick="toggleAddBillForm()">Annuleren</button>
-          </div>
-        </div>
-
-        <div id="fixed-bills-list" class="item-list"></div>
-      </div>
-
-    </div>
-
-    <!-- ==================== TAB 5: KENNIS & HACKS ==================== -->
-    <div id="view-hacks" class="hidden">
-      
-      <div class="card" style="margin-bottom: 18px; border: 2px solid var(--accent-primary);">
-        <h2>💡 Kennis & Brein-Hacks Feed</h2>
-        <p class="subtitle">Een live stroom van inzichten speciaal afgestemd op ADHD, focus en ontprikkelen.</p>
-
-        <div style="background: var(--item-bg); border: 1.5px solid var(--input-border); padding: 18px; border-radius: 14px;">
-          <span id="feed-category-badge" style="font-size: 0.75rem; font-weight: 700; background: var(--accent-primary); color: white; padding: 3px 8px; border-radius: 8px; text-transform: uppercase;">Categorie</span>
-          <h3 id="feed-title" style="font-size: 1.1rem; margin-top: 10px; margin-bottom: 6px;">Titel van het inzicht</h3>
-          <p id="feed-text" style="font-size: 0.92rem; line-height: 1.45; color: var(--text-main); margin-bottom: 14px;">Inhoud van de tip...</p>
-          
-          <button class="btn btn-secondary btn-small" onclick="generateNextFeedTip()">🎲 Volgend Inzicht ➔</button>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- ==================== TAB 6: IDEEËNKLUIS & PROJECTEN ==================== -->
-    <div id="view-ideas" class="hidden">
-      
-      <div class="card" style="margin-bottom: 18px;">
-        <h2>
-          📌 Ideeënkluis
-          <button class="btn btn-secondary btn-small" onclick="openGrabbeltonModal()">🎲 Grabbelton</button>
-        </h2>
-        <p class="subtitle">Schrijf je gedachten van je af. Hier tonen we jouw Post-its.</p>
-
-        <textarea id="idea-input" rows="2" placeholder="Typ een willekeurig idee of wilde gedachte..."></textarea>
-        
-        <div style="display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap;">
-          <select id="idea-category-select" style="margin-bottom: 0; flex: 1;"></select>
-          <button class="btn btn-secondary btn-small" onclick="addNewCategoryPrompt()">+ Cat</button>
-        </div>
-
-        <button class="btn btn-secondary" onclick="addIdea()">Prik op het Bord 📌</button>
-
-        <div id="main-ideas-postit-grid" class="postit-grid"></div>
-      </div>
-
-      <div class="card">
-        <h2>
-          🚀 Projecten
-          <button class="btn btn-secondary btn-small" onclick="toggleAddProjectForm()">+ Nieuw Project</button>
-        </h2>
-        <p class="subtitle">Zet spontane Post-its om in gestructureerde projecten.</p>
-
-        <div id="add-project-form" class="hidden" style="background: var(--item-bg); padding: 14px; border-radius: 12px; margin-bottom: 14px; border: 1.5px solid var(--input-border);">
-          <strong style="display:block; font-size: 0.88rem; margin-bottom: 8px;">Nieuw Project Aanmaken</strong>
-          <input type="text" id="project-title-input" placeholder="🚀 Titel van het project...">
-          <textarea id="project-desc-input" rows="2" placeholder="Omschrijving of doel van dit project..."></textarea>
-          <div style="display:flex; gap:8px;">
-            <button class="btn btn-small" onclick="saveNewProject()">Project Opslaan</button>
-            <button class="btn btn-secondary btn-small" onclick="toggleAddProjectForm()">Annuleren</button>
-          </div>
-        </div>
-
-        <div id="projects-compact-list" class="item-list"></div>
-      </div>
-
-    </div>
-
-    <!-- ==================== TAB 7: LUCHTIG ==================== -->
-    <div id="view-fun" class="hidden">
-      <div class="card">
-        <h2>☕ Luchtig & Passies</h2>
-        <p class="subtitle">Ontspanning en creativiteit.</p>
-
-        <div style="background: var(--item-bg); padding: 20px; border-radius: 12px; border: 1.5px dashed var(--input-border); text-align: center; color: var(--text-muted);">
-          ⚽ 🎵 🎨<br>
-          <em>"Jouw favoriete plek om even volledig te ontspannen!"</em>
-        </div>
-      </div>
-    </div>
-
-    <!-- ==================== TAB 8: INZICHTEN ==================== -->
-    <div id="view-insights" class="hidden">
-      <div class="card" style="margin-bottom: 18px;">
-        <h2>📊 Cross-Data Trends & Koppelingen</h2>
-        <p class="subtitle">Ontdek hoe je slaap, beweging en overwinningen elkaar beïnvloeden.</p>
-
-        <div class="chart-box">
-          <strong style="font-size:0.85rem; color:var(--text-main); display:block; margin-bottom:4px;">🌙 Slaap-Herstel Overzicht (Laatste 7 Dagen)</strong>
-          <div id="insights-sleep-mood-chart" class="chart-container"></div>
-        </div>
-
-        <div class="chart-box">
-          <strong style="font-size:0.85rem; color:var(--text-main); display:block; margin-bottom:4px;">👟 Stappen-Trend Overzicht (Laatste 7 Dagen)</strong>
-          <div id="insights-steps-marbles-chart" class="chart-container"></div>
-        </div>
-
-        <div class="insight-card" id="insights-auto-summary">
-          <strong>💡 Zacht Analyse Inzicht:</strong>
-          <span id="insights-summary-text">Aan het berekenen...</span>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ==================== MODALS ==================== -->
-
-  <!-- TAKEN ARCHIEF MODAL -->
-  <div id="task-archive-modal" class="modal-overlay hidden" onclick="closeTaskArchiveModal()">
-    <div class="modal-content" onclick="event.stopPropagation()">
-      <div class="modal-header">
-        <h2>📜 Voltooide Taken Archief</h2>
-        <button class="btn btn-secondary btn-small" onclick="closeTaskArchiveModal()">✕ Sluiten</button>
-      </div>
-
-      <div class="filter-bar">
-        <input type="text" id="task-archive-search" oninput="renderTaskArchiveModal()" placeholder="🔍 Zoek in archief..." style="margin-bottom:0; flex:1;">
-        <select id="task-archive-filter-mode" onchange="renderTaskArchiveModal()" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:4px 8px;">
-          <option value="ALL">🗓️ Alle tijd</option>
-          <option value="DAY">☀️ Specifieke Dag</option>
-          <option value="WEEK">📅 Deze Week</option>
-          <option value="MONTH">🗓️ Deze Maand</option>
-          <option value="YEAR">🚀 Dit Jaar</option>
-        </select>
-        <input type="date" id="task-archive-date" class="hidden" onchange="renderTaskArchiveModal()" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:2px 6px;">
-      </div>
-      
-      <div id="task-archive-modal-list" class="item-list" style="max-height: 380px; overflow-y: auto;"></div>
-    </div>
-  </div>
-
-  <!-- MOOD HISTORIE MODAL -->
-  <div id="mood-history-modal" class="modal-overlay hidden" onclick="closeMoodHistoryModal()">
-    <div class="modal-content" onclick="event.stopPropagation()">
-      <div class="modal-header">
-        <h2>📈 Mood Trend & Historie</h2>
-        <button class="btn btn-secondary btn-small" onclick="closeMoodHistoryModal()">✕ Sluiten</button>
-      </div>
-
-      <div class="filter-bar">
-        <select id="mood-history-filter-mode" onchange="renderMoodHistory()" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:4px 8px;">
-          <option value="WEEK">📅 Deze Week</option>
-          <option value="DAY">☀️ Specifieke Dag</option>
-          <option value="MONTH">🗓️ Deze Maand</option>
-          <option value="YEAR">🚀 Dit Jaar</option>
-          <option value="ALL">🗓️ Alle tijd</option>
-        </select>
-        <input type="date" id="mood-history-filter-date" class="hidden" onchange="renderMoodHistory()" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:2px 6px;">
-      </div>
-
-      <div class="chart-box">
-        <strong style="font-size:0.82rem; color:var(--text-muted);">📈 Energie-Verloop Grafiek</strong>
-        <div id="mood-chart-bars" class="chart-container"></div>
-      </div>
-
-      <div id="mood-trend-positive-text" style="font-size: 0.82rem; color: var(--accent-primary); font-weight: 600; margin-bottom: 10px;"></div>
-
-      <div id="mood-history-list" class="item-list" style="max-height:220px; overflow-y:auto;"></div>
-    </div>
-  </div>
-
-  <!-- ZACHT KOMPAS ARCHIEF MODAL -->
-  <div id="goal-archive-modal" class="modal-overlay hidden" onclick="closeGoalArchiveModal()">
-    <div class="modal-content" onclick="event.stopPropagation()">
-      <div class="modal-header">
-        <h2>📜 Zacht KomPAS Archief</h2>
-        <button class="btn btn-secondary btn-small" onclick="closeGoalArchiveModal()">✕ Sluiten</button>
-      </div>
-      <div id="goal-archive-modal-list" class="item-list" style="max-height: 380px; overflow-y: auto;"></div>
-    </div>
-  </div>
-
-  <!-- VASTE LASTEN ARCHIEF MODAL -->
-  <div id="bill-archive-modal" class="modal-overlay hidden" onclick="closeBillArchiveModal()">
-    <div class="modal-content" onclick="event.stopPropagation()">
-      <div class="modal-header">
-        <h2>📜 Vaste Lasten Archief</h2>
-        <button class="btn btn-secondary btn-small" onclick="closeBillArchiveModal()">✕ Sluiten</button>
-      </div>
-      <input type="text" id="bill-archive-search" oninput="renderBillArchiveModalList()" placeholder="🔍 Zoek in gearchiveerde vaste lasten..." style="margin-bottom:10px;">
-      <div id="bill-archive-modal-list" class="item-list" style="max-height: 380px; overflow-y: auto;"></div>
-    </div>
-  </div>
-
-  <!-- STUDIESCHULD MODAL -->
-  <div id="study-debt-modal" class="modal-overlay hidden" onclick="closeStudyDebtModal()">
-    <div class="modal-content" onclick="event.stopPropagation()">
-      <div class="modal-header">
-        <h2>🎓 Studieschuld Instellen</h2>
-        <button class="btn btn-secondary btn-small" onclick="closeStudyDebtModal()">✕ Sluiten</button>
-      </div>
-      <input type="number" id="study-total-input" placeholder="Totale Studieschuld (€)">
-      <input type="number" id="study-repaid-input" placeholder="Reeds afgelost (€)">
-      <input type="number" id="study-monthly-input" placeholder="Maandelijkse aflossing (€)">
-      <div style="display:flex; gap:8px; margin-top:10px;">
-        <button class="btn btn-small" onclick="saveStudyDebt()">Opslaan</button>
-        <button class="btn btn-secondary btn-small" style="color:#E53E3E;" onclick="deleteStudyDebt()">🗑️ Verwijderen</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- BUDDY MODALS -->
-  <div id="buddy-action-modal" class="modal-overlay hidden" onclick="closeBuddyActionModal()">
-    <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 480px;">
-      <div class="modal-header">
-        <h2 id="buddy-modal-title">💜 Signaal sturen...</h2>
-        <button class="btn btn-secondary btn-small" onclick="closeBuddyActionModal()">✕ Sluiten</button>
-      </div>
-      <div style="display: flex; flex-direction: column; gap: 10px;">
-        <button class="btn" style="background-color: #ED8936;" onclick="sendBuddySignal('yellow')">🟧 Code Geel (Preventie)</button>
-        <button class="btn" style="background-color: #38A169;" onclick="sendBuddySignal('green')">🟩 Code Groen (Eerlijke Update)</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="buddy-settings-modal" class="modal-overlay hidden" onclick="closeBuddySettingsModal()">
-    <div class="modal-content" onclick="event.stopPropagation()">
-      <div class="modal-header">
-        <h2>⚙️ Beheer jouw 4 Buddy's</h2>
-        <button class="btn btn-secondary btn-small" onclick="closeBuddySettingsModal()">✕ Sluiten</button>
-      </div>
-      <div id="buddy-inputs-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
-      <button class="btn" style="margin-top: 14px;" onclick="saveBuddySettings()">Opslaan</button>
-    </div>
-  </div>
-
-  <!-- GRABBELTON MODAL -->
-  <div id="grabbelton-modal" class="modal-overlay hidden" onclick="closeGrabbeltonModal()">
-    <div class="modal-content" onclick="event.stopPropagation()" style="text-align: center; border: 2px dashed #ED8936;">
-      <div class="modal-header">
-        <h2>🎲 Grabbelton Post-it</h2>
-        <button class="btn btn-secondary btn-small" onclick="closeGrabbeltonModal()">✕ Sluiten</button>
-      </div>
-      <div id="grabbelton-card-container" style="margin-top: 14px; margin-bottom: 20px;"></div>
-      <button class="btn btn-small" style="background-color: #ED8936;" onclick="grabNewRandomIdea()">🎲 Volgende Grabbelen</button>
-    </div>
-  </div>
-
-  <!-- RUIMTE PROJECTS MODAL -->
-  <div id="ruimte-projects-modal" class="modal-overlay hidden" onclick="closeRuimteProjectsModal()">
-    <div class="modal-content" onclick="event.stopPropagation()">
-      <div class="modal-header">
-        <h2>📂 Familie-Projecten Beheren</h2>
-        <button class="btn btn-secondary btn-small" onclick="closeRuimteProjectsModal()">✕ Sluiten</button>
-      </div>
-      <div id="ruimte-projects-list" class="item-list"></div>
-    </div>
-  </div>
-
-  <!-- Koppeling naar het losse JavaScript-bestand -->
-  <script src="app.js"></script>
+    <script>
+        // --- DATAMODEL & STATE ---
+        let appData = {
+            trots: [],
+            planTasks: [],
+            goals: [],
+            contacts: [],
+            sports: [],
+            kompas: [],
+            impulse: [],
+            fixedCosts: [],
+            ideas: [],
+            smokeCount: 0,
+            debtTotal: 0,
+            debtPaid: 0,
+            paydayDate: '',
+            buddyPhone: '',
+            steps: 0,
+            theme: 'light'
+        };
+
+        const kennisDatabase = [
+            { cat: "ADHD", title: "Pomodoro Techniek", desc: "Werk 25 minuten gefocust, neem 5 minuten pauze. Voorkomt mentale uitputting." },
+            { cat: "Rust", title: "Brain Dump", desc: "Schrijf alles wat in je hoofd rondspookt direct op papier. Dit geeft instant rust." },
+            { cat: "Vitaliteit", title: "Ochtendlicht", desc: "Pak binnen 30 minuten na het opstaan 10 minuten daglicht voor betere slaap 's nachts." },
+            { cat: "Geld", title: "24-Uur Regel", desc: "Wacht bij niet-essentiële aankoopwensen altijd 24 uur voordat je afrekent." }
+        ];
+
+        // --- INIT & SETUP ---
+        window.onload = function() {
+            loadAllData();
+            renderAll();
+        };
+
+        function saveData() {
+            localStorage.setItem('voldaan_data', JSON.stringify(appData));
+        }
+
+        function loadAllData() {
+            const saved = localStorage.getItem('voldaan_data');
+            if (saved) {
+                try {
+                    appData = { ...appData, ...JSON.parse(saved) };
+                } catch(e) {
+                    console.error("Fout bij laden data", e);
+                }
+            }
+            if(appData.theme === 'dark') document.body.classList.add('dark-theme');
+            if(appData.buddyPhone) document.getElementById('buddy-phone').value = appData.buddyPhone;
+            if(appData.debtTotal) document.getElementById('debt-total').value = appData.debtTotal;
+            if(appData.debtPaid) document.getElementById('debt-paid').value = appData.debtPaid;
+            if(appData.paydayDate) document.getElementById('payday-date').value = appData.paydayDate;
+        }
+
+        function renderAll() {
+            renderTrots();
+            renderPlanboard();
+            renderGoals();
+            renderContacts();
+            renderSports();
+            renderKompas();
+            renderImpulse();
+            renderFixedCosts();
+            renderIdeas();
+            renderKennis();
+            updateSmokeDisplay();
+            updateDebtDisplay();
+            updatePaydayDisplay();
+            updateStepsDisplay();
+        }
+
+        // --- TAB NAVIGATION ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById('tab-' + tabId).classList.add('active');
+            document.getElementById('nav-' + tabId).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        // --- THEME & BACKUP ---
+        function toggleTheme() {
+            document.body.classList.toggle('dark-theme');
+            appData.theme = document.body.classList.contains('dark-theme') ? 'dark' : 'light';
+            saveData();
+        }
+
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `voldaan_backup_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function importData() {
+            document.getElementById('importFile').click();
+        }
+
+        function processImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    appData = JSON.parse(e.target.result);
+                    saveData();
+                    location.reload();
+                } catch(err) {
+                    alert('Ongeldig backup bestand!');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // --- TAB 1: VANDAAG ---
+        function saveCheckin() {
+            alert('Check-in opgeslagen voor vandaag!');
+        }
+
+        function addTrots() {
+            const input = document.getElementById('trots-input');
+            if(!input.value.trim()) return;
+            appData.trots.push({ text: input.value, date: new Date().toLocaleDateString() });
+            input.value = '';
+            saveData();
+            renderTrots();
+        }
+
+        function renderTrots() {
+            const pot = document.getElementById('marbles-pot');
+            const list = document.getElementById('trots-list');
+            pot.innerHTML = '';
+            list.innerHTML = '';
+
+            appData.trots.forEach((item, index) => {
+                const marble = document.createElement('div');
+                marble.className = 'marble';
+                marble.title = item.text;
+                pot.appendChild(marble);
+
+                const el = document.createElement('div');
+                el.className = 'list-item';
+                el.innerHTML = `<span>🏆 ${item.text}</span><button class="btn-secondary" onclick="deleteTrots(${index})">✕</button>`;
+                list.appendChild(el);
+            });
+        }
+
+        function deleteTrots(index) {
+            appData.trots.splice(index, 1);
+            saveData();
+            renderTrots();
+        }
+
+        function sendBuddyWhatsApp() {
+            const phone = document.getElementById('buddy-phone').value.trim();
+            const msg = document.getElementById('buddy-msg').value.trim();
+            if(!phone) { alert('Vul eerst een telefoonnummer in!'); return; }
+            appData.buddyPhone = phone;
+            saveData();
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        // --- TAB 2: PLANNEN ---
+        function savePact() {
+            alert('Avond-Pact opgeslagen!');
+            document.getElementById('pact-morgen').value = '';
+            document.getElementById('pact-hoofd').value = '';
+        }
+
+        function addPlanTask() {
+            const task = document.getElementById('plan-task').value.trim();
+            const cat = document.getElementById('plan-cat').value;
+            if(!task) return;
+            appData.planTasks.push({ task, cat, done: false });
+            document.getElementById('plan-task').value = '';
+            saveData();
+            renderPlanboard();
+        }
+
+        function renderPlanboard() {
+            const list = document.getElementById('planboard-list');
+            const vandaagList = document.getElementById('vandaag-acties-list');
+            list.innerHTML = '';
+            vandaagList.innerHTML = '';
+
+            appData.planTasks.forEach((item, i) => {
+                const el = document.createElement('div');
+                el.className = 'list-item';
+                el.innerHTML = `
+                    <div>
+                        <span class="tag">${item.cat}</span>
+                        <span style="${item.done ? 'text-decoration: line-through; opacity: 0.6;' : ''}">${item.task}</span>
+                    </div>
+                    <div class="actions">
+                        <button class="btn-primary" onclick="toggleTask(${i})">${item.done ? '✓' : 'O'}</button>
+                        <button class="btn-secondary" onclick="deleteTask(${i})">✕</button>
+                    </div>
+                `;
+                list.appendChild(el);
+
+                if(!item.done) {
+                    const vEl = el.cloneNode(true);
+                    vandaagList.appendChild(vEl);
+                }
+            });
+
+            if(vandaagList.innerHTML === '') {
+                vandaagList.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">Geen openstaande acties voor vandaag!</p>';
+            }
+        }
+
+        function toggleTask(i) {
+            appData.planTasks[i].done = !appData.planTasks[i].done;
+            saveData();
+            renderPlanboard();
+        }
+
+        function deleteTask(i) {
+            appData.planTasks.splice(i, 1);
+            saveData();
+            renderPlanboard();
+        }
+
+        function addGoal() {
+            const val = document.getElementById('goal-input').value.trim();
+            if(!val) return;
+            appData.goals.push(val);
+            document.getElementById('goal-input').value = '';
+            saveData();
+            renderGoals();
+        }
+
+        function renderGoals() {
+            const list = document.getElementById('goals-list');
+            list.innerHTML = '';
+            appData.goals.forEach((g, i) => {
+                list.innerHTML += `<div class="list-item"><span>🎯 ${g}</span><button class="btn-secondary" onclick="deleteGoal(${i})">✕</button></div>`;
+            });
+        }
+
+        function deleteGoal(i) {
+            appData.goals.splice(i, 1);
+            saveData();
+            renderGoals();
+        }
+
+        function addContactRem() {
+            const name = document.getElementById('contact-name').value.trim();
+            const date = document.getElementById('contact-date').value;
+            if(!name || !date) return;
+            appData.contacts.push({ name, date });
+            document.getElementById('contact-name').value = '';
+            document.getElementById('contact-date').value = '';
+            saveData();
+            renderContacts();
+        }
+
+        function renderContacts() {
+            const list = document.getElementById('contact-list');
+            list.innerHTML = '';
+            appData.contacts.forEach((c, i) => {
+                list.innerHTML += `<div class="list-item"><span>📞 ${c.name} (${c.date})</span><button class="btn-secondary" onclick="deleteContact(${i})">✕</button></div>`;
+            });
+        }
+
+        function deleteContact(i) {
+            appData.contacts.splice(i, 1);
+            saveData();
+            renderContacts();
+        }
+
+        // --- TAB 3: VITALITEIT ---
+        function saveSleep() {
+            alert('Slaapgegevens opgeslagen!');
+        }
+
+        function saveSteps() {
+            const val = parseInt(document.getElementById('steps-input').value) || 0;
+            appData.steps = val;
+            saveData();
+            updateStepsDisplay();
+        }
+
+        function updateStepsDisplay() {
+            const pct = Math.min(100, Math.round((appData.steps / 8000) * 100));
+            document.getElementById('steps-progress').style.width = pct + '%';
+            document.getElementById('steps-text').innerText = `${appData.steps} / 8000 stappen (${pct}%)`;
+        }
+
+        function addSport() {
+            const val = document.getElementById('sport-input').value.trim();
+            if(!val) return;
+            appData.sports.push(val);
+            document.getElementById('sport-input').value = '';
+            saveData();
+            renderSports();
+        }
+
+        function renderSports() {
+            const list = document.getElementById('sport-list');
+            list.innerHTML = '';
+            appData.sports.forEach((s, i) => {
+                list.innerHTML += `<div class="list-item"><span>💪 ${s}</span><button class="btn-secondary" onclick="deleteSport(${i})">✕</button></div>`;
+            });
+        }
+
+        function deleteSport(i) {
+            appData.sports.splice(i, 1);
+            saveData();
+            renderSports();
+        }
+
+        function startSnackTimer() {
+            let sec = 600;
+            const display = document.getElementById('snack-timer-display');
+            display.style.display = 'block';
+            const t = setInterval(() => {
+                const m = Math.floor(sec / 60);
+                const s = sec % 60;
+                display.innerText = `Pauze: ${m}:${s < 10 ? '0' : ''}${s}`;
+                sec--;
+                if(sec < 0) {
+                    clearInterval(t);
+                    display.innerText = "Tijd is om! Heb je nog steeds trek?";
+                }
+            }, 1000);
+        }
+
+        function changeSmoke(delta) {
+            appData.smokeCount = Math.max(0, (appData.smokeCount || 0) + delta);
+            saveData();
+            updateSmokeDisplay();
+        }
+
+        function updateSmokeDisplay() {
+            document.getElementById('smoke-count').innerText = appData.smokeCount || 0;
+        }
+
+        // --- TAB 4: GELD ---
+        function addKompas() {
+            const val = document.getElementById('kompas-input').value.trim();
+            if(!val) return;
+            appData.kompas.push(val);
+            document.getElementById('kompas-input').value = '';
+            saveData();
+            renderKompas();
+        }
+
+        function renderKompas() {
+            const list = document.getElementById('kompas-list');
+            list.innerHTML = '';
+            appData.kompas.forEach((k, i) => {
+                list.innerHTML += `<div class="list-item"><span>🧩 ${k}</span><button class="btn-secondary" onclick="deleteKompas(${i})">✕</button></div>`;
+            });
+        }
+
+        function deleteKompas(i) {
+            appData.kompas.splice(i, 1);
+            saveData();
+            renderKompas();
+        }
+
+        function saveDebtData() {
+            appData.debtTotal = parseFloat(document.getElementById('debt-total').value) || 0;
+            appData.debtPaid = parseFloat(document.getElementById('debt-paid').value) || 0;
+            saveData();
+            updateDebtDisplay();
+        }
+
+        function updateDebtDisplay() {
+            if(!appData.debtTotal) return;
+            const pct = Math.min(100, Math.round((appData.debtPaid / appData.debtTotal) * 100));
+            document.getElementById('debt-progress').style.width = pct + '%';
+            document.getElementById('debt-text').innerText = `${pct}% afgelost (€${appData.debtPaid} / €${appData.debtTotal})`;
+        }
+
+        function updatePayday() {
+            appData.paydayDate = document.getElementById('payday-date').value;
+            saveData();
+            updatePaydayDisplay();
+        }
+
+        function updatePaydayDisplay() {
+            if(!appData.paydayDate) return;
+            const now = new Date();
+            const target = new Date(appData.paydayDate);
+            const diff = Math.ceil((target - now) / (1000 * 60 * 60 * 24));
+            const el = document.getElementById('payday-countdown');
+            if(diff > 0) el.innerText = `Nog ${diff} dag(en) tot betaaldag!`;
+            else if(diff === 0) el.innerText = "Het is Betaaldag! 🎉";
+            else el.innerText = "Betaaldag is voorbij.";
+        }
+
+        function addImpulse() {
+            const name = document.getElementById('impulse-item').value.trim();
+            const price = document.getElementById('impulse-price').value.trim();
+            if(!name) return;
+            appData.impulse.push({ name, price, date: new Date().toLocaleDateString() });
+            document.getElementById('impulse-item').value = '';
+            document.getElementById('impulse-price').value = '';
+            saveData();
+            renderImpulse();
+        }
+
+        function renderImpulse() {
+            const list = document.getElementById('impulse-list');
+            list.innerHTML = '';
+            appData.impulse.forEach((item, i) => {
+                list.innerHTML += `<div class="list-item"><span>🛒 ${item.name} (€${item.price || 0})</span><button class="btn-secondary" onclick="deleteImpulse(${i})">✕</button></div>`;
+            });
+        }
+
+        function deleteImpulse(i) {
+            appData.impulse.splice(i, 1);
+            saveData();
+            renderImpulse();
+        }
+
+        function addFixedCost() {
+            const name = document.getElementById('fixed-name').value.trim();
+            const amount = parseFloat(document.getElementById('fixed-amount').value) || 0;
+            if(!name) return;
+            appData.fixedCosts.push({ name, amount });
+            document.getElementById('fixed-name').value = '';
+            document.getElementById('fixed-amount').value = '';
+            saveData();
+            renderFixedCosts();
+        }
+
+        function renderFixedCosts() {
+            const list = document.getElementById('fixed-list');
+            let total = 0;
+            list.innerHTML = '';
+            appData.fixedCosts.forEach((item, i) => {
+                total += item.amount;
+                list.innerHTML += `<div class="list-item"><span>📄 ${item.name}</span><strong>€${item.amount.toFixed(2)}</strong><button class="btn-secondary" onclick="deleteFixedCost(${i})">✕</button></div>`;
+            });
+            document.getElementById('fixed-total').innerText = `Totaal: €${total.toFixed(2)} / maand`;
+        }
+
+        function deleteFixedCost(i) {
+            appData.fixedCosts.splice(i, 1);
+            saveData();
+            renderFixedCosts();
+        }
+
+        // --- TAB 5: KENNIS ---
+        function renderKennis(filter = '') {
+            const feed = document.getElementById('kennis-feed');
+            feed.innerHTML = '';
+            kennisDatabase.filter(k => k.title.toLowerCase().includes(filter.toLowerCase()) || k.desc.toLowerCase().includes(filter.toLowerCase())).forEach(k => {
+                feed.innerHTML += `
+                    <div style="border-bottom: 1px solid var(--border-color); padding: 0.5rem 0;">
+                        <span class="tag">${k.cat}</span><strong>${k.title}</strong>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">${k.desc}</p>
+                    </div>
+                `;
+            });
+        }
+
+        function filterKennis() {
+            renderKennis(document.getElementById('search-kennis').value);
+        }
+
+        // --- TAB 6: IDEEËN ---
+        function addIdea() {
+            const title = document.getElementById('idea-title').value.trim();
+            const desc = document.getElementById('idea-desc').value.trim();
+            if(!title) return;
+            appData.ideas.push({ title, desc });
+            document.getElementById('idea-title').value = '';
+            document.getElementById('idea-desc').value = '';
+            saveData();
+            renderIdeas();
+        }
+
+        function renderIdeas() {
+            const grid = document.getElementById('idea-grid');
+            grid.innerHTML = '';
+            appData.ideas.forEach((item, i) => {
+                grid.innerHTML += `
+                    <div class="postit">
+                        <button class="delete-btn" onclick="deleteIdea(${i})">✕</button>
+                        <strong>${item.title}</strong>
+                        <p style="margin-top: 0.3rem;">${item.desc}</p>
+                    </div>
+                `;
+            });
+        }
+
+        function deleteIdea(i) {
+            appData.ideas.splice(i, 1);
+            saveData();
+            renderIdeas();
+        }
+
+        function grabRandomIdea() {
+            if(appData.ideas.length === 0) {
+                document.getElementById('grabbed-idea').innerText = "Geen ideeën in de kluis!";
+                return;
+            }
+            const rand = appData.ideas[Math.floor(Math.random() * appData.ideas.length)];
+            document.getElementById('grabbed-idea').innerText = `💡 ${rand.title}: "${rand.desc}"`;
+        }
+    </script>
 </body>
 </html>
