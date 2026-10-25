@@ -247,28 +247,33 @@
         </div>
       </div>
 
-      <div class="filter-bar" style="margin-top:0;">
-  <select id="marble-filter-mode" onchange="renderMarbleJar()" style="margin-bottom:0; width: auto; font-size: 0.78rem; padding: 4px 8px;">
-    <option value="ALL">🗓️ Alle tijd</option>
-    <option value="DAY">☀️ Specifieke Dag</option>
-    <option value="WEEK">📅 Deze Week</option>
-    <option value="MONTH">🗓️ Deze Maand</option>
-    <option value="YEAR">🚀 Dit Jaar</option>
-  </select>
+      <div class="card" id="trots-card" style="margin-bottom: 18px;">
+        <h2>
+          🏺 De Trots-Kluis
+          <span id="marble-count-badge" style="font-size:0.82rem; background:var(--accent-primary); color:white; padding:3px 10px; border-radius:12px; font-weight:600;">0 Knikkers</span>
+        </h2>
+        <p class="subtitle">Elke kleine overwinning vult jouw virtuele glazen pot. Filter op periode en categorie!</p>
 
-  <input type="date" id="marble-filter-date" class="hidden" onchange="renderMarbleJar()" style="margin-bottom:0; width: auto; font-size: 0.78rem; padding: 2px 6px;">
+        <div class="filter-bar" style="margin-top:0;">
+          <select id="marble-filter-time" onchange="renderMarbleJar()" style="margin-bottom:0; width: auto; font-size: 0.78rem; padding: 4px 8px;">
+            <option value="ALL">🗓️ Totaal alle tijd</option>
+            <option value="TODAY">☀️ Vandaag</option>
+            <option value="WEEK">📅 Deze Week</option>
+            <option value="MONTH">🗓️ Deze Maand</option>
+            <option value="YEAR">🚀 Dit Jaar</option>
+          </select>
 
-  <select id="marble-filter-cat" onchange="renderMarbleJar()" style="margin-bottom:0; width: auto; font-size: 0.78rem; padding: 4px 8px;">
-    <option value="ALL">📂 Alle Categorieën</option>
-    <option value="Algemeen">🟡 Algemeen</option>
-    <option value="Taken">🎯 Taken</option>
-    <option value="Doelen">🧭 Doelen</option>
-    <option value="Gezondheid">🍎 Gezondheid</option>
-    <option value="Geld & Aflossingen">💶 Geld & Aflossingen</option>
-    <option value="Contacten">💜 Contacten</option>
-    <option value="Dagstart">☀️ Dagstart</option>
-  </select>
-</div>
+          <select id="marble-filter-cat" onchange="renderMarbleJar()" style="margin-bottom:0; width: auto; font-size: 0.78rem; padding: 4px 8px;">
+            <option value="ALL">📂 Alle Categorieën</option>
+            <option value="Algemeen">🟡 Algemeen</option>
+            <option value="Taken">🎯 Taken</option>
+            <option value="Doelen">🧭 Doelen</option>
+            <option value="Gezondheid">🍎 Gezondheid</option>
+            <option value="Geld & Aflossingen">💶 Geld & Aflossingen</option>
+            <option value="Contacten">💜 Contacten</option>
+            <option value="Dagstart">☀️ Dagstart</option>
+          </select>
+        </div>
 
         <div id="marble-jar-visual" style="background:var(--item-bg); border:2px dashed var(--input-border); border-radius:16px; padding:16px 12px; min-height:85px; display:flex; flex-wrap:wrap-reverse; gap:6px; align-items:flex-start; justify-content:center; max-height: 180px; overflow-y: auto;">
         </div>
@@ -1064,32 +1069,23 @@
   </div>
 
   <!-- MOOD HISTORIE MODAL -->
-  <div class="modal-content" onclick="event.stopPropagation()">
-  <div class="modal-header">
-    <h2>📈 Mood Trend & Historie</h2>
-    <button class="btn btn-secondary btn-small" onclick="closeMoodHistoryModal()">✕ Sluiten</button>
-  </div>
+  <div id="mood-history-modal" class="modal-overlay hidden" onclick="closeMoodHistoryModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2>📜 Mood Historie & Trends</h2>
+        <button class="btn btn-secondary btn-small" onclick="closeMoodHistoryModal()">✕ Sluiten</button>
+      </div>
+      <p class="subtitle">Bekijk hoe je gevoelswereld zich over langere tijd positief ontwikkelt.</p>
 
-  <div class="filter-bar">
-    <select id="mood-history-filter-mode" onchange="renderMoodHistory()" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:4px 8px;">
-      <option value="WEEK">📅 Deze Week</option>
-      <option value="DAY">☀️ Specifieke Dag</option>
-      <option value="MONTH">🗓️ Deze Maand</option>
-      <option value="YEAR">🚀 Dit Jaar</option>
-      <option value="ALL">🗓️ Alle tijd</option>
-    </select>
-    <input type="date" id="mood-history-filter-date" class="hidden" onchange="renderMoodHistory()" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:2px 6px;">
-  </div>
-
-  <div class="chart-box">
-    <strong style="font-size:0.82rem; color:var(--text-muted);">📈 Energie-Verloop Grafiek</strong>
-    <div id="mood-chart-bars" class="chart-container"></div>
-  </div>
-
-  <div id="mood-trend-positive-text" style="font-size: 0.82rem; color: var(--accent-primary); font-weight: 600; margin-bottom: 10px;"></div>
-
-  <div id="mood-history-list" class="item-list" style="max-height:220px; overflow-y:auto;"></div>
-</div>
+      <div class="filter-bar">
+        <label style="font-size:0.78rem; color:var(--text-muted);">Tijdsbestek:</label>
+        <select id="mood-history-filter-time" onchange="renderMoodHistory()" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:4px 8px;">
+          <option value="TODAY">☀️ Vandaag</option>
+          <option value="WEEK" selected>📅 Deze Week</option>
+          <option value="MONTH">🗓️ Deze Maand</option>
+          <option value="YEAR">🚀 Dit Jaar</option>
+        </select>
+      </div>
 
       <div class="insight-card" id="mood-trend-positive-box" style="margin-top:10px; margin-bottom:14px; background:var(--soft-green); border-color:var(--green-border); color:var(--green-text);">
         <strong>🌱 Positieve Trend-Analyse:</strong>
@@ -1639,130 +1635,34 @@
       updateStats();
     }
 
-    function renderMoodHistory() {
-  let energyLogs = JSON.parse(localStorage.getItem('voldaan_energy_logs') || '[]');
-  const container = document.getElementById('mood-history-list');
-  const chartContainer = document.getElementById('mood-chart-bars');
-  const modeSelect = document.getElementById('mood-history-filter-mode');
-  const dateInput = document.getElementById('mood-history-filter-date');
-  const trendTextEl = document.getElementById('mood-trend-positive-text');
+    function renderMarbleJar() {
+      let marbles = JSON.parse(localStorage.getItem('voldaan_marbles') || '[]');
+      const container = document.getElementById('marble-jar-visual');
+      const badge = document.getElementById('marble-count-badge');
+      if (!container || !badge) return;
 
-  if (!container || !chartContainer) return;
+      const timeFilter = document.getElementById('marble-filter-time') ? document.getElementById('marble-filter-time').value : 'ALL';
+      const catFilter = document.getElementById('marble-filter-cat') ? document.getElementById('marble-filter-cat').value : 'ALL';
 
-  container.innerHTML = '';
-  chartContainer.innerHTML = '';
-
-  const mode = modeSelect ? modeSelect.value : 'WEEK';
-  if (mode === 'DAY') { 
-    if (dateInput) dateInput.classList.remove('hidden'); 
-  } else { 
-    if (dateInput) dateInput.classList.add('hidden'); 
-  }
-
-  const now = new Date();
-  let filteredLogs = energyLogs.filter(item => {
-    const ts = item.timestamp || item.id;
-    const itemDate = new Date(ts);
-
-    if (mode === 'DAY') {
-      const selDateStr = (dateInput && dateInput.value) ? new Date(dateInput.value).toLocaleDateString('nl-NL') : now.toLocaleDateString('nl-NL');
-      return itemDate.toLocaleDateString('nl-NL') === selDateStr;
-    } else if (mode === 'WEEK') {
+      const now = new Date();
+      const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
       const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay())).getTime();
-      return ts >= startOfWeek;
-    } else if (mode === 'MONTH') {
-      return itemDate.getMonth() === new Date().getMonth() && itemDate.getFullYear() === new Date().getFullYear();
-    } else if (mode === 'YEAR') {
-      return itemDate.getFullYear() === new Date().getFullYear();
-    }
-    return true;
-  });
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+      const startOfYear = new Date(now.getFullYear(), 0, 1).getTime();
 
-  const moodValues = { 'Wazig / Moe': 1, 'Chaotisch': 2, 'Oké': 3, 'Gefocust': 4 };
-  if (filteredLogs.length > 0) {
-    const displayLogs = filteredLogs.slice(0, 10).reverse();
-    displayLogs.forEach(l => {
-      const val = moodValues[l.energy] || 2;
-      const pct = (val / 4) * 100;
-      const wrapper = document.createElement('div');
-      wrapper.className = 'chart-bar-wrapper';
-      wrapper.innerHTML = `
-        <div class="chart-bar" style="height: ${pct}%; background-color: var(--accent-primary);" title="${l.energy}"></div>
-        <span class="chart-label">${l.dateStr ? l.dateStr.slice(0,5) : ''}</span>
-      `;
-      chartContainer.appendChild(wrapper);
-    });
-  } else {
-    chartContainer.innerHTML = '<span style="font-size:0.78rem; color:var(--text-muted); margin:auto;">Geen stemmingen vastgelegd in deze periode.</span>';
-  }
+      let filteredMarbles = marbles.filter(m => {
+        let matchTime = true;
+        const ts = m.timestamp || m.id;
+        if (timeFilter === 'TODAY') matchTime = ts >= startOfToday;
+        else if (timeFilter === 'WEEK') matchTime = ts >= startOfWeek;
+        else if (timeFilter === 'MONTH') matchTime = ts >= startOfMonth;
+        else if (timeFilter === 'YEAR') matchTime = ts >= startOfYear;
 
-  if (trendTextEl) {
-    trendTextEl.innerText = `In deze periode heb je ${filteredLogs.length} check-in(s) vastgelegd!`;
-  }
+        let matchCat = true;
+        if (catFilter !== 'ALL') matchCat = m.category === catFilter;
 
-  filteredLogs.forEach(item => {
-    const div = document.createElement('div');
-    div.className = 'item-card';
-    div.innerHTML = `<div><strong>Mood: ${item.energy}</strong><span class="time-badge">🕒 ${item.dateStr || 'Eerder'}</span></div>`;
-    container.appendChild(div);
-  });
-}
-
-function renderMarbleJar() {
-  let marbles = JSON.parse(localStorage.getItem('voldaan_marbles') || '[]');
-  const container = document.getElementById('marble-jar-visual');
-  const badge = document.getElementById('marble-count-badge');
-  if (!container || !badge) return;
-
-  const modeSelect = document.getElementById('marble-filter-mode');
-  const dateInput = document.getElementById('marble-filter-date');
-  const catFilter = document.getElementById('marble-filter-cat') ? document.getElementById('marble-filter-cat').value : 'ALL';
-
-  const mode = modeSelect ? modeSelect.value : 'ALL';
-  if (mode === 'DAY') { 
-    if (dateInput) dateInput.classList.remove('hidden'); 
-  } else { 
-    if (dateInput) dateInput.classList.add('hidden'); 
-  }
-
-  const now = new Date();
-  let filteredMarbles = marbles.filter(m => {
-    const ts = m.timestamp || m.id;
-    const itemDate = new Date(ts);
-
-    let matchPeriod = true;
-    if (mode === 'DAY') {
-      const selDateStr = (dateInput && dateInput.value) ? new Date(dateInput.value).toLocaleDateString('nl-NL') : now.toLocaleDateString('nl-NL');
-      matchPeriod = itemDate.toLocaleDateString('nl-NL') === selDateStr;
-    } else if (mode === 'WEEK') {
-      const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay())).getTime();
-      matchPeriod = ts >= startOfWeek;
-    } else if (mode === 'MONTH') {
-      matchPeriod = itemDate.getMonth() === new Date().getMonth() && itemDate.getFullYear() === new Date().getFullYear();
-    } else if (mode === 'YEAR') {
-      matchPeriod = itemDate.getFullYear() === new Date().getFullYear();
-    }
-
-    let matchCat = (catFilter === 'ALL') || (m.category === catFilter);
-    return matchPeriod && matchCat;
-  });
-
-  badge.innerText = `${filteredMarbles.length} Knikker${filteredMarbles.length === 1 ? '' : 's'}`;
-  container.innerHTML = '';
-
-  if (filteredMarbles.length === 0) {
-    container.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted); text-align:center;">Geen knikkers gevonden voor deze selectie.</span>';
-    return;
-  }
-
-  filteredMarbles.forEach(m => {
-    const div = document.createElement('div');
-    div.className = 'marble';
-    div.style.backgroundColor = m.color;
-    div.title = `[${m.category || 'Algemeen'}] ${m.reason} (${m.date})`;
-    container.appendChild(div);
-  });
-}
+        return matchTime && matchCat;
+      });
 
       badge.innerText = `${filteredMarbles.length} Knikker${filteredMarbles.length === 1 ? '' : 's'}`;
       container.innerHTML = '';
@@ -2032,129 +1932,32 @@ function renderMarbleJar() {
     function closeMoodHistoryModal() { document.getElementById('mood-history-modal').classList.add('hidden'); }
 
     function renderMoodHistory() {
-  let energyLogs = JSON.parse(localStorage.getItem('voldaan_energy_logs') || '[]');
-  const container = document.getElementById('mood-history-list');
-  const chartContainer = document.getElementById('mood-chart-bars');
-  const modeSelect = document.getElementById('mood-history-filter-mode');
-  const dateInput = document.getElementById('mood-history-filter-date');
-  const trendTextEl = document.getElementById('mood-trend-positive-text');
+      let energyLogs = JSON.parse(localStorage.getItem('voldaan_energy_logs') || '[]');
+      const container = document.getElementById('mood-history-list');
+      const timeFilter = document.getElementById('mood-history-filter-time') ? document.getElementById('mood-history-filter-time').value : 'WEEK';
+      const trendTextEl = document.getElementById('mood-trend-positive-text');
+      container.innerHTML = '';
 
-  if (!container || !chartContainer) return;
+      if (energyLogs.length === 0) {
+        container.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted);">Nog geen stemmingen vastgelegd.</span>';
+        if (trendTextEl) trendTextEl.innerText = "Begin met inchecken om je positieve trend te ontdekken!";
+        return;
+      }
 
-  container.innerHTML = '';
-  chartContainer.innerHTML = '';
-
-  const mode = modeSelect ? modeSelect.value : 'WEEK';
-  if (mode === 'DAY') { 
-    if (dateInput) dateInput.classList.remove('hidden'); 
-  } else { 
-    if (dateInput) dateInput.classList.add('hidden'); 
-  }
-
-  const now = new Date();
-  let filteredLogs = energyLogs.filter(item => {
-    const ts = item.timestamp || item.id;
-    const itemDate = new Date(ts);
-
-    if (mode === 'DAY') {
-      const selDateStr = (dateInput && dateInput.value) ? new Date(dateInput.value).toLocaleDateString('nl-NL') : now.toLocaleDateString('nl-NL');
-      return itemDate.toLocaleDateString('nl-NL') === selDateStr;
-    } else if (mode === 'WEEK') {
+      const now = new Date();
+      const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
       const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay())).getTime();
-      return ts >= startOfWeek;
-    } else if (mode === 'MONTH') {
-      return itemDate.getMonth() === new Date().getMonth() && itemDate.getFullYear() === new Date().getFullYear();
-    } else if (mode === 'YEAR') {
-      return itemDate.getFullYear() === new Date().getFullYear();
-    }
-    return true;
-  });
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+      const startOfYear = new Date(now.getFullYear(), 0, 1).getTime();
 
-  const moodValues = { 'Wazig / Moe': 1, 'Chaotisch': 2, 'Oké': 3, 'Gefocust': 4 };
-  if (filteredLogs.length > 0) {
-    const displayLogs = filteredLogs.slice(0, 10).reverse();
-    displayLogs.forEach(l => {
-      const val = moodValues[l.energy] || 2;
-      const pct = (val / 4) * 100;
-      const wrapper = document.createElement('div');
-      wrapper.className = 'chart-bar-wrapper';
-      wrapper.innerHTML = `
-        <div class="chart-bar" style="height: ${pct}%; background-color: var(--accent-primary);" title="${l.energy}"></div>
-        <span class="chart-label">${l.dateStr ? l.dateStr.slice(0,5) : ''}</span>
-      `;
-      chartContainer.appendChild(wrapper);
-    });
-  } else {
-    chartContainer.innerHTML = '<span style="font-size:0.78rem; color:var(--text-muted); margin:auto;">Geen stemmingen vastgelegd in deze periode.</span>';
-  }
-
-  if (trendTextEl) {
-    trendTextEl.innerText = `In deze periode heb je ${filteredLogs.length} check-in(s) vastgelegd!`;
-  }
-
-  filteredLogs.forEach(item => {
-    const div = document.createElement('div');
-    div.className = 'item-card';
-    div.innerHTML = `<div><strong>Mood: ${item.energy}</strong><span class="time-badge">🕒 ${item.dateStr || 'Eerder'}</span></div>`;
-    container.appendChild(div);
-  });
-}
-
-function renderMarbleJar() {
-  let marbles = JSON.parse(localStorage.getItem('voldaan_marbles') || '[]');
-  const container = document.getElementById('marble-jar-visual');
-  const badge = document.getElementById('marble-count-badge');
-  if (!container || !badge) return;
-
-  const modeSelect = document.getElementById('marble-filter-mode');
-  const dateInput = document.getElementById('marble-filter-date');
-  const catFilter = document.getElementById('marble-filter-cat') ? document.getElementById('marble-filter-cat').value : 'ALL';
-
-  const mode = modeSelect ? modeSelect.value : 'ALL';
-  if (mode === 'DAY') { 
-    if (dateInput) dateInput.classList.remove('hidden'); 
-  } else { 
-    if (dateInput) dateInput.classList.add('hidden'); 
-  }
-
-  const now = new Date();
-  let filteredMarbles = marbles.filter(m => {
-    const ts = m.timestamp || m.id;
-    const itemDate = new Date(ts);
-
-    let matchPeriod = true;
-    if (mode === 'DAY') {
-      const selDateStr = (dateInput && dateInput.value) ? new Date(dateInput.value).toLocaleDateString('nl-NL') : now.toLocaleDateString('nl-NL');
-      matchPeriod = itemDate.toLocaleDateString('nl-NL') === selDateStr;
-    } else if (mode === 'WEEK') {
-      const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay())).getTime();
-      matchPeriod = ts >= startOfWeek;
-    } else if (mode === 'MONTH') {
-      matchPeriod = itemDate.getMonth() === new Date().getMonth() && itemDate.getFullYear() === new Date().getFullYear();
-    } else if (mode === 'YEAR') {
-      matchPeriod = itemDate.getFullYear() === new Date().getFullYear();
-    }
-
-    let matchCat = (catFilter === 'ALL') || (m.category === catFilter);
-    return matchPeriod && matchCat;
-  });
-
-  badge.innerText = `${filteredMarbles.length} Knikker${filteredMarbles.length === 1 ? '' : 's'}`;
-  container.innerHTML = '';
-
-  if (filteredMarbles.length === 0) {
-    container.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted); text-align:center;">Geen knikkers gevonden voor deze selectie.</span>';
-    return;
-  }
-
-  filteredMarbles.forEach(m => {
-    const div = document.createElement('div');
-    div.className = 'marble';
-    div.style.backgroundColor = m.color;
-    div.title = `[${m.category || 'Algemeen'}] ${m.reason} (${m.date})`;
-    container.appendChild(div);
-  });
-}
+      let filteredLogs = energyLogs.filter(item => {
+        const ts = item.timestamp || item.id;
+        if (timeFilter === 'TODAY') return ts >= startOfToday;
+        if (timeFilter === 'WEEK') return ts >= startOfWeek;
+        if (timeFilter === 'MONTH') return ts >= startOfMonth;
+        if (timeFilter === 'YEAR') return ts >= startOfYear;
+        return true;
+      });
 
       if (trendTextEl) {
         if (timeFilter === 'YEAR') trendTextEl.innerText = `Over het hele jaar zie je dat je pieken van drukte steeds sneller transformeren naar rust & herstel! (${filteredLogs.length} Check-ins)`;
