@@ -19,6 +19,8 @@ export function getTodayCardData(state = window.VoldaanApp?.state) {
       sleep: 'Nog niet vastgelegd',
       money: '€0,00',
       focus: 'Geen focus vastgelegd',
+      pact: 'Nog geen pact vastgelegd',
+      tasks: [],
     };
   }
 
@@ -26,19 +28,21 @@ export function getTodayCardData(state = window.VoldaanApp?.state) {
     ? state.money.bills.reduce((sum, bill) => sum + Number(bill.amount || 0), 0)
     : 0;
 
-  const planCount = Array.isArray(state.plan?.items)
-    ? state.plan.items.filter((item) => !item.completed).length
-    : 0;
+  const planItems = Array.isArray(state.taskList) ? state.taskList : [];
+  const openTasks = planItems.filter((item) => !item.done).slice(0, 3);
+  const focusText = openTasks.length > 0 ? `${openTasks.length} open taak${openTasks.length === 1 ? '' : 'en'}` : 'Rustige dag';
 
   return {
     mood: state.ui?.moodSelected || 'Nog niet gekozen',
     sleep: state.habits?.sleep || 'Nog niet vastgelegd',
     money: `€${Number(moneyTotal).toFixed(2)}`,
-    focus: planCount > 0 ? `${planCount} open taak${planCount === 1 ? '' : 'en'}` : 'Rustige dag',
+    focus: focusText,
+    pact: state.pact?.current || 'Nog geen pact vastgelegd',
+    tasks: openTasks,
   };
 }
 
-export function renderTodayCards() {
+export function renderTodayDashboard() {
   const state = window.VoldaanApp?.state;
   if (!state) return;
 
@@ -50,20 +54,19 @@ export function renderTodayCards() {
   cards.money = data.money;
   cards.focus = data.focus;
 
-  let container = document.getElementById('today-summary-panel');
+  let panel = document.getElementById('today-dashboard');
 
-  if (!container) {
+  if (!panel) {
     const root = document.querySelector('.container') || document.body;
-    container = document.createElement('section');
-    container.id = 'today-summary-panel';
-    container.style.marginTop = '12px';
-    container.style.display = 'grid';
-    container.style.gridTemplateColumns = 'repeat(auto-fit, minmax(150px, 1fr))';
-    container.style.gap = '12px';
-    root.appendChild(container);
+    panel = document.createElement('section');
+    panel.id = 'today-dashboard';
+    panel.style.display = 'grid';
+    panel.style.gap = '16px';
+    panel.style.marginTop = '12px';
+    root.appendChild(panel);
   }
 
-  const cardBase = `
+  const cardStyle = `
     background: var(--card-bg);
     border: 1.5px solid var(--input-border);
     border-radius: 16px;
@@ -91,7 +94,7 @@ export function renderTodayCards() {
     word-break: break-word;
   `;
 
-  const items = [
+  const topCards = [
     {
       title: 'Stemming',
       value: data.mood,
@@ -114,12 +117,36 @@ export function renderTodayCards() {
     },
   ];
 
-  container.innerHTML = items.map((item) => `
-    <div style="${cardBase}; background:${item.accent};">
-      <div style="${labelStyle}">${item.title}</div>
-      <div style="${valueStyle}">${item.value}</div>
+  const taskMarkup = data.tasks.length
+    ? data.tasks.map((task) => `
+      <li style="margin-top:8px; list-style:none; padding:8px 10px; background:rgba(17,24,39,0.03); border-radius:10px; border:1px solid rgba(17,24,39,0.05);">
+        ${task.title}
+      </li>
+    `).join('')
+    : '<li style="list-style:none; color:var(--text-muted);">Geen open taken.</li>';
+
+  panel.innerHTML = `
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:12px;">
+      ${topCards.map((item) => `
+        <div style="${cardStyle}; background:${item.accent};">
+          <div style="${labelStyle}">${item.title}</div>
+          <div style="${valueStyle}">${item.value}</div>
+        </div>
+      `).join('')}
     </div>
-  `).join('');
+
+    <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:12px;">
+      <div style="background:var(--card-bg); border:1.5px solid var(--input-border); border-radius:16px; padding:16px; box-shadow:var(--shadow);">
+        <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin-bottom:8px;">Pact</div>
+        <div style="font-size:1rem; font-weight:700; color:var(--text-main); line-height:1.5;">${data.pact}</div>
+      </div>
+
+      <div style="background:var(--card-bg); border:1.5px solid var(--input-border); border-radius:16px; padding:16px; box-shadow:var(--shadow);">
+        <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin-bottom:8px;">Open taken</div>
+        <ul style="margin:0; padding:0;">${taskMarkup}</ul>
+      </div>
+    </div>
+  `;
 }
 
 export function initTodayModule() {
@@ -150,7 +177,7 @@ export function initTodayModule() {
         trendText.textContent = 'Je hebt je energiestaat vastgelegd.';
       }
 
-      renderTodayCards();
+      renderTodayDashboard();
     });
   });
 
@@ -172,10 +199,10 @@ export function initTodayModule() {
     }
   }
 
-  renderTodayCards();
+  renderTodayDashboard();
 }
 
 if (typeof window !== 'undefined') {
   window.initTodayModule = initTodayModule;
-  window.renderTodayCards = renderTodayCards;
+  window.renderTodayDashboard = renderTodayDashboard;
 }
