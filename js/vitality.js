@@ -88,15 +88,42 @@ export function renderVitalityState() {
 
   const habits = ensureVitalityState(state);
 
-  const sleepText = document.getElementById('vitality-sleep-status');
-  if (sleepText && habits.sleep) {
-    sleepText.textContent = habits.sleep;
+  let container = document.getElementById('vitality-status-panel');
+  if (!container) {
+    const root = document.querySelector('.container') || document.body;
+    container = document.createElement('section');
+    container.id = 'vitality-status-panel';
+    container.style.background = 'var(--card-bg)';
+    container.style.border = '1.5px solid var(--input-border)';
+    container.style.borderRadius = '16px';
+    container.style.padding = '20px';
+    container.style.boxShadow = 'var(--shadow)';
+    root.appendChild(container);
   }
 
-  const stepsText = document.getElementById('vitality-steps-status');
-  if (stepsText && habits.steps !== null && habits.steps !== undefined) {
-    stepsText.textContent = String(habits.steps);
-  }
+  const sleepText = habits.sleep || 'Nog niet vastgelegd';
+  const stepsText = habits.steps || 'Nog niet vastgelegd';
+  const fitnessText = habits.fitness.length
+    ? habits.fitness.map((item) => `<li>${item.label}</li>`).join('')
+    : '<li>Nog geen fitnessactiviteit geregistreerd.</li>';
+
+  container.innerHTML = `
+    <h2 style="font-size:1.1rem; margin:0 0 10px;">🌿 Vitaliteit</h2>
+    <div style="display:grid; gap:10px; font-size:0.9rem;">
+      <div style="background:var(--item-bg); border:1.5px solid var(--input-border); border-radius:12px; padding:12px;">
+        <strong>Slaap</strong><br>
+        <span>${sleepText}</span>
+      </div>
+      <div style="background:var(--item-bg); border:1.5px solid var(--input-border); border-radius:12px; padding:12px;">
+        <strong>Stappen</strong><br>
+        <span>${stepsText}</span>
+      </div>
+      <div style="background:var(--item-bg); border:1.5px solid var(--input-border); border-radius:12px; padding:12px;">
+        <strong>Fitness</strong>
+        <ul style="margin:8px 0 0 18px; padding:0;">${fitnessText}</ul>
+      </div>
+    </div>
+  `;
 }
 
 export function initVitalityModule() {
