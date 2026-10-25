@@ -74,6 +74,7 @@ export function renderMoneyState() {
 
   const money = ensureMoneyState(state);
   const totalMonthly = getMonthlyBillTotal(state);
+  const totalAnchorGoal = money.anchors.reduce((sum, anchor) => sum + Number(anchor.targetAmount || 0), 0);
 
   let container = document.getElementById('money-status-panel');
 
@@ -91,25 +92,42 @@ export function renderMoneyState() {
   }
 
   const billsMarkup = money.bills.length
-    ? money.bills.slice(-4).map((bill) => `<li>${bill.name} — €${Number(bill.amount).toFixed(2)} (${bill.day})</li>`).join('')
-    : '<li>Geen vaste lasten toegevoegd.</li>';
+    ? money.bills.slice(-4).map((bill) => `
+      <li style="margin-top:8px; list-style:none; padding:8px 10px; border-radius:10px; background:rgba(90,103,216,0.06); border:1px solid rgba(90,103,216,0.1);">
+        <strong>${bill.name}</strong><br>
+        <span style="color:var(--text-muted); font-size:0.8rem;">€${Number(bill.amount).toFixed(2)} · elke ${bill.day}e</span>
+      </li>
+    `).join('')
+    : '<li style="list-style:none; color:var(--text-muted);">Geen vaste lasten toegevoegd.</li>';
 
   const anchorsMarkup = money.anchors.length
-    ? money.anchors.slice(-4).map((anchor) => `<li>${anchor.name} — €${Number(anchor.currentAmount).toFixed(2)} / €${Number(anchor.targetAmount).toFixed(2)}</li>`).join('')
-    : '<li>Geen spaardoelen toegevoegd.</li>';
+    ? money.anchors.slice(-4).map((anchor) => `
+      <li style="margin-top:8px; list-style:none; padding:8px 10px; border-radius:10px; background:rgba(56,161,105,0.06); border:1px solid rgba(56,161,105,0.1);">
+        <strong>${anchor.name}</strong><br>
+        <span style="color:var(--text-muted); font-size:0.8rem;">€${Number(anchor.currentAmount).toFixed(2)} / €${Number(anchor.targetAmount).toFixed(2)}</span>
+      </li>
+    `).join('')
+    : '<li style="list-style:none; color:var(--text-muted);">Geen spaardoelen toegevoegd.</li>';
 
   container.innerHTML = `
     <h2 style="font-size:1.08rem; margin:0 0 12px; color:var(--text-main);">💶 Geld</h2>
-    <div style="display:grid; gap:10px; font-size:0.9rem; line-height:1.5;">
-      <div style="background:var(--item-bg); border:1.5px solid var(--input-border); border-radius:12px; padding:12px;">
-        <strong>Vaste lasten totaal</strong><br>
-        <span style="font-size:1.2rem; font-weight:700; color:var(--accent-primary);">€${Number(totalMonthly).toFixed(2)}</span>
-        <span style="display:block; color:var(--text-muted); margin-top:4px;">verwacht per maand</span>
-        <ul style="margin:8px 0 0 18px; padding:0;">${billsMarkup}</ul>
+
+    <div style="display:grid; gap:12px; font-size:0.9rem; line-height:1.5;">
+      <div style="background:linear-gradient(135deg, rgba(90,103,216,0.12), rgba(90,103,216,0.03)); border:1.5px solid rgba(90,103,216,0.18); border-radius:14px; padding:16px;">
+        <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin-bottom:4px;">Vaste lasten totaal</div>
+        <div style="font-size:1.8rem; font-weight:700; color:var(--accent-primary);">€${Number(totalMonthly).toFixed(2)}</div>
+        <div style="color:var(--text-muted); font-size:0.8rem; margin-top:4px;">verwacht per maand</div>
       </div>
+
+      <div style="background:var(--item-bg); border:1.5px solid var(--input-border); border-radius:12px; padding:12px;">
+        <strong>Vaste lasten</strong>
+        <ul style="margin:8px 0 0 0; padding:0;">${billsMarkup}</ul>
+      </div>
+
       <div style="background:var(--item-bg); border:1.5px solid var(--input-border); border-radius:12px; padding:12px;">
         <strong>Spaardoelen</strong>
-        <ul style="margin:8px 0 0 18px; padding:0;">${anchorsMarkup}</ul>
+        <div style="margin-top:8px; color:var(--text-muted); font-size:0.8rem;">Totaal doel: €${Number(totalAnchorGoal).toFixed(2)}</div>
+        <ul style="margin:8px 0 0 0; padding:0;">${anchorsMarkup}</ul>
       </div>
     </div>
   `;
