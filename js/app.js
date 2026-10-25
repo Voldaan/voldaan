@@ -2,6 +2,7 @@ import { loadState, saveState, exportBackupData, importBackupData, hydrateTheme,
 import { initTodayModule } from './today.js';
 import { initPlanModule } from './plan.js';
 import { initVitalityModule } from './vitality.js';
+import { initMoneyModule } from './money.js';
 
 window.VoldaanApp = {
   state: null,
@@ -40,6 +41,12 @@ function initializeApp() {
     initVitalityModule();
   }
 
+  if (typeof window.initMoneyModule === 'function') {
+    window.initMoneyModule();
+  } else {
+    initMoneyModule();
+  }
+
   console.log('Voldaan modular scaffold geladen');
 }
 
@@ -47,3 +54,4 @@ document.addEventListener('DOMContentLoaded', initializeApp);
 window.initTodayModule = initTodayModule;
 window.initPlanModule = initPlanModule;
 window.initVitalityModule = initVitalityModule;
+window.initMoneyModule = initMoneyModule;
