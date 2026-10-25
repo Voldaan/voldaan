@@ -1,0 +1,57 @@
+:root {
+  --bg-color: #F8F6F0;
+  --card-bg: #FFFFFF;
+  --text-main: #2D3748;
+  --text-muted: #718096;
+  --accent-primary: #5A67D8;
+  --accent-hover: #4C51BF;
+  --soft-teal: #E6FFFA;
+  --teal-border: #B2F5EA;
+  --teal-text: #234E52;
+  --soft-warm: #FFFAF0;
+  --warm-border: #FEEBC8;
+  --warm-text: #7B341E;
+  --soft-purple: #FAF5FF;
+  --purple-border: #E9D8FD;
+  --purple-text: #553C9A;
+  --soft-green: #F0FFF4;
+  --green-border: #C6F6D5;
+  --green-text: #22543D;
+  --input-bg: #FFFFFF;
+  --input-border: #CBD5E0;
+  --item-bg: #F7FAFC;
+  --radius: 16px;
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+body.dark-theme {
+  --bg-color: #1A202C;
+  --card-bg: #2D3748;
+  --text-main: #EDF2F7;
+  --text-muted: #A0AEC0;
+  --accent-primary: #7F9CF5;
+  --accent-hover: #667EEA;
+  --soft-teal: #234E52;
+  --teal-border: #2C7A7B;
+  --teal-text: #E6FFFA;
+  --soft-warm: #7B341E;
+  --warm-border: #9C4221;
+  --warm-text: #FFFAF0;
+  --soft-purple: #44337A;
+  --purple-border: #553C9A;
+  --purple-text: #FAF5FF;
+  --soft-green: #22543D;
+  --green-border: #2F855A;
+  --green-text: #F0FFF4;
+  --input-bg: #1A202C;
+  --input-border: #4A5568;
+  --item-bg: #1A202C;
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
