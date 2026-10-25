@@ -20,7 +20,6 @@ export function ensureVitalityState(state) {
 export function logSleep(value) {
   const state = window.VoldaanApp?.state;
   if (!state) return null;
-
   const habits = ensureVitalityState(state);
   habits.sleep = value;
   window.VoldaanApp.saveState(state);
@@ -30,7 +29,6 @@ export function logSleep(value) {
 export function logSteps(value) {
   const state = window.VoldaanApp?.state;
   if (!state) return null;
-
   const habits = ensureVitalityState(state);
   habits.steps = value;
   window.VoldaanApp.saveState(state);
@@ -40,14 +38,12 @@ export function logSteps(value) {
 export function logFitnessActivity(label) {
   const state = window.VoldaanApp?.state;
   if (!state || !label) return null;
-
   const habits = ensureVitalityState(state);
   habits.fitness.push({
     id: Date.now(),
     label,
     createdAt: new Date().toISOString(),
   });
-
   window.VoldaanApp.saveState(state);
   return habits.fitness;
 }
@@ -55,14 +51,12 @@ export function logFitnessActivity(label) {
 export function logNutrition(label) {
   const state = window.VoldaanApp?.state;
   if (!state || !label) return null;
-
   const habits = ensureVitalityState(state);
   habits.nutrition.push({
     id: Date.now(),
     label,
     createdAt: new Date().toISOString(),
   });
-
   window.VoldaanApp.saveState(state);
   return habits.nutrition;
 }
@@ -70,14 +64,12 @@ export function logNutrition(label) {
 export function addSnackWait(text) {
   const state = window.VoldaanApp?.state;
   if (!state || !text) return null;
-
   const habits = ensureVitalityState(state);
   habits.snackWait.push({
     id: Date.now(),
     text,
     createdAt: new Date().toISOString(),
   });
-
   window.VoldaanApp.saveState(state);
   return habits.snackWait;
 }
@@ -87,8 +79,8 @@ export function renderVitalityState() {
   if (!state) return;
 
   const habits = ensureVitalityState(state);
-
   let container = document.getElementById('vitality-status-panel');
+
   if (!container) {
     const root = document.querySelector('.container') || document.body;
     container = document.createElement('section');
@@ -98,18 +90,28 @@ export function renderVitalityState() {
     container.style.borderRadius = '16px';
     container.style.padding = '20px';
     container.style.boxShadow = 'var(--shadow)';
+    container.style.marginTop = '12px';
     root.appendChild(container);
   }
 
   const sleepText = habits.sleep || 'Nog niet vastgelegd';
   const stepsText = habits.steps || 'Nog niet vastgelegd';
-  const fitnessText = habits.fitness.length
-    ? habits.fitness.map((item) => `<li>${item.label}</li>`).join('')
+
+  const fitnessItems = habits.fitness.length
+    ? habits.fitness.slice(-3).map((item) => `<li>${item.label}</li>`).join('')
     : '<li>Nog geen fitnessactiviteit geregistreerd.</li>';
 
+  const nutritionItems = habits.nutrition.length
+    ? habits.nutrition.slice(-3).map((item) => `<li>${item.label}</li>`).join('')
+    : '<li>Nog geen voedingscheck geregistreerd.</li>';
+
+  const snackItems = habits.snackWait.length
+    ? habits.snackWait.slice(-3).map((item) => `<li>${item.text}</li>`).join('')
+    : '<li>Geen snackpauze of later-items.</li>';
+
   container.innerHTML = `
-    <h2 style="font-size:1.1rem; margin:0 0 10px;">🌿 Vitaliteit</h2>
-    <div style="display:grid; gap:10px; font-size:0.9rem;">
+    <h2 style="font-size:1.08rem; margin:0 0 12px; color:var(--text-main);">🌿 Vitaliteit</h2>
+    <div style="display:grid; gap:10px; font-size:0.9rem; line-height:1.5;">
       <div style="background:var(--item-bg); border:1.5px solid var(--input-border); border-radius:12px; padding:12px;">
         <strong>Slaap</strong><br>
         <span>${sleepText}</span>
@@ -120,7 +122,15 @@ export function renderVitalityState() {
       </div>
       <div style="background:var(--item-bg); border:1.5px solid var(--input-border); border-radius:12px; padding:12px;">
         <strong>Fitness</strong>
-        <ul style="margin:8px 0 0 18px; padding:0;">${fitnessText}</ul>
+        <ul style="margin:6px 0 0 18px; padding:0;">${fitnessItems}</ul>
+      </div>
+      <div style="background:var(--item-bg); border:1.5px solid var(--input-border); border-radius:12px; padding:12px;">
+        <strong>Voeding</strong>
+        <ul style="margin:6px 0 0 18px; padding:0;">${nutritionItems}</ul>
+      </div>
+      <div style="background:var(--item-bg); border:1.5px solid var(--input-border); border-radius:12px; padding:12px;">
+        <strong>Snack / later</strong>
+        <ul style="margin:6px 0 0 18px; padding:0;">${snackItems}</ul>
       </div>
     </div>
   `;
@@ -168,6 +178,19 @@ export function initVitalityModule() {
     button.addEventListener('click', () => {
       const label = (button.textContent || '').trim();
       logFitnessActivity(label);
+      renderVitalityState();
+    });
+  });
+
+  const nutritionButtons = Array.from(document.querySelectorAll('button')).filter((button) => {
+    const text = (button.textContent || '').trim().toLowerCase();
+    return text.includes('voeding') || text.includes('gezond') || text.includes('balans') || text.includes('eten');
+  });
+
+  nutritionButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const label = (button.textContent || '').trim();
+      logNutrition(label);
       renderVitalityState();
     });
   });
