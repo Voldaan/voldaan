@@ -12,25 +12,43 @@ export function ensureTodayState(state) {
   return state.ui.todayCards;
 }
 
+export function getTodayCardData(state = window.VoldaanApp?.state) {
+  if (!state) {
+    return {
+      mood: 'Nog niet gekozen',
+      sleep: 'Nog niet vastgelegd',
+      money: '€0,00',
+      focus: 'Geen focus vastgelegd',
+    };
+  }
+
+  const moneyTotal = state.money?.bills
+    ? state.money.bills.reduce((sum, bill) => sum + Number(bill.amount || 0), 0)
+    : 0;
+
+  const planCount = Array.isArray(state.plan?.items)
+    ? state.plan.items.filter((item) => !item.completed).length
+    : 0;
+
+  return {
+    mood: state.ui?.moodSelected || 'Nog niet gekozen',
+    sleep: state.habits?.sleep || 'Nog niet vastgelegd',
+    money: `€${Number(moneyTotal).toFixed(2)}`,
+    focus: planCount > 0 ? `${planCount} open taak${planCount === 1 ? '' : 'en'}` : 'Rustige dag',
+  };
+}
+
 export function renderTodayCards() {
   const state = window.VoldaanApp?.state;
   if (!state) return;
 
   const cards = ensureTodayState(state);
-  const moneyTotal = state.money?.bills
-    ? state.money.bills.reduce((sum, bill) => sum + Number(bill.amount || 0), 0)
-    : 0;
+  const data = getTodayCardData(state);
 
-  const sleepText = state.habits?.sleep || 'Nog niet vastgelegd';
-  const moodText = state.ui?.moodSelected || 'Nog niet gekozen';
-  const focusText = state.plan?.items?.length
-    ? `${state.plan.items.length} actieve dingen`
-    : 'Geen focus vastgelegd';
-
-  cards.mood = moodText;
-  cards.sleep = sleepText;
-  cards.money = `€${Number(moneyTotal).toFixed(2)}`;
-  cards.focus = focusText;
+  cards.mood = data.mood;
+  cards.sleep = data.sleep;
+  cards.money = data.money;
+  cards.focus = data.focus;
 
   let container = document.getElementById('today-summary-panel');
 
@@ -45,7 +63,7 @@ export function renderTodayCards() {
     root.appendChild(container);
   }
 
-  const cardStyle = `
+  const cardBase = `
     background: var(--card-bg);
     border: 1.5px solid var(--input-border);
     border-radius: 16px;
@@ -57,48 +75,49 @@ export function renderTodayCards() {
     justify-content: space-between;
   `;
 
-  const littleLabel = `
-    font-size: 0.72rem;
+  const labelStyle = `
+    font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--text-muted);
     margin-bottom: 8px;
   `;
 
-  const bigValue = `
-    font-size: 1.15rem;
+  const valueStyle = `
+    font-size: 1.05rem;
     font-weight: 700;
     color: var(--text-main);
-    line-height: 1.3;
+    line-height: 1.35;
+    word-break: break-word;
   `;
 
   const items = [
     {
       title: 'Stemming',
-      value: cards.mood,
+      value: data.mood,
       accent: 'linear-gradient(135deg, rgba(90,103,216,0.12), rgba(90,103,216,0.04))',
     },
     {
       title: 'Slaap',
-      value: cards.sleep,
+      value: data.sleep,
       accent: 'linear-gradient(135deg, rgba(45,212,191,0.12), rgba(45,212,191,0.04))',
     },
     {
       title: 'Geld',
-      value: cards.money,
+      value: data.money,
       accent: 'linear-gradient(135deg, rgba(56,189,248,0.12), rgba(56,189,248,0.04))',
     },
     {
       title: 'Focus',
-      value: cards.focus,
+      value: data.focus,
       accent: 'linear-gradient(135deg, rgba(168,85,247,0.12), rgba(168,85,247,0.04))',
     },
   ];
 
   container.innerHTML = items.map((item) => `
-    <div style="${cardStyle}; background:${item.accent};">
-      <div style="${littleLabel}">${item.title}</div>
-      <div style="${bigValue}">${item.value}</div>
+    <div style="${cardBase}; background:${item.accent};">
+      <div style="${labelStyle}">${item.title}</div>
+      <div style="${valueStyle}">${item.value}</div>
     </div>
   `).join('');
 }
