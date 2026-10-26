@@ -88,34 +88,87 @@
     header p { font-size: 0.85rem; color: var(--text-muted); margin-top: 2px; }
 
     .nav-tabs {
-      display: flex; background: var(--card-bg); padding: 6px; border-radius: 14px;
-      border: 1.5px solid var(--input-border); box-shadow: var(--shadow); gap: 4px; margin-bottom: 6px; overflow-x: auto;
+      display: flex;
+      background: var(--card-bg);
+      padding: 6px;
+      border-radius: 14px;
+      border: 1.5px solid var(--input-border);
+      box-shadow: var(--shadow);
+      gap: 4px;
+      margin-bottom: 8px;
+      overflow-x: auto;
+      scrollbar-width: thin;
     }
 
     .tab-btn {
-      flex: 1; padding: 10px 6px; border: none; background: none; color: var(--text-muted);
-      font-weight: 600; font-size: 0.8rem; border-radius: 10px; cursor: pointer; transition: all 0.2s ease;
-      text-align: center; white-space: nowrap;
+      flex: 1;
+      min-width: 80px;
+      padding: 10px 6px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: 0.78rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+      white-space: nowrap;
     }
 
-    .tab-btn.active { background-color: var(--accent-primary); color: white; box-shadow: 0 2px 8px rgba(90, 103, 216, 0.25); }
+    .tab-btn:hover {
+      background: rgba(90, 103, 216, 0.06);
+      color: var(--text-main);
+    }
+
+    .tab-btn.active {
+      background-color: var(--accent-primary);
+      color: white;
+      box-shadow: 0 2px 8px rgba(90, 103, 216, 0.25);
+    }
 
     .theme-toggle-btn {
-      background: var(--card-bg); border: 1.5px solid var(--input-border); color: var(--text-main);
-      padding: 8px 12px; border-radius: 20px; font-size: 0.9rem; cursor: pointer; box-shadow: var(--shadow);
+      background: var(--card-bg);
+      border: 1.5px solid var(--input-border);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+
+    .app-shell-panel {
+      display: none;
+    }
+
+    .app-shell-panel.active-panel {
+      display: block;
     }
 
     .card {
-      background: var(--card-bg); border-radius: var(--radius); padding: 20px;
-      box-shadow: var(--shadow); border: 1.5px solid var(--input-border); transition: background-color 0.3s ease, border-color 0.3s ease;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border: 1.5px solid var(--input-border);
+      transition: background-color 0.3s ease, border-color 0.3s ease;
     }
 
     .card h2 { font-size: 1.1rem; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .subtitle { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.4; }
 
     .btn {
-      background-color: var(--accent-primary); color: white; border: none; border-radius: 12px;
-      padding: 12px 18px; font-size: 0.95rem; font-weight: 600; cursor: pointer; width: 100%; transition: all 0.2s ease;
+      background-color: var(--accent-primary);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.2s ease;
     }
     .btn:hover { background-color: var(--accent-hover); transform: translateY(-1px); }
     .btn-secondary { background-color: var(--item-bg); border: 1.5px solid var(--input-border); color: var(--text-main); }
@@ -159,9 +212,9 @@
     .postit:hover { transform: scale(1.02) rotate(0deg); z-index: 10; }
     .postit-pin { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); font-size: 1.2rem; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.3)); }
     .postit-content { font-size: 0.92rem; line-height: 1.35; font-weight: 500; word-break: break-word; margin-top: 4px; }
-    .postit-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; font-size: 0.75rem; opacity: 0.9; border-top: 1px dashed rgba(0,0,0,0.18); padding-top: 6px; }
+    .postit-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; font-size: 0.75rem; opacity: 0.9; border-top: 1px dashed rgba(0,0,0,0.18); padding-top: 8px; }
     .postit-menu-btn { background: none; border: none; font-size: 1.1rem; cursor: pointer; color: inherit; padding: 0 4px; }
-    .postit-menu { position: absolute; bottom: 30px; right: 10px; background: var(--card-bg); border: 1.5px solid var(--input-border); border-radius: 10px; box-shadow: var(--shadow); display: flex; flex-direction: column; min-width: 140px; padding: 8px; gap: 4px; }
+    .postit-menu { position: absolute; bottom: 30px; right: 10px; background: var(--card-bg); border: 1.5px solid var(--input-border); border-radius: 10px; box-shadow: var(--shadow); display: none; }
     .postit-menu button { background: none; border: none; text-align: left; padding: 6px 10px; font-size: 0.78rem; color: var(--text-main); cursor: pointer; border-radius: 6px; }
     .postit-menu button:hover { background: var(--item-bg); }
 
@@ -181,7 +234,7 @@
     .stat-label { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
 
     .tip-box { background-color: var(--soft-warm); border: 1.5px solid var(--warm-border); color: var(--warm-text); padding: 16px; border-radius: 14px; }
-    .insight-card { background-color: var(--soft-teal); border: 1.5px solid var(--teal-border); color: var(--teal-text); padding: 14px; border-radius: 12px; font-size: 0.88rem; margin-top: 12px; line-height: 1.4; }
+    .insight-card { background-color: var(--soft-teal); border: 1.5px solid var(--teal-border); color: var(--teal-text); padding: 14px; border-radius: 12px; font-size: 0.88rem; margin-top: 12px; }
 
     .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; margin-bottom: 10px; align-items: center; }
     .btn-group { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
@@ -197,7 +250,6 @@
   <canvas id="confetti-canvas"></canvas>
 
   <div class="container">
-    
     <header>
       <div>
         <h1>Voldaan</h1>
@@ -206,7 +258,7 @@
       <button class="theme-toggle-btn" onclick="toggleTheme()" id="theme-btn">🌙 Nacht</button>
     </header>
 
-    <nav class="nav-tabs">
+    <nav class="nav-tabs" aria-label="Hoofdnavigatie">
       <button class="tab-btn active" onclick="switchView('today')" id="tab-today">🏠 Vandaag</button>
       <button class="tab-btn" onclick="switchView('plan')" id="tab-plan">🎯 Plannen</button>
       <button class="tab-btn" onclick="switchView('vitality')" id="tab-vitality">🌿 Vitaliteit</button>
@@ -216,6 +268,15 @@
       <button class="tab-btn" onclick="switchView('fun')" id="tab-fun">☕ Luchtig</button>
       <button class="tab-btn" onclick="switchView('insights')" id="tab-insights">📊 Inzichten</button>
     </nav>
+
+    <div id="today-dashboard" class="app-shell-panel active-panel"></div>
+    <div id="plan-panel" class="app-shell-panel"></div>
+    <div id="vitality-status-panel" class="app-shell-panel"></div>
+    <div id="money-status-panel" class="app-shell-panel"></div>
+    <div id="hacks-panel" class="app-shell-panel"></div>
+    <div id="ideas-status-panel" class="app-shell-panel"></div>
+    <div id="fun-panel" class="app-shell-panel"></div>
+    <div id="insights-panel" class="app-shell-panel"></div>
 
     <script type="module" src="js/app.js"></script>
   </div>
