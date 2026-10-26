@@ -738,6 +738,11 @@
         </div>
 
         <div id="fixed-bills-list" class="item-list"></div>
+        <!-- Totaaloverzicht Vaste Lasten -->
+        <div style="margin-top: 14px; padding: 12px; background: var(--item-bg); border-radius: 12px; border: 1.5px solid var(--input-border); display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Totaal aan vaste lasten per maand:</span>
+          <strong id="fixed-bills-total-display" style="font-size: 1.15rem; color: var(--accent-primary);">€0,00</strong>
+        </div>
       </div>
 
       <!-- SECTIE: TOEKOMST-ANKERS (SPAARPOTJES & PLANNEN UITGEBREID) -->
@@ -3711,38 +3716,44 @@
       }
 
       // Vaste Lasten (gesorteerd op afschrijfdag 1-31)
-      let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
-      const billsContainer = document.getElementById('fixed-bills-list');
-      billsContainer.innerHTML = '';
+let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
+const billsContainer = document.getElementById('fixed-bills-list');
+const totalDisplay = document.getElementById('fixed-bills-total-display');
+billsContainer.innerHTML = '';
 
-      const filterBill = document.getElementById('bills-filter') ? document.getElementById('bills-filter').value : 'ALL';
-      let filteredBills = bills.filter(b => !b.archived);
-      if (filterBill === 'UNPAID') filteredBills = filteredBills.filter(b => !b.paid);
-      if (filterBill === 'PAID') filteredBills = filteredBills.filter(b => b.paid);
+const filterBill = document.getElementById('bills-filter') ? document.getElementById('bills-filter').value : 'ALL';
+let filteredBills = bills.filter(b => !b.archived);
+if (filterBill === 'UNPAID') filteredBills = filteredBills.filter(b => !b.paid);
+if (filterBill === 'PAID') filteredBills = filteredBills.filter(b => b.paid);
 
-      filteredBills.sort((a,b) => (a.day || 1) - (b.day || 1));
+filteredBills.sort((a,b) => (a.day || 1) - (b.day || 1));
 
-      if (filteredBills.length === 0) {
-        billsContainer.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted);">Geen vaste lasten gevonden.</span>';
-      } else {
-        filteredBills.forEach(bill => {
-          const div = document.createElement('div');
-          div.className = `item-card ${bill.paid ? 'done' : ''}`;
-          div.innerHTML = `
-            <div>
-              <strong style="cursor:pointer;" onclick="toggleFixedBill(${bill.id})">${bill.paid ? '✅' : '⚪'} ${bill.name}</strong>
-              <span class="time-badge">🗓️ Dag ${bill.day || 1}e van de maand | ${bill.type || 'Incasso'} | Aangemaakt: ${bill.created || 'Eerder'}</span>
-            </div>
-            <div style="display:flex; gap:6px; align-items:center;">
-              <strong>€${bill.amount || 0}</strong>
-              <button class="btn btn-secondary btn-small" style="font-size:0.7rem; padding:2px 6px;" onclick="editFixedBill(${bill.id})">✏️</button>
-              <button class="btn btn-secondary btn-small" style="font-size:0.7rem; padding:2px 6px;" onclick="archiveFixedBill(${bill.id})">📦</button>
-            </div>
-          `;
-          billsContainer.appendChild(div);
-        });
-      }
+// 💡 BEREKEN HET TOTAALALBEDRAG VAN DE ACTIEVE VASTE LASTEN
+let totalAmount = filteredBills.reduce((sum, b) => sum + (parseFloat(b.amount) || 0), 0);
+if (totalDisplay) {
+  totalDisplay.innerText = `€${totalAmount.toFixed(2).replace('.', ',')}`;
+}
 
+if (filteredBills.length === 0) {
+  billsContainer.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted);">Geen vaste lasten gevonden.</span>';
+} else {
+  filteredBills.forEach(bill => {
+    const div = document.createElement('div');
+    div.className = `item-card ${bill.paid ? 'done' : ''}`;
+    div.innerHTML = `
+      <div>
+        <strong style="cursor:pointer;" onclick="toggleFixedBill(${bill.id})">${bill.paid ? '✅' : '⚪'} ${bill.name}</strong>
+        <span class="time-badge">🗓️ Dag ${bill.day || 1}e van de maand | ${bill.type || 'Incasso'} | Aangemaakt: ${bill.created || 'Eerder'}</span>
+      </div>
+      <div style="display:flex; gap:6px; align-items:center;">
+        <strong>€${(parseFloat(bill.amount) || 0).toFixed(2).replace('.', ',')}</strong>
+        <button class="btn btn-secondary btn-small" style="font-size:0.7rem; padding:2px 6px;" onclick="editFixedBill(${bill.id})">✏️</button>
+        <button class="btn btn-secondary btn-small" style="font-size:0.7rem; padding:2px 6px;" onclick="archiveFixedBill(${bill.id})">📦</button>
+      </div>
+    `;
+    billsContainer.appendChild(div);
+  });
+}
       // Toekomst Ankers (Spaarpotjes & Plannen)
       let anchors = JSON.parse(localStorage.getItem('voldaan_future_anchors') || '[]');
       const anchorsContainer = document.getElementById('future-anchors-list');
