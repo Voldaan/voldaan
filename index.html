@@ -757,16 +757,31 @@
 
         <div class="filter-bar" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; align-items: center;">
           <select id="bills-filter-period" onchange="handleBillFilterChange()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 4px 8px;">
-            <option value="CURRENT_MONTH" selected>🗓️ Deze Maand (Standaard)</option>
+            <option value="CURRENT_MONTH" selected>🗓️ Deze Maand</option>
+            <option value="DAY">☀️ Specifieke Dag</option>
             <option value="SPECIFIC_WEEK">📆 Specifieke Week</option>
             <option value="SPECIFIC_MONTH">📅 Specifieke Maand</option>
             <option value="SPECIFIC_YEAR">🚀 Specifiek Jaar</option>
+            <option value="RANGE">📆 Van / Tot Datum</option>
             <option value="ALL">📂 Alle Verwachte Uitgaven</option>
           </select>
 
           <input type="date" id="bills-filter-date" onchange="renderMoneyView()" class="hidden" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 2px 6px;">
           <input type="month" id="bills-filter-month" onchange="renderMoneyView()" class="hidden" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 2px 6px;">
-          <input type="number" id="bills-filter-year" placeholder="Jaar (2027)" onchange="renderMoneyView()" min="2024" max="2035" class="hidden" style="margin-bottom:0; width: 100px; font-size: 0.8rem; padding: 2px 6px;">
+          <input type="number" id="bills-filter-year" placeholder="Jaar (2026)" onchange="renderMoneyView()" min="2024" max="2035" class="hidden" style="margin-bottom:0; width: 90px; font-size: 0.8rem; padding: 2px 6px;">
+
+          <div id="bills-filter-range-box" class="hidden" style="display:inline-flex; gap:4px; align-items:center;">
+            <input type="date" id="bills-filter-from" onchange="renderMoneyView()" style="margin-bottom:0; width: auto; font-size: 0.78rem; padding: 2px 4px;">
+            <span style="font-size:0.75rem;">t/m</span>
+            <input type="date" id="bills-filter-to" onchange="renderMoneyView()" style="margin-bottom:0; width: auto; font-size: 0.78rem; padding: 2px 4px;">
+          </div>
+
+          <select id="bills-filter-status" onchange="renderMoneyView()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 4px 8px;">
+            <option value="ALL">📂 Alles</option>
+            <option value="UNPAID" selected>⚪ Nog te verwachten</option>
+            <option value="PAID">✅ Voldaan</option>
+          </select>
+        </div>
 
           <select id="bills-filter-status" onchange="renderMoneyView()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 4px 8px;">
             <option value="ALL">📂 Alles</option>
@@ -1051,14 +1066,28 @@
         <select id="trans-filter-period" onchange="handleTransPeriodChange()" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:4px 6px;">
           <option value="ALL" selected>🗓️ Alle tijd</option>
           <option value="DAY">☀️ Specifieke Dag</option>
-          <option value="WEEK">📅 Deze Week</option>
-          <option value="MONTH">🗓️ Deze Maand</option>
-          <option value="YEAR">🚀 Dit Jaar</option>
+          <option value="WEEK">📅 Specifieke Week</option>
+          <option value="MONTH">🗓️ Specifieke Maand</option>
+          <option value="YEAR">🚀 Specifiek Jaar</option>
+          <option value="RANGE">📆 Van / Tot Datum</option>
         </select>
 
         <input type="date" id="trans-filter-date" onchange="renderAllTransactionsModal()" class="hidden" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:2px 6px;">
+        <input type="month" id="trans-filter-month" onchange="renderAllTransactionsModal()" class="hidden" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:2px 6px;">
+        <input type="number" id="trans-filter-year" placeholder="Jaar" onchange="renderAllTransactionsModal()" min="2024" max="2035" class="hidden" style="margin-bottom:0; width:80px; font-size:0.8rem; padding:2px 6px;">
+
+        <div id="trans-filter-range-box" class="hidden" style="display:inline-flex; gap:4px; align-items:center;">
+          <input type="date" id="trans-filter-from" onchange="renderAllTransactionsModal()" style="margin-bottom:0; width:auto; font-size:0.78rem; padding:2px 4px;">
+          <span style="font-size:0.75rem;">t/m</span>
+          <input type="date" id="trans-filter-to" onchange="renderAllTransactionsModal()" style="margin-bottom:0; width:auto; font-size:0.78rem; padding:2px 4px;">
+        </div>
 
         <select id="trans-filter-cat" onchange="renderAllTransactionsModal()" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:4px 6px;"></select>
+      </div>
+
+      <!-- TOTAAL OVERZICHT IN MODAL DAT MEE-VERANDERT -->
+      <div id="trans-modal-summary-box" style="margin-top:10px; padding:10px; background:var(--item-bg); border-radius:10px; border:1px solid var(--input-border); display:flex; justify-content:space-between; font-size:0.85rem;">
+        <span>Totaal geselecteerd: <strong id="trans-modal-total-sum" style="color:var(--accent-primary);">€0,00</strong></span>
       </div>
 
       <div id="all-transactions-modal-list" class="item-list" style="max-height: 380px; overflow-y: auto; margin-top: 10px;"></div>
@@ -1789,7 +1818,16 @@
 
     function handleTransPeriodChange() {
       const mode = document.getElementById('trans-filter-period').value;
-      document.getElementById('trans-filter-date').classList.toggle('hidden', mode !== 'DAY');
+      const dateEl = document.getElementById('trans-filter-date');
+      const monthEl = document.getElementById('trans-filter-month');
+      const yearEl = document.getElementById('trans-filter-year');
+      const rangeBox = document.getElementById('trans-filter-range-box');
+
+      if (dateEl) dateEl.classList.toggle('hidden', mode !== 'DAY' && mode !== 'WEEK');
+      if (monthEl) monthEl.classList.toggle('hidden', mode !== 'MONTH');
+      if (yearEl) yearEl.classList.toggle('hidden', mode !== 'YEAR');
+      if (rangeBox) rangeBox.classList.toggle('hidden', mode !== 'RANGE');
+
       renderAllTransactionsModal();
     }
 
@@ -1799,9 +1837,9 @@
       const searchVal = document.getElementById('trans-search-input') ? document.getElementById('trans-search-input').value.toLowerCase() : '';
       const typeVal = document.getElementById('trans-filter-type') ? document.getElementById('trans-filter-type').value : 'ALL';
       const periodVal = document.getElementById('trans-filter-period') ? document.getElementById('trans-filter-period').value : 'ALL';
-      const dateVal = document.getElementById('trans-filter-date') ? document.getElementById('trans-filter-date').value : '';
       const catVal = document.getElementById('trans-filter-cat') ? document.getElementById('trans-filter-cat').value : 'ALL';
 
+      if (!container) return;
       container.innerHTML = '';
 
       let filtered = transactions.filter(t => !t.archived);
@@ -1816,20 +1854,61 @@
         if (isNaN(itemDate.getTime())) return true;
 
         if (periodVal === 'DAY') {
+          const dateVal = document.getElementById('trans-filter-date').value;
           const selDateStr = dateVal ? new Date(dateVal).toLocaleDateString('nl-NL') : now.toLocaleDateString('nl-NL');
           return itemDate.toLocaleDateString('nl-NL') === selDateStr;
-        } else if (periodVal === 'WEEK') {
-          const startOfWeek = new Date();
-          startOfWeek.setDate(now.getDate() - now.getDay());
+        } 
+        else if (periodVal === 'WEEK') {
+          const dateVal = document.getElementById('trans-filter-date').value;
+          const refDate = dateVal ? new Date(dateVal) : now;
+          const startOfWeek = new Date(refDate);
+          startOfWeek.setDate(refDate.getDate() - (refDate.getDay() === 0 ? 6 : refDate.getDay() - 1));
           startOfWeek.setHours(0,0,0,0);
-          return itemDate.getTime() >= startOfWeek.getTime();
-        } else if (periodVal === 'MONTH') {
-          return itemDate.getMonth() === now.getMonth() && itemDate.getFullYear() === now.getFullYear();
-        } else if (periodVal === 'YEAR') {
-          return itemDate.getFullYear() === now.getFullYear();
+          const endOfWeek = new Date(startOfWeek);
+          endOfWeek.setDate(startOfWeek.getDate() + 7);
+          return itemDate >= startOfWeek && itemDate < endOfWeek;
+        } 
+        else if (periodVal === 'MONTH') {
+          const monthVal = document.getElementById('trans-filter-month').value;
+          if (!monthVal) return itemDate.getMonth() === now.getMonth() && itemDate.getFullYear() === now.getFullYear();
+          const [y, m] = monthVal.split('-');
+          return itemDate.getFullYear() === parseInt(y) && (itemDate.getMonth() + 1) === parseInt(m);
+        } 
+        else if (periodVal === 'YEAR') {
+          const yearVal = document.getElementById('trans-filter-year').value;
+          return yearVal ? itemDate.getFullYear() === parseInt(yearVal) : itemDate.getFullYear() === now.getFullYear();
+        }
+        else if (periodVal === 'RANGE') {
+          const fromVal = document.getElementById('trans-filter-from').value;
+          const toVal = document.getElementById('trans-filter-to').value;
+          if (fromVal && new Date(fromVal) > itemDate) return false;
+          if (toVal) {
+            const toDate = new Date(toVal);
+            toDate.setHours(23,59,59,999);
+            if (toDate < itemDate) return false;
+          }
+          return true;
         }
         return true;
       });
+
+      let totalExpense = 0;
+      let totalIncome = 0;
+      filtered.forEach(t => {
+        const amt = parseFloat(t.amount) || 0;
+        if (t.type === 'EXPENSE') totalExpense += amt;
+        else totalIncome += amt;
+      });
+
+      const totalSumEl = document.getElementById('trans-modal-total-sum');
+      if (totalSumEl) {
+        if (typeVal === 'EXPENSE') totalSumEl.innerText = `-€${totalExpense.toFixed(2).replace('.', ',')}`;
+        else if (typeVal === 'INCOME') totalSumEl.innerText = `+€${totalIncome.toFixed(2).replace('.', ',')}`;
+        else {
+          const net = totalIncome - totalExpense;
+          totalSumEl.innerText = `${net >= 0 ? '+' : ''}€${net.toFixed(2).replace('.', ',')} (Uit: €${totalExpense.toFixed(2)}, In: €${totalIncome.toFixed(2)})`;
+        }
+      }
 
       if (filtered.length === 0) {
         container.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted);">Geen transacties gevonden.</span>';
@@ -4077,9 +4156,16 @@
 
     function handleBillFilterChange() {
       const mode = document.getElementById('bills-filter-period').value;
-      document.getElementById('bills-filter-date').classList.toggle('hidden', mode !== 'SPECIFIC_WEEK');
-      document.getElementById('bills-filter-month').classList.toggle('hidden', mode !== 'SPECIFIC_MONTH');
-      document.getElementById('bills-filter-year').classList.toggle('hidden', mode !== 'SPECIFIC_YEAR');
+      const dateEl = document.getElementById('bills-filter-date');
+      const monthEl = document.getElementById('bills-filter-month');
+      const yearEl = document.getElementById('bills-filter-year');
+      const rangeBox = document.getElementById('bills-filter-range-box');
+
+      if (dateEl) dateEl.classList.toggle('hidden', mode !== 'DAY' && mode !== 'SPECIFIC_WEEK');
+      if (monthEl) monthEl.classList.toggle('hidden', mode !== 'SPECIFIC_MONTH');
+      if (yearEl) yearEl.classList.toggle('hidden', mode !== 'SPECIFIC_YEAR');
+      if (rangeBox) rangeBox.classList.toggle('hidden', mode !== 'RANGE');
+
       renderMoneyView();
     }
 
@@ -4422,13 +4508,11 @@
       renderRuimteKompas();
       updatePaydayCountdown();
 
-      // Quick Transactions List (Max 5)
       let transactions = JSON.parse(localStorage.getItem('voldaan_transactions') || '[]');
       const quickContainer = document.getElementById('quick-transactions-list');
       if (quickContainer) {
         quickContainer.innerHTML = '';
         const activeTrans = transactions.filter(t => !t.archived).slice(0, 5);
-
         if (activeTrans.length === 0) {
           quickContainer.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted);">Nog geen recente transacties. Voer je eerste in!</span>';
         } else {
@@ -4436,12 +4520,10 @@
         }
       }
 
-      // Impuls Items
       let impulseItems = JSON.parse(localStorage.getItem('voldaan_impulse_items') || '[]');
       const impulseContainer = document.getElementById('impulse-list');
       if (impulseContainer) {
         impulseContainer.innerHTML = '';
-
         if (impulseItems.length === 0) {
           impulseContainer.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted);">Geen items in wachtkamer.</span>';
         } else {
@@ -4457,7 +4539,6 @@
         }
       }
 
-      // Verwachte Uitgaven
       let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
       const billsContainer = document.getElementById('fixed-bills-list');
       const totalDisplay = document.getElementById('fixed-bills-total-display');
@@ -4466,10 +4547,8 @@
         billsContainer.innerHTML = '';
 
         const periodMode = document.getElementById('bills-filter-period') ? document.getElementById('bills-filter-period').value : 'CURRENT_MONTH';
-        const statusFilter = document.getElementById('bills-filter-status') ? document.getElementById('bills-filter-status').value : 'ALL';
-        
+        const statusFilter = document.getElementById('bills-filter-status') ? document.getElementById('bills-filter-status').value : 'UNPAID';
         const now = new Date();
-        const currentYearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
         let filteredBills = bills.filter(b => !b.archived);
 
@@ -4477,41 +4556,57 @@
         if (statusFilter === 'PAID') filteredBills = filteredBills.filter(b => b.paid);
 
         filteredBills = filteredBills.filter(b => {
-          const rawDate = b.date ? new Date(b.date) : new Date();
-          if (isNaN(rawDate.getTime())) return true;
+          const itemDate = b.date ? new Date(b.date) : new Date();
+          if (isNaN(itemDate.getTime())) return true;
 
-          const itemYearMonth = `${rawDate.getFullYear()}-${String(rawDate.getMonth() + 1).padStart(2, '0')}`;
-
-          if (b.repeat === 'MONTHLY') return true;
+          if (b.repeat === 'MONTHLY' && periodMode === 'CURRENT_MONTH') return true;
 
           if (periodMode === 'CURRENT_MONTH') {
-            return !b.date || itemYearMonth === currentYearMonth;
+            return itemDate.getMonth() === now.getMonth() && itemDate.getFullYear() === now.getFullYear();
+          } 
+          else if (periodMode === 'DAY') {
+            const dateVal = document.getElementById('bills-filter-date').value;
+            const selDateStr = dateVal ? new Date(dateVal).toLocaleDateString('nl-NL') : now.toLocaleDateString('nl-NL');
+            return itemDate.toLocaleDateString('nl-NL') === selDateStr;
+          }
+          else if (periodMode === 'SPECIFIC_WEEK') {
+            const dateVal = document.getElementById('bills-filter-date').value;
+            const refDate = dateVal ? new Date(dateVal) : now;
+            const startOfWeek = new Date(refDate);
+            startOfWeek.setDate(refDate.getDate() - (refDate.getDay() === 0 ? 6 : refDate.getDay() - 1));
+            startOfWeek.setHours(0,0,0,0);
+            const endOfWeek = new Date(startOfWeek);
+            endOfWeek.setDate(startOfWeek.getDate() + 7);
+            return itemDate >= startOfWeek && itemDate < endOfWeek;
           } 
           else if (periodMode === 'SPECIFIC_MONTH') {
-            const selectedMonth = document.getElementById('bills-filter-month').value;
-            return selectedMonth ? itemYearMonth === selectedMonth : true;
+            const monthVal = document.getElementById('bills-filter-month').value;
+            if (!monthVal) return true;
+            const [y, m] = monthVal.split('-');
+            return itemDate.getFullYear() === parseInt(y) && (itemDate.getMonth() + 1) === parseInt(m);
           } 
           else if (periodMode === 'SPECIFIC_YEAR') {
-            const selectedYear = document.getElementById('bills-filter-year').value;
-            return selectedYear ? rawDate.getFullYear().toString() === selectedYear : true;
+            const yearVal = document.getElementById('bills-filter-year').value;
+            return yearVal ? itemDate.getFullYear() === parseInt(yearVal) : true;
           } 
-          else if (periodMode === 'SPECIFIC_WEEK') {
-            const selDateVal = document.getElementById('bills-filter-date').value;
-            if (!selDateVal) return true;
-            const selDate = new Date(selDateVal);
-            const startOfWeek = new Date(selDate); startOfWeek.setDate(selDate.getDate() - selDate.getDay() + 1);
-            const endOfWeek = new Date(startOfWeek); endOfWeek.setDate(startOfWeek.getDate() + 6);
-            return rawDate >= startOfWeek && rawDate <= endOfWeek;
+          else if (periodMode === 'RANGE') {
+            const fromVal = document.getElementById('bills-filter-from').value;
+            const toVal = document.getElementById('bills-filter-to').value;
+            if (fromVal && new Date(fromVal) > itemDate) return false;
+            if (toVal) {
+              const toDate = new Date(toVal);
+              toDate.setHours(23,59,59,999);
+              if (toDate < itemDate) return false;
+            }
+            return true;
           }
           return true;
         });
 
-        let totalUnpaidAmount = filteredBills
-          .filter(b => !b.paid)
-          .reduce((sum, b) => sum + (parseFloat(b.amount) || 0), 0);
+        let totalAmount = filteredBills.reduce((sum, b) => sum + (parseFloat(b.amount) || 0), 0);
 
         if (totalDisplay) {
-          totalDisplay.innerText = `€${totalUnpaidAmount.toFixed(2).replace('.', ',')}`;
+          totalDisplay.innerText = `€${totalAmount.toFixed(2).replace('.', ',')}`;
         }
 
         if (filteredBills.length === 0) {
@@ -4542,6 +4637,7 @@
           });
         }
       }
+    }
 
       // Toekomst Ankers (Spaarpotjes)
       let anchors = JSON.parse(localStorage.getItem('voldaan_future_anchors') || '[]');
