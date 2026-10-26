@@ -750,33 +750,64 @@
         <p class="subtitle">Overzicht van je maandlasten, gesorteerd op verwachte afschrijfdag van de maand.</p>
 
         <div id="add-bill-form" class="hidden" style="background: var(--item-bg); padding: 14px; border-radius: 12px; margin-bottom: 14px; border: 1.5px solid var(--input-border);">
-          <strong style="display:block; font-size: 0.88rem; margin-bottom: 8px;" id="bill-form-title">Vaste Last Toevoegen</strong>
-          <input type="hidden" id="bill-edit-id" value="">
-          <input type="text" id="bill-name-input" placeholder="Dienst / Naam (bijv. Huur, Netflix, Zorg)...">
-          <div style="display:flex; gap:8px;">
-            <select id="bill-type-select" style="margin-bottom:10px; flex:1;">
-              <option value="Automatische Incasso">💳 Automatische Incasso</option>
-              <option value="Handmatige Overboeking">🏛️ Handmatige Overboeking</option>
-              <option value="Acceptgiro / Factuur">📄 Acceptgiro / Factuur</option>
-              <option value="Pin / Contant">💶 Pin / Contant</option>
-            </select>
-            <input type="number" id="bill-amount-input" placeholder="Bedrag (€)" style="flex:1;">
-          </div>
-          <input type="number" id="bill-day-input" min="1" max="31" placeholder="Verwachte afschrijfdag van de maand (1 - 31)">
-          <div style="display:flex; gap:8px;">
-            <button class="btn btn-small" onclick="saveFixedBill()">Opslaan</button>
-            <button class="btn btn-secondary btn-small" onclick="toggleAddBillForm()">Annuleren</button>
-          </div>
-        </div>
+  <strong style="display:block; font-size: 0.88rem; margin-bottom: 8px;" id="bill-form-title">Nieuwe Verwachte Uitgave Toevoegen</strong>
+  <input type="hidden" id="bill-edit-id" value="">
+  
+  <input type="text" id="bill-name-input" placeholder="Omschrijving (bijv. APK Keuring, Huur, Cadeau)...">
+  
+  <div style="display:flex; gap:8px;">
+    <input type="number" id="bill-amount-input" placeholder="Bedrag (€)" style="flex:1;">
+    <select id="bill-type-select" style="margin-bottom:10px; flex:1;">
+      <option value="Automatische Incasso">💳 Automatische Incasso</option>
+      <option value="Handmatige Overboeking">🏛️ Handmatige Overboeking</option>
+      <option value="Pin / Contant">💶 Pin / Contant</option>
+    </select>
+  </div>
 
-        <div class="filter-bar">
-          <label style="font-size: 0.78rem; color: var(--text-muted);">Filter:</label>
-          <select id="bills-filter" onchange="renderMoneyView()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 4px 8px;">
-            <option value="ALL">📂 Alles</option>
-            <option value="UNPAID">⚪ Nog te betalen</option>
-            <option value="PAID">✅ Betaald</option>
-          </select>
-        </div>
+  <div style="display:flex; gap:8px;">
+    <div style="flex:1;">
+      <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 2px;">Verwachte Datum:</label>
+      <input type="date" id="bill-date-input" style="margin-bottom:10px;">
+    </div>
+    <div style="flex:1;">
+      <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 2px;">Herhaling:</label>
+      <select id="bill-repeat-select" style="margin-bottom:10px;">
+        <option value="NONE">❌ Eenmalig (Geen herhaling)</option>
+        <option value="WEEKLY">📅 Wekelijks</option>
+        <option value="MONTHLY">🗓️ Maandelijks</option>
+        <option value="YEARLY">🚀 Jaarlijks</option>
+      </select>
+    </div>
+  </div>
+
+  <div style="display:flex; gap:8px;">
+    <button class="btn btn-small" onclick="saveFixedBill()">Opslaan</button>
+    <button class="btn btn-secondary btn-small" onclick="toggleAddBillForm()">Annuleren</button>
+  </div>
+</div>
+
+        <div class="filter-bar" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; align-items: center;">
+  <!-- Periode Selectie -->
+  <select id="bills-filter-period" onchange="handleBillFilterChange()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 4px 8px;">
+    <option value="CURRENT_MONTH" selected>🗓️ Deze Maand (Standaard)</option>
+    <option value="SPECIFIC_WEEK">📆 Specifieke Week</option>
+    <option value="SPECIFIC_MONTH">📅 Specifieke Maand</option>
+    <option value="SPECIFIC_YEAR">🚀 Specifiek Jaar</option>
+    <option value="ALL">📂 Alle Verwachte Uitgaven</option>
+  </select>
+
+  <!-- Datum Kiezers voor specifieke keuzes -->
+  <input type="date" id="bills-filter-date" onchange="renderMoneyView()" class="hidden" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 2px 6px;">
+  <input type="month" id="bills-filter-month" onchange="renderMoneyView()" class="hidden" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 2px 6px;">
+  <input type="number" id="bills-filter-year" placeholder="Jaar (bijv. 2027)" onchange="renderMoneyView()" min="2024" max="2035" class="hidden" style="margin-bottom:0; width: 110px; font-size: 0.8rem; padding: 2px 6px;">
+
+  <!-- Status filter -->
+  <select id="bills-filter-status" onchange="renderMoneyView()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 4px 8px;">
+    <option value="ALL">📂 Alles</option>
+    <option value="UNPAID">⚪ Nog te verwachten</option>
+    <option value="PAID">✅ Voldaan</option>
+  </select>
+</div>
 
         <div id="fixed-bills-list" class="item-list"></div>
         <!-- Totaaloverzicht Vaste Lasten -->
@@ -3476,57 +3507,66 @@
       }
     }
 
-    function editFixedBill(id) {
-      let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
-      const b = bills.find(item => item.id === id);
-      if (!b) return;
+    function handleBillFilterChange() {
+  const mode = document.getElementById('bills-filter-period').value;
+  document.getElementById('bills-filter-date').classList.toggle('hidden', mode !== 'SPECIFIC_WEEK');
+  document.getElementById('bills-filter-month').classList.toggle('hidden', mode !== 'SPECIFIC_MONTH');
+  document.getElementById('bills-filter-year').classList.toggle('hidden', mode !== 'SPECIFIC_YEAR');
+  renderMoneyView();
+}
 
-      document.getElementById('bill-edit-id').value = b.id;
-      document.getElementById('bill-name-input').value = b.name;
-      document.getElementById('bill-type-select').value = b.type || 'Automatische Incasso';
-      document.getElementById('bill-amount-input').value = b.amount || '';
-      document.getElementById('bill-day-input').value = b.day || '';
-      document.getElementById('bill-form-title').innerText = '✏️ Vaste Last Bewerken';
-      document.getElementById('add-bill-form').classList.remove('hidden');
+function editFixedBill(id) {
+  let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
+  const b = bills.find(item => item.id === id);
+  if (!b) return;
+
+  document.getElementById('bill-edit-id').value = b.id;
+  document.getElementById('bill-name-input').value = b.name;
+  document.getElementById('bill-type-select').value = b.type || 'Automatische Incasso';
+  document.getElementById('bill-amount-input').value = b.amount || '';
+  if (document.getElementById('bill-date-input')) document.getElementById('bill-date-input').value = b.date || '';
+  if (document.getElementById('bill-repeat-select')) document.getElementById('bill-repeat-select').value = b.repeat || 'NONE';
+  
+  document.getElementById('bill-form-title').innerText = '✏️ Uitgave Bewerken';
+  document.getElementById('add-bill-form').classList.remove('hidden');
+}
+
+function saveFixedBill() {
+  const editId = document.getElementById('bill-edit-id').value;
+  const name = document.getElementById('bill-name-input').value.trim();
+  const amount = parseFloat(document.getElementById('bill-amount-input').value) || 0;
+  const type = document.getElementById('bill-type-select').value;
+  const dateVal = document.getElementById('bill-date-input').value || new Date().toISOString().slice(0,10);
+  const repeat = document.getElementById('bill-repeat-select').value;
+
+  if (!name) return;
+
+  let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
+
+  if (editId) {
+    const idx = bills.findIndex(b => b.id === parseInt(editId));
+    if (idx !== -1) {
+      bills[idx] = { ...bills[idx], name, amount, type, date: dateVal, repeat };
     }
+  } else {
+    bills.push({
+      id: Date.now(),
+      name,
+      amount,
+      type,
+      date: dateVal,
+      repeat,
+      paid: false,
+      archived: false,
+      created: getNowDateTimeStr()
+    });
+  }
 
-    function saveFixedBill() {
-      const editId = document.getElementById('bill-edit-id').value;
-      const name = document.getElementById('bill-name-input').value.trim();
-      const type = document.getElementById('bill-type-select').value;
-      const amount = parseFloat(document.getElementById('bill-amount-input').value) || 0;
-      const day = parseInt(document.getElementById('bill-day-input').value) || 1;
-
-      if (!name) return;
-
-      let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
-
-      if (editId) {
-        const idx = bills.findIndex(b => b.id === parseInt(editId));
-        if (idx !== -1) {
-          bills[idx].name = name;
-          bills[idx].type = type;
-          bills[idx].amount = amount;
-          bills[idx].day = Math.min(31, Math.max(1, day));
-        }
-      } else {
-        bills.push({
-          id: Date.now(),
-          name,
-          type,
-          amount,
-          day: Math.min(31, Math.max(1, day)),
-          paid: false,
-          archived: false,
-          created: getNowDateTimeStr()
-        });
-      }
-
-      localStorage.setItem('voldaan_fixed_bills', JSON.stringify(bills));
-      document.getElementById('add-bill-form').classList.add('hidden');
-      renderMoneyView();
-    }
-
+  localStorage.setItem('voldaan_fixed_bills', JSON.stringify(bills));
+  document.getElementById('add-bill-form').classList.add('hidden');
+  renderMoneyView();
+}
+    
     function archiveFixedBill(id) {
       let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
       const idx = bills.findIndex(b => b.id === id);
@@ -3768,40 +3808,84 @@
 let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
 const billsContainer = document.getElementById('fixed-bills-list');
 const totalDisplay = document.getElementById('fixed-bills-total-display');
-billsContainer.innerHTML = '';
 
-const filterBill = document.getElementById('bills-filter') ? document.getElementById('bills-filter').value : 'ALL';
-let filteredBills = bills.filter(b => !b.archived);
-if (filterBill === 'UNPAID') filteredBills = filteredBills.filter(b => !b.paid);
-if (filterBill === 'PAID') filteredBills = filteredBills.filter(b => b.paid);
+if (billsContainer) {
+  billsContainer.innerHTML = '';
 
-filteredBills.sort((a,b) => (a.day || 1) - (b.day || 1));
+  const periodMode = document.getElementById('bills-filter-period') ? document.getElementById('bills-filter-period').value : 'CURRENT_MONTH';
+  const statusFilter = document.getElementById('bills-filter-status') ? document.getElementById('bills-filter-status').value : 'ALL';
+  
+  const now = new Date();
+  const currentYearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
-// 💡 BEREKEN HET TOTAALALBEDRAG VAN DE ACTIEVE VASTE LASTEN
-let totalAmount = filteredBills.reduce((sum, b) => sum + (parseFloat(b.amount) || 0), 0);
-if (totalDisplay) {
-  totalDisplay.innerText = `€${totalAmount.toFixed(2).replace('.', ',')}`;
-}
+  let filteredBills = bills.filter(b => !b.archived);
 
-if (filteredBills.length === 0) {
-  billsContainer.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted);">Geen vaste lasten gevonden.</span>';
-} else {
-  filteredBills.forEach(bill => {
-    const div = document.createElement('div');
-    div.className = `item-card ${bill.paid ? 'done' : ''}`;
-    div.innerHTML = `
-      <div>
-        <strong style="cursor:pointer;" onclick="toggleFixedBill(${bill.id})">${bill.paid ? '✅' : '⚪'} ${bill.name}</strong>
-        <span class="time-badge">🗓️ Dag ${bill.day || 1}e van de maand | ${bill.type || 'Incasso'} | Aangemaakt: ${bill.created || 'Eerder'}</span>
-      </div>
-      <div style="display:flex; gap:6px; align-items:center;">
-        <strong>€${(parseFloat(bill.amount) || 0).toFixed(2).replace('.', ',')}</strong>
-        <button class="btn btn-secondary btn-small" style="font-size:0.7rem; padding:2px 6px;" onclick="editFixedBill(${bill.id})">✏️</button>
-        <button class="btn btn-secondary btn-small" style="font-size:0.7rem; padding:2px 6px;" onclick="archiveFixedBill(${bill.id})">📦</button>
-      </div>
-    `;
-    billsContainer.appendChild(div);
+  // Status Filter
+  if (statusFilter === 'UNPAID') filteredBills = filteredBills.filter(b => !b.paid);
+  if (statusFilter === 'PAID') filteredBills = filteredBills.filter(b => b.paid);
+
+  // Datum & Herhaling Filter
+  filteredBills = filteredBills.filter(b => {
+    const itemDate = new Date(b.date || Date.now());
+    const itemYearMonth = `${itemDate.getFullYear()}-${String(itemDate.getMonth() + 1).padStart(2, '0')}`;
+
+    // Periodieke uitgaven (herhaling maandelijks/wekelijks) matchen altijd
+    if (b.repeat === 'MONTHLY') return true;
+
+    if (periodMode === 'CURRENT_MONTH') {
+      return itemYearMonth === currentYearMonth;
+    } 
+    else if (periodMode === 'SPECIFIC_MONTH') {
+      const selectedMonth = document.getElementById('bills-filter-month').value; // e.g. "2027-03"
+      return selectedMonth ? itemYearMonth === selectedMonth : true;
+    } 
+    else if (periodMode === 'SPECIFIC_YEAR') {
+      const selectedYear = document.getElementById('bills-filter-year').value;
+      return selectedYear ? itemDate.getFullYear().toString() === selectedYear : true;
+    } 
+    else if (periodMode === 'SPECIFIC_WEEK') {
+      const selDateVal = document.getElementById('bills-filter-date').value;
+      if (!selDateVal) return true;
+      const selDate = new Date(selDateVal);
+      const startOfWeek = new Date(selDate); startOfWeek.setDate(selDate.getDate() - selDate.getDay() + 1);
+      const endOfWeek = new Date(startOfWeek); endOfWeek.setDate(startOfWeek.getDate() + 6);
+      return itemDate >= startOfWeek && itemDate <= endOfWeek;
+    }
+    return true; // ALL
   });
+
+  // Sorteren op datum
+  filteredBills.sort((a,b) => new Date(a.date) - new Date(b.date));
+
+  // 💡 OPTELSOM BEREKENEN VAN EXACT DE GETOONDE ITEMS
+  let totalAmount = filteredBills.reduce((sum, b) => sum + (parseFloat(b.amount) || 0), 0);
+  if (totalDisplay) {
+    totalDisplay.innerText = `€${totalAmount.toFixed(2).replace('.', ',')}`;
+  }
+
+  if (filteredBills.length === 0) {
+    billsContainer.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted);">Geen uitgaven gepland voor deze selectie.</span>';
+  } else {
+    filteredBills.forEach(bill => {
+      const div = document.createElement('div');
+      div.className = `item-card ${bill.paid ? 'done' : ''}`;
+      const formattedDate = new Date(bill.date).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: 'numeric' });
+      const repeatBadge = bill.repeat === 'MONTHLY' ? '🔄 Maandelijks' : bill.repeat === 'WEEKLY' ? '🔄 Wekelijks' : bill.repeat === 'YEARLY' ? '🔄 Jaarlijks' : '📌 Eenmalig';
+
+      div.innerHTML = `
+        <div>
+          <strong style="cursor:pointer;" onclick="toggleFixedBill(${bill.id})">${bill.paid ? '✅' : '⚪'} ${bill.name}</strong>
+          <span class="time-badge">🗓️ ${formattedDate} | ${repeatBadge} | ${bill.type || 'Incasso'}</span>
+        </div>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <strong>€${(parseFloat(bill.amount) || 0).toFixed(2).replace('.', ',')}</strong>
+          <button class="btn btn-secondary btn-small" style="font-size:0.7rem; padding:2px 6px;" onclick="editFixedBill(${bill.id})">✏️</button>
+          <button class="btn btn-secondary btn-small" style="font-size:0.7rem; padding:2px 6px;" onclick="archiveFixedBill(${bill.id})">📦</button>
+        </div>
+      `;
+      billsContainer.appendChild(div);
+    });
+  }
 }
       // Toekomst Ankers (Spaarpotjes & Plannen)
       let anchors = JSON.parse(localStorage.getItem('voldaan_future_anchors') || '[]');
