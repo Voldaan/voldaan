@@ -36,7 +36,7 @@ function getModulePanelMap() {
   const fallbackPanels = Array.from(document.querySelectorAll('.app-shell-panel'));
   fallbackPanels.forEach((panel) => {
     const id = panel.id || '';
-    const tabName = id.replace('-panel', '').replace('-dashboard', '').replace('-status', '').replace('-panel', '');
+    const tabName = id.replace('-panel', '').replace('-dashboard', '').replace('-status', '');
     if (tabName && !knownPanels[tabName]) {
       knownPanels[tabName] = panel;
     }
@@ -93,6 +93,10 @@ function renderAllViews(state) {
 
   if (typeof window.renderTodayDashboard === 'function') {
     window.renderTodayDashboard();
+  }
+
+  if (typeof window.renderPlanState === 'function') {
+    window.renderPlanState();
   }
 
   if (typeof window.renderVitalityState === 'function') {
