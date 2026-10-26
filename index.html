@@ -126,11 +126,11 @@
     }
     .energy-btn.selected { border-color: var(--accent-primary); background-color: rgba(90, 103, 216, 0.15); font-weight: 600; }
 
-    textarea, input[type="text"], input[type="number"], input[type="date"], input[type="month"], select {
+    textarea, input[type="text"], input[type="number"], input[type="date"], input[type="datetime-local"], input[type="month"], select {
       width: 100%; background: var(--input-bg); color: var(--text-main); border: 1.5px solid var(--input-border);
       border-radius: 10px; padding: 10px 12px; font-size: 0.9rem; margin-bottom: 10px; outline: none;
     }
-    textarea:focus, input[type="text"]:focus, select:focus, input[type="date"]:focus, input[type="month"]:focus { border-color: var(--accent-primary); }
+    textarea:focus, input[type="text"]:focus, select:focus, input[type="date"]:focus, input[type="datetime-local"]:focus, input[type="month"]:focus { border-color: var(--accent-primary); }
 
     .item-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
     .item-card {
@@ -151,10 +151,6 @@
     .postit-pin { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); font-size: 1.2rem; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.3)); }
     .postit-content { font-size: 0.92rem; line-height: 1.35; font-weight: 500; word-break: break-word; margin-top: 4px; }
     .postit-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; font-size: 0.75rem; opacity: 0.9; border-top: 1px dashed rgba(0,0,0,0.18); padding-top: 6px; }
-    .postit-menu-btn { background: none; border: none; font-size: 1.1rem; cursor: pointer; color: inherit; padding: 0 4px; }
-    .postit-menu { position: absolute; bottom: 30px; right: 10px; background: var(--card-bg); border: 1.5px solid var(--input-border); border-radius: 10px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 2px; padding: 6px; z-index: 20; min-width: 140px; }
-    .postit-menu button { background: none; border: none; text-align: left; padding: 6px 10px; font-size: 0.78rem; color: var(--text-main); cursor: pointer; border-radius: 6px; }
-    .postit-menu button:hover { background: var(--item-bg); }
 
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6);
@@ -183,17 +179,9 @@
     .hidden { display: none !important; }
     
     .marble-3d {
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      box-shadow: inset -4px -4px 6px rgba(0,0,0,0.4), 2px 4px 6px rgba(0,0,0,0.2);
-      animation: dropMarble 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      cursor: pointer;
-      transition: transform 0.2s ease;
+      width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+      position: relative; box-shadow: inset -4px -4px 6px rgba(0,0,0,0.4), 2px 4px 6px rgba(0,0,0,0.2);
+      animation: dropMarble 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; transition: transform 0.2s ease;
     }
     .marble-3d:hover { transform: scale(1.3); z-index: 10; }
     .marble-3d::after {
@@ -201,6 +189,12 @@
       border-radius: 50%; background: rgba(255, 255, 255, 0.85);
     }
     @keyframes dropMarble { 0% { transform: translateY(-30px) scale(1.3); opacity: 0; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
+
+    .label-badge { font-size: 0.68rem; padding: 2px 6px; border-radius: 6px; font-weight: 600; display: inline-block; margin-top: 2px; }
+    .label-impulse { background: #FED7D7; color: #9B2C2C; }
+    .label-saving { background: #FEEBC8; color: #7B341E; }
+    .label-necessary { background: #EBF8FF; color: #2C5282; }
+    .label-growth { background: #E6FFFA; color: #234E52; }
   </style>
 </head>
 <body>
@@ -613,6 +607,158 @@
         <button class="btn btn-secondary btn-small" onclick="openMoneyArchiveModal()">📜 Geld-Archief</button>
       </div>
 
+      <!-- HELEMAAL BOVENAAN: LIVE BANKSALDO & TRANSACTIES HUBS -->
+      <div class="card" style="margin-bottom: 18px; border: 2px solid var(--accent-primary); background: linear-gradient(135deg, var(--card-bg) 0%, var(--soft-teal) 100%);">
+        <h2>
+          🏦 Live Banksaldo
+          <button class="btn btn-secondary btn-small" onclick="promptUpdateBankBalance()">✏️ Saldo Aanpassen</button>
+        </h2>
+        <p class="subtitle">Vul je actuele saldo in uit je bankapp. Transacties passen dit bedrag automatisch aan.</p>
+
+        <div style="text-align: center; padding: 12px; background: var(--card-bg); border-radius: 12px; border: 1.5px solid var(--input-border); margin-bottom: 14px;">
+          <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">HUIDIG BANKSALDO</span>
+          <strong id="live-bank-balance-display" style="font-size: 2rem; font-weight: 700; color: #2B6CB0;">€0,00</strong>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <strong style="font-size: 0.95rem;">💸 Transacties (Inkomsten & Uitgaven)</strong>
+          <div style="display: flex; gap: 6px;">
+            <button class="btn btn-secondary btn-small" onclick="openManageMoneyCategoriesModal()">⚙️ Categorieën</button>
+            <button class="btn btn-small" onclick="toggleAddTransactionForm()">+ Transactie</button>
+          </div>
+        </div>
+
+        <!-- FORMULIER TRANSACTIE -->
+        <div id="add-transaction-form" class="hidden" style="background: var(--item-bg); padding: 14px; border-radius: 12px; margin-bottom: 14px; border: 1.5px solid var(--input-border);">
+          <strong style="display:block; font-size: 0.88rem; margin-bottom: 8px;" id="transaction-form-title">Nieuwe Transactie Invoeren</strong>
+          <input type="hidden" id="trans-edit-id" value="">
+          
+          <input type="text" id="trans-title-input" placeholder="Omschrijving (bijv. Getankt, Salaris, Boodschappen)..." style="margin-bottom: 8px;">
+          
+          <div style="display:flex; gap:8px;">
+            <input type="number" step="0.01" id="trans-amount-input" placeholder="Bedrag (€)" style="flex:1; margin-bottom: 8px;">
+            <select id="trans-type-select" style="margin-bottom: 8px; flex:1;">
+              <option value="EXPENSE">➖ Uitgave</option>
+              <option value="INCOME">➕ Inkomst</option>
+            </select>
+          </div>
+
+          <div style="display:flex; gap:8px;">
+            <select id="trans-cat-select" style="margin-bottom:8px; flex:1;"></select>
+            <select id="trans-label-select" style="margin-bottom:8px; flex:1;">
+              <option value="NONE">🏷️ Geen bewustwordingslabel</option>
+              <option value="SAVING">💡 Besparing / Onnodig</option>
+              <option value="IMPULSE">🛑 Impulsaankoop</option>
+              <option value="NECESSARY">📌 Noodzakelijk / Vaste last</option>
+              <option value="GROWTH">🌱 Investeer in mezelf</option>
+            </select>
+          </div>
+
+          <div style="display:flex; gap:8px;">
+            <div style="flex:1;">
+              <label style="font-size:0.75rem; color:var(--text-muted); display:block; margin-bottom:2px;">Datum & Tijd:</label>
+              <input type="datetime-local" id="trans-datetime-input" style="margin-bottom:10px;">
+            </div>
+            <div style="flex:1;">
+              <label style="font-size:0.75rem; color:var(--text-muted); display:block; margin-bottom:2px;">Periodiek Herhalen:</label>
+              <select id="trans-repeat-select" style="margin-bottom:10px;">
+                <option value="NONE">❌ Eenmalig</option>
+                <option value="WEEKLY">📅 Wekelijks</option>
+                <option value="MONTHLY">🗓️ Maandelijks</option>
+                <option value="YEARLY">🚀 Jaarlijks</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-small" onclick="saveTransaction()">Opslaan</button>
+            <button class="btn btn-secondary btn-small" onclick="toggleAddTransactionForm()">Annuleren</button>
+          </div>
+        </div>
+
+        <!-- SNELLE TRANSACTIE LIJST (MAX 5) -->
+        <div id="quick-transactions-list" class="item-list"></div>
+
+        <button class="btn btn-secondary" style="margin-top: 12px;" onclick="openAllTransactionsModal()">📂 Bekijk & Filter Alle Transacties</button>
+      </div>
+
+      <!-- VERWACHTE UITGAVEN KAART (NU BOVEN HET RUIMTE-KOMPAS) -->
+      <div class="card" style="margin-bottom: 18px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <h3 style="margin: 0;">🔮 Verwachte Uitgaven</h3>
+          <div style="display: flex; gap: 6px;">
+            <button class="btn btn-secondary btn-small" onclick="openBillArchiveModal()">📜 Archief</button>
+            <button class="btn btn-small" onclick="toggleAddBillForm()">+ Nieuw</button>
+          </div>
+        </div>
+        
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; margin-bottom: 12px;">Overzicht van verwachte uitgaven in de gekozen periode.</p>
+
+        <div id="add-bill-form" class="hidden" style="background: var(--item-bg); padding: 14px; border-radius: 12px; margin-bottom: 14px; border: 1.5px solid var(--input-border);">
+          <strong style="display:block; font-size: 0.88rem; margin-bottom: 8px;" id="bill-form-title">Nieuwe Verwachte Uitgave Toevoegen</strong>
+          <input type="hidden" id="bill-edit-id" value="">
+          
+          <input type="text" id="bill-name-input" placeholder="Omschrijving (bijv. APK Keuring, Huur, Cadeau)..." style="margin-bottom: 8px; width: 100%;">
+          
+          <div style="display:flex; gap:8px;">
+            <input type="number" id="bill-amount-input" placeholder="Bedrag (€)" style="flex:1; margin-bottom: 8px;">
+            <select id="bill-type-select" style="margin-bottom: 8px; flex:1;">
+              <option value="Automatische Incasso">💳 Automatische Incasso</option>
+              <option value="Handmatige Overboeking">🏛️ Handmatige Overboeking</option>
+              <option value="Pin / Contant">💶 Pin / Contant</option>
+            </select>
+          </div>
+
+          <div style="display:flex; gap:8px;">
+            <div style="flex:1;">
+              <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 2px;">Verwachte Datum:</label>
+              <input type="date" id="bill-date-input" style="margin-bottom:10px; width: 100%;">
+            </div>
+            <div style="flex:1;">
+              <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 2px;">Herhaling:</label>
+              <select id="bill-repeat-select" style="margin-bottom:10px; width: 100%;">
+                <option value="NONE">❌ Eenmalig (Geen herhaling)</option>
+                <option value="WEEKLY">📅 Wekelijks</option>
+                <option value="MONTHLY">🗓️ Maandelijks</option>
+                <option value="YEARLY">🚀 Jaarlijks</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-small" onclick="saveFixedBill()">Opslaan</button>
+            <button class="btn btn-secondary btn-small" onclick="toggleAddBillForm()">Annuleren</button>
+          </div>
+        </div>
+
+        <div class="filter-bar" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; align-items: center;">
+          <select id="bills-filter-period" onchange="handleBillFilterChange()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 4px 8px;">
+            <option value="CURRENT_MONTH" selected>🗓️ Deze Maand (Standaard)</option>
+            <option value="SPECIFIC_WEEK">📆 Specifieke Week</option>
+            <option value="SPECIFIC_MONTH">📅 Specifieke Maand</option>
+            <option value="SPECIFIC_YEAR">🚀 Specifiek Jaar</option>
+            <option value="ALL">📂 Alle Verwachte Uitgaven</option>
+          </select>
+
+          <input type="date" id="bills-filter-date" onchange="renderMoneyView()" class="hidden" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 2px 6px;">
+          <input type="month" id="bills-filter-month" onchange="renderMoneyView()" class="hidden" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 2px 6px;">
+          <input type="number" id="bills-filter-year" placeholder="Jaar (2027)" onchange="renderMoneyView()" min="2024" max="2035" class="hidden" style="margin-bottom:0; width: 100px; font-size: 0.8rem; padding: 2px 6px;">
+
+          <select id="bills-filter-status" onchange="renderMoneyView()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 4px 8px;">
+            <option value="ALL">📂 Alles</option>
+            <option value="UNPAID">⚪ Nog te verwachten</option>
+            <option value="PAID">✅ Voldaan</option>
+          </select>
+        </div>
+
+        <div id="fixed-bills-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+
+        <div style="margin-top: 14px; padding: 12px; background: var(--item-bg); border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 0.88rem; font-weight: 600;">Totaal nog te verwachten uitgaven:</span>
+          <strong id="fixed-bills-total-display" style="font-size: 1.1rem; color: var(--accent-primary);">€0,00</strong>
+        </div>
+      </div>
+
       <!-- RUIMTE-KOMPAS -->
       <div class="card" style="margin-bottom: 18px; border: 2px solid var(--accent-primary);">
         <h2>
@@ -698,83 +844,6 @@
         </div>
 
         <div id="impulse-list" class="item-list"></div>
-      </div>
-
-      <!-- VERWACHTE UITGAVEN KAART -->
-      <div class="card" style="margin-bottom: 20px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-          <h3 style="margin: 0;">🔮 Verwachte Uitgaven</h3>
-          <div style="display: flex; gap: 6px;">
-            <button class="btn btn-secondary btn-small" onclick="openBillArchiveModal()">📜 Archief</button>
-            <button class="btn btn-small" onclick="toggleAddBillForm()">+ Nieuw</button>
-          </div>
-        </div>
-        
-        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; margin-bottom: 12px;">Overzicht van verwachte uitgaven in de gekozen periode.</p>
-
-        <div id="add-bill-form" class="hidden" style="background: var(--item-bg); padding: 14px; border-radius: 12px; margin-bottom: 14px; border: 1.5px solid var(--input-border);">
-          <strong style="display:block; font-size: 0.88rem; margin-bottom: 8px;" id="bill-form-title">Nieuwe Verwachte Uitgave Toevoegen</strong>
-          <input type="hidden" id="bill-edit-id" value="">
-          
-          <input type="text" id="bill-name-input" placeholder="Omschrijving (bijv. APK Keuring, Huur, Cadeau)..." style="margin-bottom: 8px; width: 100%;">
-          
-          <div style="display:flex; gap:8px;">
-            <input type="number" id="bill-amount-input" placeholder="Bedrag (€)" style="flex:1; margin-bottom: 8px;">
-            <select id="bill-type-select" style="margin-bottom: 8px; flex:1;">
-              <option value="Automatische Incasso">💳 Automatische Incasso</option>
-              <option value="Handmatige Overboeking">🏛️ Handmatige Overboeking</option>
-              <option value="Pin / Contant">💶 Pin / Contant</option>
-            </select>
-          </div>
-
-          <div style="display:flex; gap:8px;">
-            <div style="flex:1;">
-              <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 2px;">Verwachte Datum:</label>
-              <input type="date" id="bill-date-input" style="margin-bottom:10px; width: 100%;">
-            </div>
-            <div style="flex:1;">
-              <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 2px;">Herhaling:</label>
-              <select id="bill-repeat-select" style="margin-bottom:10px; width: 100%;">
-                <option value="NONE">❌ Eenmalig (Geen herhaling)</option>
-                <option value="WEEKLY">📅 Wekelijks</option>
-                <option value="MONTHLY">🗓️ Maandelijks</option>
-                <option value="YEARLY">🚀 Jaarlijks</option>
-              </select>
-            </div>
-          </div>
-
-          <div style="display:flex; gap:8px;">
-            <button class="btn btn-small" onclick="saveFixedBill()">Opslaan</button>
-            <button class="btn btn-secondary btn-small" onclick="toggleAddBillForm()">Annuleren</button>
-          </div>
-        </div>
-
-        <div class="filter-bar" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; align-items: center;">
-          <select id="bills-filter-period" onchange="handleBillFilterChange()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 4px 8px;">
-            <option value="CURRENT_MONTH" selected>🗓️ Deze Maand (Standaard)</option>
-            <option value="SPECIFIC_WEEK">📆 Specifieke Week</option>
-            <option value="SPECIFIC_MONTH">📅 Specifieke Maand</option>
-            <option value="SPECIFIC_YEAR">🚀 Specifiek Jaar</option>
-            <option value="ALL">📂 Alle Verwachte Uitgaven</option>
-          </select>
-
-          <input type="date" id="bills-filter-date" onchange="renderMoneyView()" class="hidden" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 2px 6px;">
-          <input type="month" id="bills-filter-month" onchange="renderMoneyView()" class="hidden" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 2px 6px;">
-          <input type="number" id="bills-filter-year" placeholder="Jaar (2027)" onchange="renderMoneyView()" min="2024" max="2035" class="hidden" style="margin-bottom:0; width: 100px; font-size: 0.8rem; padding: 2px 6px;">
-
-          <select id="bills-filter-status" onchange="renderMoneyView()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 4px 8px;">
-            <option value="ALL">📂 Alles</option>
-            <option value="UNPAID">⚪ Nog te verwachten</option>
-            <option value="PAID">✅ Voldaan</option>
-          </select>
-        </div>
-
-        <div id="fixed-bills-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
-
-        <div style="margin-top: 14px; padding: 12px; background: var(--item-bg); border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
-          <span style="font-size: 0.88rem; font-weight: 600;">Totaal nog te verwachten uitgaven:</span>
-          <strong id="fixed-bills-total-display" style="font-size: 1.1rem; color: var(--accent-primary);">€0,00</strong>
-        </div>
       </div>
 
       <!-- TOEKOMST-ANKERS -->
@@ -939,6 +1008,56 @@
   </div>
 
   <!-- MODALS -->
+  <div id="all-transactions-modal" class="modal-overlay hidden" onclick="closeAllTransactionsModal()">
+    <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 680px;">
+      <div class="modal-header">
+        <h2>💸 Alle Transacties (Inkomsten & Uitgaven)</h2>
+        <button class="btn btn-secondary btn-small" onclick="closeAllTransactionsModal()">✕ Sluiten</button>
+      </div>
+      
+      <div class="filter-bar" style="margin-top: 6px;">
+        <input type="text" id="trans-search-input" oninput="renderAllTransactionsModal()" placeholder="🔍 Zoek op omschrijving..." style="margin-bottom:0; flex:1; font-size:0.85rem;">
+        
+        <select id="trans-filter-type" onchange="renderAllTransactionsModal()" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:4px 6px;">
+          <option value="ALL">📂 Inkomsten & Uitgaven</option>
+          <option value="EXPENSE">➖ Alleen Uitgaven</option>
+          <option value="INCOME">➕ Alleen Inkomsten</option>
+        </select>
+
+        <select id="trans-filter-period" onchange="handleTransPeriodChange()" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:4px 6px;">
+          <option value="ALL" selected>🗓️ Alle tijd</option>
+          <option value="DAY">☀️ Specifieke Dag</option>
+          <option value="WEEK">📅 Deze Week</option>
+          <option value="MONTH">🗓️ Deze Maand</option>
+          <option value="YEAR">🚀 Dit Jaar</option>
+        </select>
+
+        <input type="date" id="trans-filter-date" onchange="renderAllTransactionsModal()" class="hidden" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:2px 6px;">
+
+        <select id="trans-filter-cat" onchange="renderAllTransactionsModal()" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:4px 6px;"></select>
+      </div>
+
+      <div id="all-transactions-modal-list" class="item-list" style="max-height: 380px; overflow-y: auto; margin-top: 10px;"></div>
+    </div>
+  </div>
+
+  <div id="manage-money-categories-modal" class="modal-overlay hidden" onclick="closeManageMoneyCategoriesModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2>⚙️ Geld Categorieën Beheren</h2>
+        <button class="btn btn-secondary btn-small" onclick="closeManageMoneyCategoriesModal()">✕ Sluiten</button>
+      </div>
+      <p class="subtitle">Voeg categorieën toe of pas bestaande categorieën aan.</p>
+      
+      <div id="money-categories-manage-list" class="item-list" style="margin-bottom: 14px;"></div>
+      
+      <div style="display:flex; gap:8px;">
+        <input type="text" id="new-money-cat-input" placeholder="Nieuwe categorie naam..." style="margin-bottom:0; flex:1;">
+        <button class="btn btn-small" style="width:auto;" onclick="saveMoneyCategoryFromModal()">Toevoegen</button>
+      </div>
+    </div>
+  </div>
+
   <div id="study-debt-modal" class="modal-overlay hidden" onclick="closeStudyDebtModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
@@ -1224,6 +1343,7 @@
       <div class="filter-bar">
         <select id="money-archive-filter" onchange="renderMoneyArchive()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 6px;">
           <option value="ALL">📂 Alles in het archief</option>
+          <option value="trans">💸 Verwijderde Transacties</option>
           <option value="impulse">🍃 Bespaarde Impulsen</option>
           <option value="bill">🛡️ Vaste Lasten</option>
           <option value="anchor">🔮 Afgeronde Potjes</option>
@@ -1301,6 +1421,364 @@
         else ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
       render();
+    }
+
+    // --- LIVE BANKSALDO & TRANSACTIES LOGICA ---
+    function getMoneyCategories() {
+      let cats = JSON.parse(localStorage.getItem('voldaan_money_categories') || 'null');
+      if (!cats) {
+        cats = ["boodschappen", "tanken", "horeca", "tabak", "onverwachte uitgaven", "uitje", "cadeau", "aanschaf", "aflossen", "loon", "lening", "verwachte uitgave"];
+        localStorage.setItem('voldaan_money_categories', JSON.stringify(cats));
+      }
+      return cats;
+    }
+
+    function updateMoneyCategoryDropdowns() {
+      const cats = getMoneyCategories();
+      const formSelect = document.getElementById('trans-cat-select');
+      const filterSelect = document.getElementById('trans-filter-cat');
+
+      if (formSelect) {
+        formSelect.innerHTML = '';
+        cats.forEach(c => {
+          formSelect.innerHTML += `<option value="${c}">${c.charAt(0).toUpperCase() + c.slice(1)}</option>`;
+        });
+      }
+
+      if (filterSelect) {
+        filterSelect.innerHTML = '<option value="ALL">📂 Alle Categorieën</option>';
+        cats.forEach(c => {
+          filterSelect.innerHTML += `<option value="${c}">${c.charAt(0).toUpperCase() + c.slice(1)}</option>`;
+        });
+      }
+    }
+
+    function openManageMoneyCategoriesModal() {
+      document.getElementById('manage-money-categories-modal').classList.remove('hidden');
+      renderManageMoneyCategoriesModal();
+    }
+
+    function closeManageMoneyCategoriesModal() {
+      document.getElementById('manage-money-categories-modal').classList.add('hidden');
+    }
+
+    function renderManageMoneyCategoriesModal() {
+      const container = document.getElementById('money-categories-manage-list');
+      const cats = getMoneyCategories();
+      container.innerHTML = '';
+
+      cats.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'item-card';
+        div.innerHTML = `
+          <strong>🏷️ ${c}</strong>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-secondary btn-small" style="font-size:0.75rem; padding:3px 8px;" onclick="renameMoneyCategoryPrompt('${c.replace(/'/g, "\\'")}')">✏️ Hernoemen</button>
+            <button class="btn btn-secondary btn-small" style="font-size:0.75rem; color:#E53E3E; padding:3px 8px;" onclick="deleteMoneyCategory('${c.replace(/'/g, "\\'")}')">🗑️ Wis</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function saveMoneyCategoryFromModal() {
+      const input = document.getElementById('new-money-cat-input');
+      const name = input.value.trim().toLowerCase();
+      if (!name) return;
+
+      let cats = getMoneyCategories();
+      if (!cats.includes(name)) {
+        cats.push(name);
+        localStorage.setItem('voldaan_money_categories', JSON.stringify(cats));
+        updateMoneyCategoryDropdowns();
+        renderManageMoneyCategoriesModal();
+      }
+      input.value = '';
+    }
+
+    function renameMoneyCategoryPrompt(oldName) {
+      const newName = prompt(`Geef categorie "${oldName}" een nieuwe naam:`, oldName);
+      if (!newName || !newName.trim() || newName.trim().toLowerCase() === oldName) return;
+
+      let cats = getMoneyCategories();
+      const idx = cats.indexOf(oldName);
+      if (idx !== -1) {
+        cats[idx] = newName.trim().toLowerCase();
+        localStorage.setItem('voldaan_money_categories', JSON.stringify(cats));
+      }
+
+      let transactions = JSON.parse(localStorage.getItem('voldaan_transactions') || '[]');
+      transactions.forEach(t => { if (t.category === oldName) t.category = newName.trim().toLowerCase(); });
+      localStorage.setItem('voldaan_transactions', JSON.stringify(transactions));
+
+      updateMoneyCategoryDropdowns();
+      renderManageMoneyCategoriesModal();
+      renderMoneyView();
+    }
+
+    function deleteMoneyCategory(catName) {
+      let cats = getMoneyCategories();
+      if (cats.length <= 1) { alert("Je moet minimaal 1 categorie overhouden."); return; }
+      if (confirm(`Wil je de categorie "${catName}" verwijderen? Transacties in deze categorie worden verplaatst naar onverwachte uitgaven.`)) {
+        cats = cats.filter(c => c !== catName);
+        localStorage.setItem('voldaan_money_categories', JSON.stringify(cats));
+
+        let transactions = JSON.parse(localStorage.getItem('voldaan_transactions') || '[]');
+        transactions.forEach(t => { if (t.category === catName) t.category = 'onverwachte uitgaven'; });
+        localStorage.setItem('voldaan_transactions', JSON.stringify(transactions));
+
+        updateMoneyCategoryDropdowns();
+        renderManageMoneyCategoriesModal();
+        renderMoneyView();
+      }
+    }
+
+    function getBankBalance() {
+      return parseFloat(localStorage.getItem('voldaan_bank_balance') || '0.00');
+    }
+
+    function setBankBalance(val) {
+      localStorage.setItem('voldaan_bank_balance', parseFloat(val).toFixed(2));
+      renderBankBalanceDisplay();
+    }
+
+    function promptUpdateBankBalance() {
+      const current = getBankBalance();
+      const updated = prompt("Vul je actuele banksaldo in uit je bankapp (minteken toegestaan):", current);
+      if (updated !== null && updated.trim() !== "") {
+        const parsed = parseFloat(updated.replace(',', '.'));
+        if (!isNaN(parsed)) {
+          setBankBalance(parsed);
+          triggerConfetti();
+        }
+      }
+    }
+
+    function renderBankBalanceDisplay() {
+      const el = document.getElementById('live-bank-balance-display');
+      if (!el) return;
+      const val = getBankBalance();
+      el.innerText = `€${val.toFixed(2).replace('.', ',')}`;
+      el.style.color = val < 0 ? '#E53E3E' : '#2B6CB0';
+    }
+
+    function toggleAddTransactionForm() {
+      const form = document.getElementById('add-transaction-form');
+      if (form.classList.contains('hidden')) {
+        document.getElementById('trans-edit-id').value = '';
+        document.getElementById('trans-title-input').value = '';
+        document.getElementById('trans-amount-input').value = '';
+        document.getElementById('trans-type-select').value = 'EXPENSE';
+        document.getElementById('trans-label-select').value = 'NONE';
+        document.getElementById('trans-repeat-select').value = 'NONE';
+        
+        const now = new Date();
+        const nowIso = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
+        document.getElementById('trans-datetime-input').value = nowIso;
+        
+        document.getElementById('transaction-form-title').innerText = 'Nieuwe Transactie Invoeren';
+        form.classList.remove('hidden');
+      } else {
+        form.classList.add('hidden');
+      }
+    }
+
+    function saveTransaction() {
+      const editId = document.getElementById('trans-edit-id').value;
+      const title = document.getElementById('trans-title-input').value.trim();
+      const amount = parseFloat(document.getElementById('trans-amount-input').value) || 0;
+      const type = document.getElementById('trans-type-select').value;
+      const category = document.getElementById('trans-cat-select').value;
+      const label = document.getElementById('trans-label-select').value;
+      const datetimeVal = document.getElementById('trans-datetime-input').value || new Date().toISOString().slice(0, 16);
+      const repeat = document.getElementById('trans-repeat-select').value;
+
+      if (!title || amount <= 0) return;
+
+      let transactions = JSON.parse(localStorage.getItem('voldaan_transactions') || '[]');
+      let currentBalance = getBankBalance();
+
+      if (editId) {
+        const idx = transactions.findIndex(t => t.id === parseInt(editId));
+        if (idx !== -1) {
+          const oldT = transactions[idx];
+          currentBalance += (oldT.type === 'EXPENSE' ? oldT.amount : -oldT.amount);
+          currentBalance += (type === 'EXPENSE' ? -amount : amount);
+          
+          transactions[idx] = { ...transactions[idx], title, amount, type, category, label, datetime: datetimeVal, repeat };
+        }
+      } else {
+        currentBalance += (type === 'EXPENSE' ? -amount : amount);
+        transactions.unshift({
+          id: Date.now(),
+          title,
+          amount,
+          type,
+          category,
+          label,
+          datetime: datetimeVal,
+          repeat,
+          archived: false,
+          created: getNowDateTimeStr()
+        });
+      }
+
+      setBankBalance(currentBalance);
+      localStorage.setItem('voldaan_transactions', JSON.stringify(transactions));
+      document.getElementById('add-transaction-form').classList.add('hidden');
+
+      if (type === 'INCOME') {
+        addMarble(`Inkomst ontvangen: ${title} (€${amount})`, 'Geld & Aflossingen');
+        triggerConfetti();
+      } else {
+        addMarble(`Uitgave gedaan: ${title} (€${amount})`, 'Geld & Aflossingen');
+      }
+
+      renderMoneyView();
+    }
+
+    function editTransaction(id) {
+      let transactions = JSON.parse(localStorage.getItem('voldaan_transactions') || '[]');
+      const t = transactions.find(item => item.id === id);
+      if (!t) return;
+
+      document.getElementById('trans-edit-id').value = t.id;
+      document.getElementById('trans-title-input').value = t.title;
+      document.getElementById('trans-amount-input').value = t.amount;
+      document.getElementById('trans-type-select').value = t.type;
+      document.getElementById('trans-cat-select').value = t.category;
+      document.getElementById('trans-label-select').value = t.label || 'NONE';
+      document.getElementById('trans-datetime-input').value = t.datetime || '';
+      document.getElementById('trans-repeat-select').value = t.repeat || 'NONE';
+
+      document.getElementById('transaction-form-title').innerText = '✏️ Transactie Bewerken';
+      document.getElementById('add-transaction-form').classList.remove('hidden');
+    }
+
+    function archiveTransaction(id) {
+      let transactions = JSON.parse(localStorage.getItem('voldaan_transactions') || '[]');
+      const idx = transactions.findIndex(t => t.id === id);
+      if (idx !== -1) {
+        const t = transactions[idx];
+        let currentBalance = getBankBalance();
+        currentBalance += (t.type === 'EXPENSE' ? t.amount : -t.amount);
+        setBankBalance(currentBalance);
+
+        transactions[idx].archived = true;
+        localStorage.setItem('voldaan_transactions', JSON.stringify(transactions));
+        renderMoneyView();
+        if (!document.getElementById('all-transactions-modal').classList.contains('hidden')) renderAllTransactionsModal();
+      }
+    }
+
+    function restoreTransaction(id) {
+      let transactions = JSON.parse(localStorage.getItem('voldaan_transactions') || '[]');
+      const idx = transactions.findIndex(t => t.id === id);
+      if (idx !== -1) {
+        const t = transactions[idx];
+        let currentBalance = getBankBalance();
+        currentBalance += (t.type === 'EXPENSE' ? -t.amount : t.amount);
+        setBankBalance(currentBalance);
+
+        transactions[idx].archived = false;
+        localStorage.setItem('voldaan_transactions', JSON.stringify(transactions));
+        renderMoneyView();
+        renderMoneyArchive();
+        if (!document.getElementById('all-transactions-modal').classList.contains('hidden')) renderAllTransactionsModal();
+      }
+    }
+
+    function getLabelBadgeHtml(label) {
+      if (!label || label === 'NONE') return '';
+      if (label === 'IMPULSE') return '<span class="label-badge label-impulse">🛑 Impulsaankoop</span>';
+      if (label === 'SAVING') return '<span class="label-badge label-saving">💡 Besparing / Onnodig</span>';
+      if (label === 'NECESSARY') return '<span class="label-badge label-necessary">📌 Noodzakelijk</span>';
+      if (label === 'GROWTH') return '<span class="label-badge label-growth">🌱 Investering in mezelf</span>';
+      return '';
+    }
+
+    function renderTransactionCard(t) {
+      const div = document.createElement('div');
+      div.className = 'item-card';
+      const isExpense = t.type === 'EXPENSE';
+      const colorStyle = isExpense ? 'color:#E53E3E;' : 'color:#38A169;';
+      const prefix = isExpense ? '-' : '+';
+      const formattedDate = t.datetime ? new Date(t.datetime).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : t.created;
+
+      div.innerHTML = `
+        <div>
+          <strong>${t.title}</strong>
+          <span class="time-badge">🗓️ ${formattedDate} | 🏷️ ${t.category} ${t.repeat && t.repeat !== 'NONE' ? `| 🔄 ${t.repeat}` : ''}</span>
+          ${getLabelBadgeHtml(t.label)}
+        </div>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <strong style="${colorStyle}">${prefix}€${(parseFloat(t.amount) || 0).toFixed(2).replace('.', ',')}</strong>
+          <button class="btn btn-secondary btn-small" style="font-size:0.7rem; padding:2px 6px;" onclick="editTransaction(${t.id})">✏️</button>
+          <button class="btn btn-secondary btn-small" style="font-size:0.7rem; padding:2px 6px;" onclick="archiveTransaction(${t.id})">📦</button>
+        </div>
+      `;
+      return div;
+    }
+
+    function openAllTransactionsModal() {
+      document.getElementById('all-transactions-modal').classList.remove('hidden');
+      renderAllTransactionsModal();
+    }
+
+    function closeAllTransactionsModal() {
+      document.getElementById('all-transactions-modal').classList.add('hidden');
+    }
+
+    function handleTransPeriodChange() {
+      const mode = document.getElementById('trans-filter-period').value;
+      document.getElementById('trans-filter-date').classList.toggle('hidden', mode !== 'DAY');
+      renderAllTransactionsModal();
+    }
+
+    function renderAllTransactionsModal() {
+      let transactions = JSON.parse(localStorage.getItem('voldaan_transactions') || '[]');
+      const container = document.getElementById('all-transactions-modal-list');
+      const searchVal = document.getElementById('trans-search-input') ? document.getElementById('trans-search-input').value.toLowerCase() : '';
+      const typeVal = document.getElementById('trans-filter-type') ? document.getElementById('trans-filter-type').value : 'ALL';
+      const periodVal = document.getElementById('trans-filter-period') ? document.getElementById('trans-filter-period').value : 'ALL';
+      const dateVal = document.getElementById('trans-filter-date') ? document.getElementById('trans-filter-date').value : '';
+      const catVal = document.getElementById('trans-filter-cat') ? document.getElementById('trans-filter-cat').value : 'ALL';
+
+      container.innerHTML = '';
+
+      let filtered = transactions.filter(t => !t.archived);
+
+      if (searchVal) filtered = filtered.filter(t => t.title.toLowerCase().includes(searchVal));
+      if (typeVal !== 'ALL') filtered = filtered.filter(t => t.type === typeVal);
+      if (catVal !== 'ALL') filtered = filtered.filter(t => t.category === catVal);
+
+      const now = new Date();
+      filtered = filtered.filter(t => {
+        const itemDate = t.datetime ? new Date(t.datetime) : new Date(t.id);
+        if (isNaN(itemDate.getTime())) return true;
+
+        if (periodVal === 'DAY') {
+          const selDateStr = dateVal ? new Date(dateVal).toLocaleDateString('nl-NL') : now.toLocaleDateString('nl-NL');
+          return itemDate.toLocaleDateString('nl-NL') === selDateStr;
+        } else if (periodVal === 'WEEK') {
+          const startOfWeek = new Date();
+          startOfWeek.setDate(now.getDate() - now.getDay());
+          startOfWeek.setHours(0,0,0,0);
+          return itemDate.getTime() >= startOfWeek.getTime();
+        } else if (periodVal === 'MONTH') {
+          return itemDate.getMonth() === now.getMonth() && itemDate.getFullYear() === now.getFullYear();
+        } else if (periodVal === 'YEAR') {
+          return itemDate.getFullYear() === now.getFullYear();
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted);">Geen transacties gevonden.</span>';
+        return;
+      }
+
+      filtered.forEach(t => container.appendChild(renderTransactionCard(t)));
     }
 
     // --- KENNIS & BREIN-HACKS ---
@@ -3447,7 +3925,36 @@
       const idx = bills.findIndex(b => b.id === id);
       if (idx !== -1) {
         bills[idx].paid = !bills[idx].paid;
-        if (bills[idx].paid) { triggerConfetti(); addMarble(`Vaste last voldaan: ${bills[idx].name}`, 'Geld & Aflossingen'); }
+        
+        if (bills[idx].paid) {
+          triggerConfetti();
+          addMarble(`Vaste last voldaan: ${bills[idx].name}`, 'Geld & Aflossingen');
+
+          // Automatische verwerking in live banksaldo als transactie
+          let transactions = JSON.parse(localStorage.getItem('voldaan_transactions') || '[]');
+          const amount = parseFloat(bills[idx].amount) || 0;
+          
+          if (amount > 0) {
+            let currentBalance = getBankBalance();
+            currentBalance -= amount;
+            setBankBalance(currentBalance);
+
+            transactions.unshift({
+              id: Date.now(),
+              title: bills[idx].name,
+              amount: amount,
+              type: 'EXPENSE',
+              category: 'verwachte uitgave',
+              label: 'NECESSARY',
+              datetime: new Date().toISOString().slice(0, 16),
+              repeat: bills[idx].repeat || 'NONE',
+              archived: false,
+              created: getNowDateTimeStr()
+            });
+            localStorage.setItem('voldaan_transactions', JSON.stringify(transactions));
+          }
+        }
+
         localStorage.setItem('voldaan_fixed_bills', JSON.stringify(bills));
         renderMoneyView();
         updateStats();
@@ -3663,8 +4170,41 @@
     
     function renderMoneyArchive() {
       const container = document.getElementById('money-archive-list');
+      const filter = document.getElementById('money-archive-filter') ? document.getElementById('money-archive-filter').value : 'ALL';
       if (!container) return;
-      container.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted);">Geen items in het archief.</span>';
+      container.innerHTML = '';
+
+      let archiveItems = [];
+
+      if (filter === 'ALL' || filter === 'trans') {
+        let transactions = JSON.parse(localStorage.getItem('voldaan_transactions') || '[]');
+        transactions.filter(t => t.archived).forEach(t => {
+          archiveItems.push({
+            type: 'trans',
+            id: t.id,
+            title: `[Transactie] ${t.title} (${t.type === 'EXPENSE' ? '-' : '+'}€${t.amount})`,
+            date: t.created || 'Onbekend'
+          });
+        });
+      }
+
+      if (archiveItems.length === 0) {
+        container.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted);">Geen items in het archief.</span>';
+        return;
+      }
+
+      archiveItems.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'item-card';
+        div.innerHTML = `
+          <div>
+            <strong>${item.title}</strong>
+            <span class="time-badge">Gearchiveerd: ${item.date}</span>
+          </div>
+          <button class="btn btn-small" style="font-size:0.75rem; background-color:#38A169; color:white;" onclick="restoreTransaction(${item.id})">🔄 Terugzetten</button>
+        `;
+        container.appendChild(div);
+      });
     }
 
     function addImpulseItem() {
@@ -3713,9 +4253,25 @@
     }
 
     function renderMoneyView() {
+      renderBankBalanceDisplay();
+      updateMoneyCategoryDropdowns();
       renderStudyDebtDisplay();
       renderRuimteKompas();
       updatePaydayCountdown();
+
+      // Quick Transactions List (Max 5)
+      let transactions = JSON.parse(localStorage.getItem('voldaan_transactions') || '[]');
+      const quickContainer = document.getElementById('quick-transactions-list');
+      if (quickContainer) {
+        quickContainer.innerHTML = '';
+        const activeTrans = transactions.filter(t => !t.archived).slice(0, 5);
+
+        if (activeTrans.length === 0) {
+          quickContainer.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted);">Nog geen recente transacties. Voer je eerste in!</span>';
+        } else {
+          activeTrans.forEach(t => quickContainer.appendChild(renderTransactionCard(t)));
+        }
+      }
 
       // Impuls Items
       let impulseItems = JSON.parse(localStorage.getItem('voldaan_impulse_items') || '[]');
@@ -3880,6 +4436,7 @@
     initDefaultContacts();
     initDefaultRuimteData();
     updateCategoryDropdowns();
+    updateMoneyCategoryDropdowns();
     renderTip();
     renderMoneyTip();
     renderMarbleJar();
