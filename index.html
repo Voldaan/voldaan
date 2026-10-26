@@ -216,8 +216,8 @@
       <button class="tab-btn" onclick="switchView('plan')" id="tab-plan">🎯 Plannen</button>
       <button class="tab-btn" onclick="switchView('vitality')" id="tab-vitality">🌿 Vitaliteit</button>
       <button class="tab-btn" onclick="switchView('money')" id="tab-money">💶 Geld</button>
-      <button class="tab-btn" onclick="switchView('hacks')" id="tab-hacks">💡 Kennis & Hacks</button>
       <button class="tab-btn" onclick="switchView('ideas')" id="tab-ideas">📌 Ideeënkluis</button>
+      <button class="tab-btn" onclick="switchView('hacks')" id="tab-hacks">💡 Kennis & Hacks</button>
       <button class="tab-btn" onclick="switchView('fun')" id="tab-fun">☕ Luchtig</button>
       <button class="tab-btn" onclick="switchView('insights')" id="tab-insights">📊 Inzichten</button>
     </nav>
@@ -421,9 +421,12 @@
       <div class="card" style="margin-bottom: 18px;">
         <h2>
           🎯 Zacht Planbord
-          <button class="btn btn-secondary btn-small" onclick="openTaskArchiveModal()">📜 Taken Archief Pop-up</button>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-secondary btn-small" onclick="openAllTasksModal()">📂 Alle Taken</button>
+            <button class="btn btn-secondary btn-small" onclick="openTaskArchiveModal()">📜 Archief</button>
+          </div>
         </h2>
-        <p class="subtitle">Kies behapbare acties voor nu (nieuwste taken automatisch bovenaan).</p>
+        <p class="subtitle">Kies behapbare acties voor nu (max. 5 op de voorgrond, nieuwste eerst).</p>
 
         <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;">
           <input type="text" id="task-input" placeholder="Kleine actie voor nu..." style="margin-bottom: 0; flex: 1 1 200px;">
@@ -439,8 +442,8 @@
           <button class="btn btn-small" style="width: auto;" onclick="addTask()">Toevoegen</button>
         </div>
 
+        <!-- DATUM EN CATEGORIE FILTERS FOR PLANBORD -->
         <div class="filter-bar" style="margin-top: 6px; margin-bottom: 8px;">
-          <label style="font-size: 0.78rem; color: var(--text-muted);">Filter op categorie:</label>
           <select id="tasks-filter-category" onchange="renderTasks()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 4px 8px;">
             <option value="ALL">📂 Alle categorieën</option>
             <option value="Privé">🏠 Privé</option>
@@ -451,9 +454,30 @@
             <option value="Gezondheid">🍎 Gezondheid</option>
             <option value="Financieel">💶 Financieel</option>
           </select>
+
+          <select id="tasks-filter-period" onchange="handleTaskPeriodChange('main')" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 4px 8px;">
+            <option value="ALL" selected>🗓️ Alle tijd</option>
+            <option value="DAY">☀️ Specifieke Dag</option>
+            <option value="WEEK">📅 Specifieke Week</option>
+            <option value="MONTH">🗓️ Specifieke Maand</option>
+            <option value="YEAR">🚀 Specifiek Jaar</option>
+            <option value="RANGE">📆 Van / Tot Datum</option>
+          </select>
+
+          <input type="date" id="tasks-filter-date" onchange="renderTasks()" class="hidden" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 2px 6px;">
+          <input type="month" id="tasks-filter-month" onchange="renderTasks()" class="hidden" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 2px 6px;">
+          <input type="number" id="tasks-filter-year" placeholder="Jaar (2026)" onchange="renderTasks()" min="2024" max="2035" class="hidden" style="margin-bottom:0; width: 90px; font-size: 0.8rem; padding: 2px 6px;">
+          
+          <div id="tasks-filter-range-box" class="hidden" style="display:inline-flex; gap:4px; align-items:center;">
+            <input type="date" id="tasks-filter-from" onchange="renderTasks()" style="margin-bottom:0; width: auto; font-size: 0.78rem; padding: 2px 4px;">
+            <span style="font-size:0.75rem;">t/m</span>
+            <input type="date" id="tasks-filter-to" onchange="renderTasks()" style="margin-bottom:0; width: auto; font-size: 0.78rem; padding: 2px 4px;">
+          </div>
         </div>
 
         <div id="tasks-list" class="item-list"></div>
+
+        <button id="show-more-tasks-btn" class="btn btn-secondary hidden" style="margin-top: 10px;" onclick="openAllTasksModal()">📂 Bekijk Alle Openstaande Taken (<span id="more-tasks-count">0</span> extra)</button>
       </div>
 
       <div class="card" style="margin-bottom: 18px;">
@@ -1190,14 +1214,48 @@
     </div>
   </div>
 
-  <div id="task-archive-modal" class="modal-overlay hidden" onclick="closeTaskArchiveModal()">
-    <div class="modal-content" onclick="event.stopPropagation()">
+  <div id="all-tasks-modal" class="modal-overlay hidden" onclick="closeAllTasksModal()">
+    <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 650px;">
       <div class="modal-header">
-        <h2>📜 Voltooide Taken Archief</h2>
-        <button class="btn btn-secondary btn-small" onclick="closeTaskArchiveModal()">✕ Sluiten</button>
+        <h2>🎯 Alle Openstaande Taken</h2>
+        <button class="btn btn-secondary btn-small" onclick="closeAllTasksModal()">✕ Sluiten</button>
       </div>
-      <p class="subtitle">Hier staan alle afgevinkte taken.</p>
-      <div id="task-archive-modal-list" class="item-list" style="max-height: 380px; overflow-y: auto;"></div>
+
+      <div class="filter-bar" style="margin-top: 6px;">
+        <input type="text" id="modal-tasks-search" oninput="renderAllTasksModal()" placeholder="🔍 Zoek taak..." style="margin-bottom:0; flex:1; font-size:0.85rem;">
+        
+        <select id="modal-tasks-cat" onchange="renderAllTasksModal()" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:4px 6px;">
+          <option value="ALL">📂 Alle Categorieën</option>
+          <option value="Privé">🏠 Privé</option>
+          <option value="Gezin">👨‍👩‍👧‍👦 Gezin</option>
+          <option value="Werk">💼 Werk</option>
+          <option value="Klussen">🔨 Klussen</option>
+          <option value="Vrije tijd">🎨 Vrije tijd</option>
+          <option value="Gezondheid">🍎 Gezondheid</option>
+          <option value="Financieel">💶 Financieel</option>
+        </select>
+
+        <select id="modal-tasks-period" onchange="handleTaskPeriodChange('modal')" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:4px 6px;">
+          <option value="ALL" selected>🗓️ Alle tijd</option>
+          <option value="DAY">☀️ Specifieke Dag</option>
+          <option value="WEEK">📅 Specifieke Week</option>
+          <option value="MONTH">🗓️ Specifieke Maand</option>
+          <option value="YEAR">🚀 Specifiek Jaar</option>
+          <option value="RANGE">📆 Van / Tot Datum</option>
+        </select>
+
+        <input type="date" id="modal-tasks-date" onchange="renderAllTasksModal()" class="hidden" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:2px 6px;">
+        <input type="month" id="modal-tasks-month" onchange="renderAllTasksModal()" class="hidden" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:2px 6px;">
+        <input type="number" id="modal-tasks-year" placeholder="Jaar" onchange="renderAllTasksModal()" min="2024" max="2035" class="hidden" style="margin-bottom:0; width:80px; font-size:0.8rem; padding:2px 6px;">
+
+        <div id="modal-tasks-range-box" class="hidden" style="display:inline-flex; gap:4px; align-items:center;">
+          <input type="date" id="modal-tasks-from" onchange="renderAllTasksModal()" style="margin-bottom:0; width:auto; font-size:0.78rem; padding:2px 4px;">
+          <span style="font-size:0.75rem;">t/m</span>
+          <input type="date" id="modal-tasks-to" onchange="renderAllTasksModal()" style="margin-bottom:0; width:auto; font-size:0.78rem; padding:2px 4px;">
+        </div>
+      </div>
+
+      <div id="all-tasks-modal-list" class="item-list" style="max-height: 400px; overflow-y: auto; margin-top: 10px;"></div>
     </div>
   </div>
 
@@ -2988,54 +3046,99 @@
       document.getElementById('task-archive-modal').classList.add('hidden');
     }
 
-    function renderTaskArchiveModal() {
-      let tasks = JSON.parse(localStorage.getItem('voldaan_tasks') || '[]');
-      const doneTasks = tasks.filter(t => t.done).sort((a,b) => b.id - a.id);
-      const container = document.getElementById('task-archive-modal-list');
-      container.innerHTML = '';
+    function handleTaskPeriodChange(scope) {
+      const prefix = scope === 'modal' ? 'modal-tasks-' : 'tasks-filter-';
+      const mode = document.getElementById(`${prefix}period`).value;
+      
+      const dateEl = document.getElementById(`${prefix}date`);
+      const monthEl = document.getElementById(`${prefix}month`);
+      const yearEl = document.getElementById(`${prefix}year`);
+      const rangeBox = document.getElementById(`${prefix}range-box`);
 
-      if (doneTasks.length === 0) {
-        container.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted);">Nog geen voltooide taken in het archief.</span>';
-        return;
-      }
+      if (dateEl) dateEl.classList.toggle('hidden', mode !== 'DAY' && mode !== 'WEEK');
+      if (monthEl) monthEl.classList.toggle('hidden', mode !== 'MONTH');
+      if (yearEl) yearEl.classList.toggle('hidden', mode !== 'YEAR');
+      if (rangeBox) rangeBox.classList.toggle('hidden', mode !== 'RANGE');
 
-      doneTasks.forEach(task => {
-        const cat = task.category || 'Privé';
-        const icon = taskCatIcons[cat] || '🏷️';
-        const div = document.createElement('div');
-        div.className = 'item-card done';
-        div.innerHTML = `
-          <div>
-            <span>✅ <strong>[${icon} ${cat}]</strong> ${task.text}</span>
-            <span class="time-badge">Voltooid: ${task.doneAt || 'Eerder'}</span>
-          </div>
-          <div style="display:flex; gap:6px;">
-            <button class="btn btn-small" style="font-size:0.75rem; background-color:#38A169; color:white;" onclick="toggleTask(${task.id})">🔄 Terugzetten</button>
-            <button style="background:none; border:none; color:#E53E3E; cursor:pointer;" onclick="removeTask(${task.id})">✕</button>
-          </div>
-        `;
-        container.appendChild(div);
+      if (scope === 'modal') renderAllTasksModal();
+      else renderTasks();
+    }
+
+    function filterTasksByPeriod(tasks, prefix) {
+      const periodMode = document.getElementById(`${prefix}period`) ? document.getElementById(`${prefix}period`).value : 'ALL';
+      const now = new Date();
+
+      return tasks.filter(t => {
+        const itemDate = t.id ? new Date(t.id) : new Date();
+        if (isNaN(itemDate.getTime())) return true;
+
+        if (periodMode === 'DAY') {
+          const dateVal = document.getElementById(`${prefix}date`).value;
+          const selDateStr = dateVal ? new Date(dateVal).toLocaleDateString('nl-NL') : now.toLocaleDateString('nl-NL');
+          return itemDate.toLocaleDateString('nl-NL') === selDateStr;
+        } 
+        else if (periodMode === 'WEEK') {
+          const dateVal = document.getElementById(`${prefix}date`).value;
+          const refDate = dateVal ? new Date(dateVal) : now;
+          const startOfWeek = new Date(refDate); 
+          startOfWeek.setDate(refDate.getDate() - (refDate.getDay() === 0 ? 6 : refDate.getDay() - 1));
+          startOfWeek.setHours(0,0,0,0);
+          const endOfWeek = new Date(startOfWeek);
+          endOfWeek.setDate(startOfWeek.getDate() + 7);
+          return itemDate >= startOfWeek && itemDate < endOfWeek;
+        } 
+        else if (periodMode === 'MONTH') {
+          const monthVal = document.getElementById(`${prefix}month`).value;
+          if (!monthVal) return true;
+          const [y, m] = monthVal.split('-');
+          return itemDate.getFullYear() === parseInt(y) && (itemDate.getMonth() + 1) === parseInt(m);
+        } 
+        else if (periodMode === 'YEAR') {
+          const yearVal = document.getElementById(`${prefix}year`).value;
+          return yearVal ? itemDate.getFullYear() === parseInt(yearVal) : true;
+        } 
+        else if (periodMode === 'RANGE') {
+          const fromVal = document.getElementById(`${prefix}from`).value;
+          const toVal = document.getElementById(`${prefix}to`).value;
+          if (fromVal && new Date(fromVal) > itemDate) return false;
+          if (toVal) {
+            const toDate = new Date(toVal);
+            toDate.setHours(23,59,59,999);
+            if (toDate < itemDate) return false;
+          }
+          return true;
+        }
+        return true;
       });
     }
 
     function renderTasks() {
       let tasks = JSON.parse(localStorage.getItem('voldaan_tasks') || '[]');
       const container = document.getElementById('tasks-list');
-      if (!container) return;
+      const moreBtn = document.getElementById('show-more-tasks-btn');
+      const moreCountSpan = document.getElementById('more-tasks-count');
 
+      if (!container) return;
       container.innerHTML = '';
 
       const filterCat = document.getElementById('tasks-filter-category') ? document.getElementById('tasks-filter-category').value : 'ALL';
       let filteredTasks = filterCat !== 'ALL' ? tasks.filter(t => (t.category || 'Privé') === filterCat) : tasks;
 
+      filteredTasks = filterTasksByPeriod(filteredTasks, 'tasks-filter-');
+
       const activeTasks = filteredTasks.filter(t => !t.done).sort((a,b) => b.id - a.id);
 
       if (activeTasks.length === 0) {
-        container.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted);">Geen actieve taken. Neem heerlijk rust!</span>';
+        container.innerHTML = '<span style="font-size:0.82rem; color:var(--text-muted);">Geen actieve taken gevonden voor deze selectie.</span>';
+        if (moreBtn) moreBtn.classList.add('hidden');
         return;
       }
 
-      activeTasks.forEach((task) => {
+      // Maximaal 5 tonen op voorgrond
+      const displayTasks = activeTasks.slice(0, 5);
+      const remainingCount = activeTasks.length - 5;
+
+      displayTasks.forEach((task) => {
         const cat = task.category || 'Privé';
         const icon = taskCatIcons[cat] || '🏷️';
         const div = document.createElement('div');
@@ -3047,6 +3150,66 @@
           </div>
           <div style="display:flex; gap:4px; align-items:center;">
             <button class="btn btn-secondary btn-small" style="font-size:0.72rem; padding:3px 6px; background-color:#3182CE; color:white;" onclick="pushTaskToCalendar('${task.text.replace(/'/g, "\\'")}')">📅 Agenda</button>
+            <button class="btn btn-secondary btn-small" style="font-size:0.72rem; padding:3px 6px;" onclick="editTask(${task.id})">✏️</button>
+            <button class="btn btn-small" style="font-size:0.72rem; padding:3px 6px; background-color:#38A169;" onclick="toggleTask(${task.id})">✅</button>
+            <button style="background:none; border:none; color:#E53E3E; cursor:pointer;" onclick="removeTask(${task.id})">✕</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+
+      if (remainingCount > 0) {
+        if (moreBtn) {
+          moreBtn.classList.remove('hidden');
+          if (moreCountSpan) moreCountSpan.innerText = remainingCount;
+        }
+      } else {
+        if (moreBtn) moreBtn.classList.add('hidden');
+      }
+    }
+
+    function openAllTasksModal() {
+      document.getElementById('all-tasks-modal').classList.remove('hidden');
+      renderAllTasksModal();
+    }
+
+    function closeAllTasksModal() {
+      document.getElementById('all-tasks-modal').classList.add('hidden');
+    }
+
+    function renderAllTasksModal() {
+      let tasks = JSON.parse(localStorage.getItem('voldaan_tasks') || '[]');
+      const container = document.getElementById('all-tasks-modal-list');
+      const searchVal = document.getElementById('modal-tasks-search') ? document.getElementById('modal-tasks-search').value.toLowerCase() : '';
+      const catVal = document.getElementById('modal-tasks-cat') ? document.getElementById('modal-tasks-cat').value : 'ALL';
+
+      if (!container) return;
+      container.innerHTML = '';
+
+      let filtered = tasks.filter(t => !t.done);
+
+      if (searchVal) filtered = filtered.filter(t => t.text.toLowerCase().includes(searchVal));
+      if (catVal !== 'ALL') filtered = filtered.filter(t => (t.category || 'Privé') === catVal);
+
+      filtered = filterTasksByPeriod(filtered, 'modal-tasks-');
+      filtered.sort((a,b) => b.id - a.id);
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted);">Geen openstaande taken gevonden.</span>';
+        return;
+      }
+
+      filtered.forEach(task => {
+        const cat = task.category || 'Privé';
+        const icon = taskCatIcons[cat] || '🏷️';
+        const div = document.createElement('div');
+        div.className = 'item-card';
+        div.innerHTML = `
+          <div>
+            <span style="cursor:pointer;" onclick="toggleTask(${task.id})">⚪ <strong style="font-size:0.78rem; opacity:0.85;">[${icon} ${cat}]</strong> ${task.text}</span>
+            <span class="time-badge">Aangemaakt: ${task.created}</span>
+          </div>
+          <div style="display:flex; gap:4px; align-items:center;">
             <button class="btn btn-secondary btn-small" style="font-size:0.72rem; padding:3px 6px;" onclick="editTask(${task.id})">✏️</button>
             <button class="btn btn-small" style="font-size:0.72rem; padding:3px 6px; background-color:#38A169;" onclick="toggleTask(${task.id})">✅</button>
             <button style="background:none; border:none; color:#E53E3E; cursor:pointer;" onclick="removeTask(${task.id})">✕</button>
