@@ -195,6 +195,59 @@
     .label-saving { background: #FEEBC8; color: #7B341E; }
     .label-necessary { background: #EBF8FF; color: #2C5282; }
     .label-growth { background: #E6FFFA; color: #234E52; }
+    /* --- VITALITEIT & GELDKOMPAS EXTRA STYLES --- */
+.vitality-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.habit-tracker-card {
+  background: var(--bg-card, #ffffff);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.timer-display {
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  margin: 12px 0;
+  color: var(--accent-primary, #4a6da7);
+}
+
+/* Reparatie Verwachte Uitgaven Kaartjes */
+.expected-item {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  padding: 12px 16px !important;
+}
+
+.expected-item-details {
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
+.expected-item-details p,
+.expected-item-details div,
+.expected-item-details span {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  word-break: break-word !important;
+  white-space: normal !important;
+}
+
+.expected-item-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-shrink: 0 !important;
+}
   </style>
 </head>
 <body>
@@ -512,6 +565,7 @@
     </div>
 
     <!-- PAGINA 3: VITALITEIT -->
+    <!-- PAGINA 3: VITALITEIT & GEWOONTES -->
     <div id="view-vitality" class="hidden">
       <div class="card" style="margin-bottom: 18px;">
         <h2>🌙 Nachtrust & Herstel</h2>
@@ -599,13 +653,19 @@
           <button class="btn btn-secondary btn-small" style="flex: 1; border: 1.5px solid var(--green-border);" onclick="logBalanceHabit('Gezonde Voeding / Fruit 🥗', 'Gezondheid')">🥗 Gezond Gegeten</button>
         </div>
 
-        <div style="background: var(--soft-warm); padding: 12px; border-radius: 12px; border: 1.5px solid var(--warm-border);">
-          <strong style="font-size: 0.85rem; color: var(--warm-text); display: block; margin-bottom: 4px;">🛑 Snaai-Wachtkamer (15 Minuten Pauze)</strong>
-          <p style="font-size: 0.78rem; color: var(--warm-text); margin-bottom: 8px;">Trek in een ondoordachte snack? Zet het even 15 minuten op pauze en kijk of de trek wegzakt.</p>
+        <!-- SNAAI WACHTKAMER INCLUSIEF TIMER -->
+        <div style="background: var(--soft-warm); padding: 14px; border-radius: 12px; border: 1.5px solid var(--warm-border);">
+          <strong style="font-size: 0.88rem; color: var(--warm-text); display: block; margin-bottom: 4px;">🛑 Snaai-Wachtkamer (15 Minuten Pauze)</strong>
+          <p style="font-size: 0.78rem; color: var(--warm-text); margin-bottom: 8px;">Trek in een ondoordachte snack? Zet de 15-minuten timer en kijk of de trek wegzakt.</p>
 
-          <div style="display: flex; gap: 6px;">
+          <div style="text-align: center; margin: 10px 0;">
+            <div id="snack-timer-display" style="font-size: 1.8rem; font-weight: bold; color: var(--warm-text);">15:00</div>
+            <button class="btn btn-small" style="background-color: #ED8936; width: auto; margin-top: 6px;" onclick="startSnackTimer()">Start 15-min Pauze ⏱️</button>
+          </div>
+
+          <div style="display: flex; gap: 6px; margin-top: 10px;">
             <input type="text" id="snack-input" placeholder="Waar heb je trek in?" style="margin-bottom: 0; flex: 1; font-size: 0.82rem;">
-            <button class="btn btn-small" style="background-color: #ED8936; width: auto;" onclick="addSnackWait()">Pauzeren ⏸️</button>
+            <button class="btn btn-small" style="background-color: #ED8936; width: auto;" onclick="addSnackWait()">Parkeren ⏸️</button>
           </div>
 
           <div id="snack-wait-list" class="item-list" style="margin-top: 8px;"></div>
@@ -4528,12 +4588,14 @@
             const repeatBadge = bill.repeat === 'MONTHLY' ? '🔄 Maandelijks' : bill.repeat === 'WEEKLY' ? '🔄 Wekelijks' : bill.repeat === 'YEARLY' ? '🔄 Jaarlijks' : '📌 Eenmalig';
 
             div.innerHTML = `
-              <div>
+              <div style="flex: 1; min-width: 0;">
                 <strong style="cursor:pointer;" onclick="toggleFixedBill(${bill.id})">${bill.paid ? '✅' : '⚪'} ${bill.name}</strong>
-                <span class="time-badge">🗓️ ${formattedDate} | ${repeatBadge} | ${bill.type || 'Incasso'}</span>
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
+                  <span>📅 ${formattedDate}</span> | <span>📌 ${repeatBadge}</span> | <span>${bill.type || 'Incasso'}</span>
+                </div>
               </div>
-              <div style="display:flex; gap:6px; align-items:center;">
-                <strong style="${bill.paid ? 'text-decoration: line-through; opacity: 0.6;' : ''}">€${(parseFloat(bill.amount) || 0).toFixed(2).replace('.', ',')}</strong>
+              <div style="display:flex; gap:6px; align-items:center; flex-shrink: 0;">
+                <strong style="${bill.paid ? 'text-decoration: line-through; opacity: 0.6;' : ''}; margin-right:4px;">€${(parseFloat(bill.amount) || 0).toFixed(2).replace('.', ',')}</strong>
                 <button class="btn btn-secondary btn-small" style="font-size:0.7rem; padding:2px 6px;" onclick="editFixedBill(${bill.id})">✏️</button>
                 <button class="btn btn-secondary btn-small" style="font-size:0.7rem; padding:2px 6px;" onclick="archiveFixedBill(${bill.id})">📦</button>
               </div>
@@ -4608,6 +4670,26 @@
     updateSavedTipsBadge();
     updatePaydayCountdown();
     setInterval(updatePaydayCountdown, 1000);
+    // --- SNAAI WACHTKAMER TIMER LOGICA ---
+let snackTimerInterval = null;
+
+function startSnackTimer() {
+  if (snackTimerInterval) clearInterval(snackTimerInterval);
+  let timeLeft = 15 * 60;
+  const display = document.getElementById('snack-timer-display');
+  if (!display) return;
+  
+  snackTimerInterval = setInterval(() => {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    display.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    if (timeLeft <= 0) {
+      clearInterval(snackTimerInterval);
+      alert('🎉 De 15 minuten zijn om! Is de trek nog steeds zo erg, of is het weggezakt?');
+    }
+    timeLeft--;
+  }, 1000);
+}
   </script>
 </body>
 </html>
