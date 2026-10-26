@@ -42,6 +42,15 @@ export function getTodayCardData(state = window.VoldaanApp?.state) {
   };
 }
 
+function escapeHtml(value = '') {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 export function renderTodayDashboard() {
   const state = window.VoldaanApp?.state;
   if (!state) return;
@@ -60,11 +69,15 @@ export function renderTodayDashboard() {
     const root = document.querySelector('.container') || document.body;
     panel = document.createElement('section');
     panel.id = 'today-dashboard';
+    panel.className = 'app-shell-panel active-panel';
     panel.style.display = 'grid';
     panel.style.gap = '16px';
     panel.style.marginTop = '12px';
     root.appendChild(panel);
   }
+
+  panel.classList.add('app-shell-panel', 'active-panel');
+  panel.style.display = '';
 
   const cardStyle = `
     background: var(--card-bg);
@@ -119,31 +132,38 @@ export function renderTodayDashboard() {
 
   const taskMarkup = data.tasks.length
     ? data.tasks.map((task) => `
-      <li style="margin-top:8px; list-style:none; padding:8px 10px; background:rgba(17,24,39,0.03); border-radius:10px; border:1px solid rgba(17,24,39,0.05);">
-        ${task.title}
-      </li>
-    `).join('')
+        <li style="margin-top:8px; list-style:none; padding:8px 10px; background:rgba(17,24,39,0.03); border-radius:10px; border:1px solid rgba(17,24,39,0.05);">
+          ${escapeHtml(task.title || 'Taak')}
+        </li>
+      `).join('')
     : '<li style="list-style:none; color:var(--text-muted);">Geen open taken.</li>';
 
   panel.innerHTML = `
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:12px;">
-      ${topCards.map((item) => `
-        <div style="${cardStyle}; background:${item.accent};">
-          <div style="${labelStyle}">${item.title}</div>
-          <div style="${valueStyle}">${item.value}</div>
-        </div>
-      `).join('')}
-    </div>
-
-    <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:12px;">
-      <div style="background:var(--card-bg); border:1.5px solid var(--input-border); border-radius:16px; padding:16px; box-shadow:var(--shadow);">
-        <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin-bottom:8px;">Pact</div>
-        <div style="font-size:1rem; font-weight:700; color:var(--text-main); line-height:1.5;">${data.pact}</div>
+    <div style="display:grid; gap:12px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:2px;">
+        <div style="font-size:1.08rem; font-weight:700; color:var(--text-main);">Vandaag</div>
+        <div style="font-size:0.76rem; color:var(--text-muted);">${new Date().toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'short' })}</div>
       </div>
 
-      <div style="background:var(--card-bg); border:1.5px solid var(--input-border); border-radius:16px; padding:16px; box-shadow:var(--shadow);">
-        <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin-bottom:8px;">Open taken</div>
-        <ul style="margin:0; padding:0;">${taskMarkup}</ul>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:12px;">
+        ${topCards.map((item) => `
+          <div style="${cardStyle}; background:${item.accent};">
+            <div style="${labelStyle}">${item.title}</div>
+            <div style="${valueStyle}">${escapeHtml(item.value)}</div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div style="display:grid; grid-template-columns:1.2fr 1fr; gap:12px;">
+        <div style="background:var(--card-bg); border:1.5px solid var(--input-border); border-radius:16px; padding:16px; box-shadow:var(--shadow);">
+          <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin-bottom:8px;">Pact</div>
+          <div style="font-size:1rem; font-weight:700; color:var(--text-main); line-height:1.5;">${escapeHtml(data.pact)}</div>
+        </div>
+
+        <div style="background:var(--card-bg); border:1.5px solid var(--input-border); border-radius:16px; padding:16px; box-shadow:var(--shadow);">
+          <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin-bottom:8px;">Open taken</div>
+          <ul style="margin:0; padding:0;">${taskMarkup}</ul>
+        </div>
       </div>
     </div>
   `;
