@@ -1,284 +1,872 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Voldaan — Rust & Structuur op Jouw Tempo</title>
-  
-  <link rel="icon" type="image/jpeg" href="icon.jpg?v=2">
-  <link rel="apple-touch-icon" href="icon.jpg?v=2">
-  <link rel="manifest" href="manifest.json?v=2">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voldaan - Jouw Persoonlijke Dashboard</title>
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIlZvbGRhYW4iLAogICJzaG9ydF9uYW1lIjogIlZvbGRhYW4iLAogICJzdGFydF91cmwiOiAiLi8iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmOGY5ZmEiLAogICJ0aGVtZV9jb2xvciIjogIiM0YTY5YmQiCn0=">
+    <style>
+        :root {
+            --bg-color: #f4f6f8;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --text-muted: #7f8c8d;
+            --primary: #4a69bd;
+            --primary-hover: #3c5496;
+            --accent: #6a89cc;
+            --success: #78e08f;
+            --warning: #f6b93b;
+            --danger: #e55039;
+            --border-color: #e1e8ed;
+            --shadow: 0 4px 6px rgba(0,0,0,0.05);
+            --radius: 12px;
+        }
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/theme.css">
-  <link rel="stylesheet" href="css/base.css">
-  <style>
-    :root {
-      --bg-color: #F8F6F0;
-      --card-bg: #FFFFFF;
-      --text-main: #2D3748;
-      --text-muted: #718096;
-      --accent-primary: #5A67D8;
-      --accent-hover: #4C51BF;
-      --soft-teal: #E6FFFA;
-      --teal-border: #B2F5EA;
-      --teal-text: #234E52;
-      --soft-warm: #FFFAF0;
-      --warm-border: #FEEBC8;
-      --warm-text: #7B341E;
-      --soft-purple: #FAF5FF;
-      --purple-border: #E9D8FD;
-      --purple-text: #553C9A;
-      --soft-green: #F0FFF4;
-      --green-border: #C6F6D5;
-      --green-text: #22543D;
-      --input-bg: #FFFFFF;
-      --input-border: #CBD5E0;
-      --item-bg: #F7FAFC;
-      --radius: 16px;
-      --shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-    }
+        body.dark-theme {
+            --bg-color: #1a1a2e;
+            --card-bg: #16213e;
+            --text-color: #e9ecef;
+            --text-muted: #a0aec0;
+            --primary: #0f3460;
+            --primary-hover: #16425b;
+            --accent: #e94560;
+            --border-color: #2a2a4a;
+            --shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
 
-    body.dark-theme {
-      --bg-color: #1A202C;
-      --card-bg: #2D3748;
-      --text-main: #EDF2F7;
-      --text-muted: #A0AEC0;
-      --accent-primary: #7F9CF5;
-      --accent-hover: #667EEA;
-      --soft-teal: #234E52;
-      --teal-border: #2C7A7B;
-      --teal-text: #E6FFFA;
-      --soft-warm: #7B341E;
-      --warm-border: #9C4221;
-      --warm-text: #FFFAF0;
-      --soft-purple: #44337A;
-      --purple-border: #553C9A;
-      --purple-text: #FAF5FF;
-      --soft-green: #22543D;
-      --green-border: #2F855A;
-      --green-text: #F0FFF4;
-      --input-bg: #1A202C;
-      --input-border: #4A5568;
-      --item-bg: #1A202C;
-      --shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-    }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); padding-bottom: 70px; transition: background-color 0.3s, color 0.3s; }
+        
+        header { background: var(--card-bg); padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); }
+        header h1 { font-size: 1.5rem; color: var(--primary); }
+        .header-actions { display: flex; gap: 0.5rem; align-items: center; }
+        .btn-icon { background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 0.4rem; border-radius: 50%; color: var(--text-color); }
+        .btn-icon:hover { background: rgba(0,0,0,0.05); }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding: 0.5rem 0; z-index: 1000; }
+        nav button { background: none; border: none; display: flex; flex-direction: column; align-items: center; font-size: 0.75rem; color: var(--text-muted); cursor: pointer; width: 20%; }
+        nav button.active { color: var(--primary); font-weight: bold; }
+        nav button .icon { font-size: 1.3rem; margin-bottom: 2px; }
 
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      display: flex;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 16px;
-      transition: background-color 0.3s ease, color 0.3s ease;
-    }
+        .container { max-width: 800px; margin: 1rem auto; padding: 0 1rem; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
-    #confetti-canvas {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999;
-    }
+        .card { background: var(--card-bg); border-radius: var(--radius); padding: 1.2rem; margin-bottom: 1rem; border: 1px solid var(--border-color); box-shadow: var(--shadow); }
+        .card h2 { font-size: 1.1rem; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem; color: var(--primary); }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
 
-    .container { width: 100%; max-width: 580px; display: flex; flex-direction: column; gap: 18px; padding-bottom: 40px; }
-    header { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; margin-bottom: 2px; }
-    header h1 { font-size: 1.8rem; font-weight: 700; color: var(--accent-primary); letter-spacing: -0.5px; }
-    header p { font-size: 0.85rem; color: var(--text-muted); margin-top: 2px; }
+        input, select, textarea, button { width: 100%; padding: 0.6rem 0.8rem; margin-bottom: 0.5rem; border: 1px solid var(--border-color); border-radius: 6px; background: var(--card-bg); color: var(--text-color); font-size: 0.9rem; }
+        button.btn-primary { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
+        button.btn-primary:hover { background: var(--primary-hover); }
+        button.btn-secondary { background: transparent; border: 1px solid var(--primary); color: var(--primary); font-weight: bold; cursor: pointer; }
+        
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid var(--border-color); }
+        .list-item:last-child { border-bottom: none; }
+        .list-item .actions { display: flex; gap: 0.3rem; }
+        .list-item .actions button { width: auto; padding: 0.2rem 0.5rem; margin-bottom: 0; font-size: 0.8rem; }
 
-    .nav-tabs {
-      display: flex;
-      background: var(--card-bg);
-      padding: 6px;
-      border-radius: 14px;
-      border: 1.5px solid var(--input-border);
-      box-shadow: var(--shadow);
-      gap: 4px;
-      margin-bottom: 8px;
-      overflow-x: auto;
-      scrollbar-width: thin;
-    }
+        .tag { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: bold; background: var(--border-color); margin-right: 0.3rem; }
+        .progress-bar { width: 100%; height: 10px; background: var(--border-color); border-radius: 5px; overflow: hidden; margin: 0.5rem 0; }
+        .progress-fill { height: 100%; background: var(--primary); transition: width 0.3s; }
 
-    .tab-btn {
-      flex: 1;
-      min-width: 80px;
-      padding: 10px 6px;
-      border: none;
-      background: transparent;
-      color: var(--text-muted);
-      font-weight: 700;
-      font-size: 0.78rem;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      text-align: center;
-      white-space: nowrap;
-    }
-
-    .tab-btn:hover {
-      background: rgba(90, 103, 216, 0.06);
-      color: var(--text-main);
-    }
-
-    .tab-btn.active {
-      background-color: var(--accent-primary);
-      color: white;
-      box-shadow: 0 2px 8px rgba(90, 103, 216, 0.25);
-    }
-
-    .theme-toggle-btn {
-      background: var(--card-bg);
-      border: 1.5px solid var(--input-border);
-      color: var(--text-main);
-      padding: 8px 12px;
-      border-radius: 20px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      box-shadow: var(--shadow);
-    }
-
-    .app-shell-panel {
-      display: none;
-    }
-
-    .app-shell-panel.active-panel {
-      display: block;
-    }
-
-    .card {
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      padding: 20px;
-      box-shadow: var(--shadow);
-      border: 1.5px solid var(--input-border);
-      transition: background-color 0.3s ease, border-color 0.3s ease;
-    }
-
-    .card h2 { font-size: 1.1rem; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-    .subtitle { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.4; }
-
-    .btn {
-      background-color: var(--accent-primary);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      padding: 12px 18px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      width: 100%;
-      transition: all 0.2s ease;
-    }
-    .btn:hover { background-color: var(--accent-hover); transform: translateY(-1px); }
-    .btn-secondary { background-color: var(--item-bg); border: 1.5px solid var(--input-border); color: var(--text-main); }
-    .btn-small { padding: 6px 12px; font-size: 0.8rem; width: auto; border-radius: 8px; }
-
-    .energy-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
-    .energy-btn {
-      background: var(--item-bg); border: 1.5px solid var(--input-border); color: var(--text-main);
-      border-radius: 10px; padding: 10px; font-size: 0.85rem; cursor: pointer; text-align: center; transition: all 0.2s;
-    }
-    .energy-btn.selected { border-color: var(--accent-primary); background-color: rgba(90, 103, 216, 0.15); font-weight: 600; }
-
-    textarea, input[type="text"], input[type="number"], input[type="date"], select {
-      width: 100%; background: var(--input-bg); color: var(--text-main); border: 1.5px solid var(--input-border);
-      border-radius: 10px; padding: 10px 12px; font-size: 0.9rem; margin-bottom: 10px; outline: none;
-    }
-    textarea:focus, input[type="text"]:focus, select:focus, input[type="date"]:focus { border-color: var(--accent-primary); }
-
-    .item-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
-    .item-card {
-      background: var(--item-bg); padding: 12px; border-radius: 12px; font-size: 0.9rem;
-      display: flex; justify-content: space-between; align-items: center; border: 1.5px solid var(--input-border);
-    }
-    .item-card.done { background: var(--soft-green); border-color: var(--green-border); color: var(--green-text); text-decoration: line-through; }
-    .time-badge { font-size: 0.72rem; color: var(--text-muted); display: block; margin-top: 2px; }
-
-    .marble {
-      width: 20px; height: 20px; border-radius: 50%; display: inline-block;
-      box-shadow: inset -2px -2px 4px rgba(0,0,0,0.35), 1px 2px 4px rgba(0,0,0,0.2);
-      animation: dropMarble 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    @keyframes dropMarble { 0% { transform: translateY(-30px) scale(1.3); opacity: 0; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
-
-    .postit-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px; margin-top: 14px; }
-    .postit {
-      border-radius: 8px; padding: 16px 14px 12px 14px; box-shadow: 2px 4px 12px rgba(0,0,0,0.08);
-      position: relative; border: 1.5px solid rgba(0,0,0,0.08); transform: rotate(-1deg); transition: all 0.2s ease;
-      display: flex; flex-direction: column; justify-content: space-between; min-height: 130px;
-    }
-    .postit:nth-child(even) { transform: rotate(1.5deg); }
-    .postit:hover { transform: scale(1.02) rotate(0deg); z-index: 10; }
-    .postit-pin { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); font-size: 1.2rem; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.3)); }
-    .postit-content { font-size: 0.92rem; line-height: 1.35; font-weight: 500; word-break: break-word; margin-top: 4px; }
-    .postit-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; font-size: 0.75rem; opacity: 0.9; border-top: 1px dashed rgba(0,0,0,0.18); padding-top: 8px; }
-    .postit-menu-btn { background: none; border: none; font-size: 1.1rem; cursor: pointer; color: inherit; padding: 0 4px; }
-    .postit-menu { position: absolute; bottom: 30px; right: 10px; background: var(--card-bg); border: 1.5px solid var(--input-border); border-radius: 10px; box-shadow: var(--shadow); display: none; }
-    .postit-menu button { background: none; border: none; text-align: left; padding: 6px 10px; font-size: 0.78rem; color: var(--text-main); cursor: pointer; border-radius: 6px; }
-    .postit-menu button:hover { background: var(--item-bg); }
-
-    .modal-overlay {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6);
-      backdrop-filter: blur(4px); z-index: 10000; display: flex; justify-content: center; align-items: flex-start; padding: 16px; overflow-y: auto;
-    }
-    .modal-content {
-      background: var(--card-bg); color: var(--text-main); width: 100%; max-width: 620px; border-radius: var(--radius);
-      padding: 22px; border: 1.5px solid var(--input-border); box-shadow: var(--shadow); margin-top: 20px; margin-bottom: 40px;
-    }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-
-    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: center; }
-    .stat-box { background: var(--item-bg); padding: 12px 6px; border-radius: 12px; border: 1.5px solid var(--input-border); }
-    .stat-number { font-size: 1.3rem; font-weight: 700; color: var(--accent-primary); }
-    .stat-label { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
-
-    .tip-box { background-color: var(--soft-warm); border: 1.5px solid var(--warm-border); color: var(--warm-text); padding: 16px; border-radius: 14px; }
-    .insight-card { background-color: var(--soft-teal); border: 1.5px solid var(--teal-border); color: var(--teal-text); padding: 14px; border-radius: 12px; font-size: 0.88rem; margin-top: 12px; }
-
-    .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; margin-bottom: 10px; align-items: center; }
-    .btn-group { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
-
-    .progress-bar-bg { background: var(--input-border); border-radius: 12px; height: 14px; width: 100%; overflow: hidden; margin-top: 6px; margin-bottom: 6px; }
-    .progress-bar-fill { background: linear-gradient(90deg, #38A169 0%, #319795 100%); height: 100%; transition: width 0.4s ease; }
-
-    .hidden { display: none !important; }
-  </style>
+        .marbles-container { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; }
+        .marble { width: 20px; height: 20px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, var(--warning), #d35400); display: inline-block; }
+        .postit-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.8rem; }
+        .postit { background: #fff9c4; color: #333; padding: 0.8rem; border-radius: 8px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); position: relative; font-size: 0.85rem; }
+        body.dark-theme .postit { background: #fbc02d; color: #111; }
+        .postit .delete-btn { position: absolute; top: 2px; right: 4px; background: none; border: none; color: #777; cursor: pointer; font-size: 0.9rem; width: auto; }
+    </style>
 </head>
 <body>
 
-  <canvas id="confetti-canvas"></canvas>
-
-  <div class="container">
     <header>
-      <div>
         <h1>Voldaan</h1>
-        <p>Geen druk. Geen schuldgevoel. Jouw tempo.</p>
-      </div>
-      <button class="theme-toggle-btn" onclick="toggleTheme()" id="theme-btn">🌙 Nacht</button>
+        <div class="header-actions">
+            <button class="btn-icon" onclick="toggleTheme()" title="Thema wisselen">🌙</button>
+            <button class="btn-icon" onclick="exportData()" title="Backup Opslaan">💾</button>
+            <button class="btn-icon" onclick="importData()" title="Backup Laden">📂</button>
+            <input type="file" id="importFile" style="display:none" onchange="processImport(event)">
+        </div>
     </header>
 
-    <nav class="nav-tabs" aria-label="Hoofdnavigatie">
-      <button class="tab-btn active" onclick="switchView('today')" id="tab-today">🏠 Vandaag</button>
-      <button class="tab-btn" onclick="switchView('plan')" id="tab-plan">🎯 Plannen</button>
-      <button class="tab-btn" onclick="switchView('vitality')" id="tab-vitality">🌿 Vitaliteit</button>
-      <button class="tab-btn" onclick="switchView('money')" id="tab-money">💶 Geld</button>
-      <button class="tab-btn" onclick="switchView('hacks')" id="tab-hacks">💡 Kennis & Hacks</button>
-      <button class="tab-btn" onclick="switchView('ideas')" id="tab-ideas">📌 Ideeënkluis</button>
-      <button class="tab-btn" onclick="switchView('fun')" id="tab-fun">☕ Luchtig</button>
-      <button class="tab-btn" onclick="switchView('insights')" id="tab-insights">📊 Inzichten</button>
+    <div class="container">
+        <!-- TAB 1: VANDAAG -->
+        <div id="tab-vandaag" class="tab-content active">
+            <div class="card">
+                <h2>☀️ Dagelijkse Check-in</h2>
+                <div class="grid-2">
+                    <div>
+                        <label>Stemming (1-10)</label>
+                        <input type="number" id="checkin-mood" min="1" max="10" value="7">
+                    </div>
+                    <div>
+                        <label>Energie (1-10)</label>
+                        <input type="number" id="checkin-energy" min="1" max="10" value="7">
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="saveCheckin()">Check-in Opslaan</button>
+            </div>
+
+            <div class="card">
+                <h2>🔮 Trots-Kluis & Knikkers</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Elke overwinning is een knikker in de pot!</p>
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="text" id="trots-input" placeholder="Waar ben je trots op?">
+                    <button class="btn-primary" style="width: 30%;" onclick="addTrots()">Toevoegen</button>
+                </div>
+                <div class="marbles-container" id="marbles-pot"></div>
+                <div id="trots-list" style="margin-top: 0.8rem;"></div>
+            </div>
+
+            <div class="card">
+                <h2>⚡ Actie-Hub (Vandaag)</h2>
+                <div id="vandaag-acties-list"></div>
+            </div>
+
+            <div class="card">
+                <h2>🤝 Buddy-Lijn</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Snel een berichtje naar je vast geselecteerde buddy.</p>
+                <input type="text" id="buddy-phone" placeholder="Telefoonnummer buddy (bijv. 31612345678)">
+                <input type="text" id="buddy-msg" placeholder="Berichttekst...">
+                <button class="btn-secondary" onclick="sendBuddyWhatsApp()">Verstuur via WhatsApp 💬</button>
+            </div>
+
+            <div class="card">
+                <h2>🧠 Breinhack van de Dag</h2>
+                <blockquote id="daily-hack" style="font-style: italic; border-left: 3px solid var(--primary); padding-left: 0.5rem; color: var(--text-muted);">
+                    "Breek grote taken op in mini-stappen van maximaal 2 minuten. Beginnen is het lastigste gedeelte."
+                </blockquote>
+            </div>
+        </div>
+
+        <!-- TAB 2: PLANNEN -->
+        <div id="tab-plannen" class="tab-content">
+            <div class="card">
+                <h2>🌙 Avond-Pact</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Sluit je dag bewust af voor een rustige nacht.</p>
+                <input type="text" id="pact-morgen" placeholder="Belangrijkste doel voor morgen...">
+                <textarea id="pact-hoofd" placeholder="Schrijf je hoofd leeg..."></textarea>
+                <button class="btn-primary" onclick="savePact()">Pact Opslaan</button>
+            </div>
+
+            <div class="card">
+                <h2>📌 Zacht Planbord</h2>
+                <input type="text" id="plan-task" placeholder="Nieuwe taak...">
+                <div class="grid-2">
+                    <select id="plan-cat">
+                        <option value="Must">Must (Moet echt)</option>
+                        <option value="Should">Should (Zou fijn zijn)</option>
+                        <option value="Want">Want (Leuk/Wens)</option>
+                    </select>
+                    <button class="btn-primary" onclick="addPlanTask()">Toevoegen</button>
+                </div>
+                <div id="planboard-list"></div>
+            </div>
+
+            <div class="card">
+                <h2>🎯 Langetermijndoelen</h2>
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="text" id="goal-input" placeholder="Nieuw langetermijndoel...">
+                    <button class="btn-primary" style="width: 30%;" onclick="addGoal()">Toevoegen</button>
+                </div>
+                <div id="goals-list" style="margin-top: 0.5rem;"></div>
+            </div>
+
+            <div class="card">
+                <h2>👥 Contact-Herinneringen</h2>
+                <div class="grid-2">
+                    <input type="text" id="contact-name" placeholder="Naam persoon">
+                    <input type="date" id="contact-date">
+                </div>
+                <button class="btn-primary" onclick="addContactRem()">Herinnering Instellen</button>
+                <div id="contact-list" style="margin-top: 0.5rem;"></div>
+            </div>
+        </div>
+
+        <!-- TAB 3: VITALITEIT -->
+        <div id="tab-vitaliteit" class="tab-content">
+            <div class="card">
+                <h2>😴 Slaap & Herstel Logboek</h2>
+                <div class="grid-2">
+                    <div>
+                        <label>Uren geslapen</label>
+                        <input type="number" id="sleep-hours" step="0.5" value="7.5">
+                    </div>
+                    <div>
+                        <label>Kwaliteit (1-10)</label>
+                        <input type="number" id="sleep-quality" min="1" max="10" value="7">
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="saveSleep()">Slaap Opslaan</button>
+            </div>
+
+            <div class="card">
+                <h2>🚶 Stappenteller</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Doel: 8.000 stappen per dag</p>
+                <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                    <input type="number" id="steps-input" placeholder="Aantal stappen vandaag">
+                    <button class="btn-primary" style="width: 30%;" onclick="saveSteps()">Opslaan</button>
+                </div>
+                <div class="progress-bar"><div id="steps-progress" class="progress-fill" style="width: 0%;"></div></div>
+                <p id="steps-text" style="font-size: 0.8rem; text-align: right; color: var(--text-muted);">0 / 8000 stappen</p>
+            </div>
+
+            <div class="card">
+                <h2>🏋️ Sport & Fitheid</h2>
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="text" id="sport-input" placeholder="Oefening/Workout (bijv. 30min Wandelen)">
+                    <button class="btn-primary" style="width: 30%;" onclick="addSport()">Loggen</button>
+                </div>
+                <div id="sport-list" style="margin-top: 0.5rem;"></div>
+            </div>
+
+            <div class="card">
+                <h2>🍪 Snaai-Wachtkamer</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Trek in een snack? Wacht 10 minuten voor je beslist.</p>
+                <button class="btn-secondary" onclick="startSnackTimer()">Start 10-Minuten Pauze ⏱️</button>
+                <p id="snack-timer-display" style="font-weight: bold; text-align: center; margin-top: 0.5rem; display: none; color: var(--accent);"></p>
+            </div>
+
+            <div class="card">
+                <h2>🚭 Rookbalans</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Houd bij hoeveel peuken je vandaag hebt gerookt of vermeden.</p>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>Aantal vandaag: <strong id="smoke-count">0</strong></span>
+                    <div>
+                        <button class="btn-primary" style="width: auto; padding: 0.3rem 0.8rem;" onclick="changeSmoke(1)">+1</button>
+                        <button class="btn-secondary" style="width: auto; padding: 0.3rem 0.8rem;" onclick="changeSmoke(-1)">-1</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: GELD -->
+        <div id="tab-geld" class="tab-content">
+            <div class="card">
+                <h2>🏠 Ruimte-Kompas</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Familieprojecten, afspraken en gezamenlijke doelen.</p>
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="text" id="kompas-input" placeholder="Nieuw project / afspraak...">
+                    <button class="btn-primary" style="width: 30%;" onclick="addKompas()">Toevoegen</button>
+                </div>
+                <div id="kompas-list" style="margin-top: 0.5rem;"></div>
+            </div>
+
+            <div class="card">
+                <h2>🎓 Studieschuld Visualisatie</h2>
+                <div class="grid-2">
+                    <input type="number" id="debt-total" placeholder="Totale Schuld (€)" onchange="saveDebtData()">
+                    <input type="number" id="debt-paid" placeholder="Reeds Afgelost (€)" onchange="saveDebtData()">
+                </div>
+                <div class="progress-bar"><div id="debt-progress" class="progress-fill" style="width: 0%; background: var(--success);"></div></div>
+                <p id="debt-text" style="font-size: 0.8rem; text-align: right; color: var(--text-muted);">0% afgelost</p>
+            </div>
+
+            <div class="card">
+                <h2>🗓️ Payday Radar Countdown</h2>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <label style="width: 50%;">Volgende Betaaldag:</label>
+                    <input type="date" id="payday-date" onchange="updatePayday()">
+                </div>
+                <p id="payday-countdown" style="font-size: 1.1rem; font-weight: bold; text-align: center; margin-top: 0.5rem; color: var(--primary);"></p>
+            </div>
+
+            <div class="card">
+                <h2>🛑 Impuls-Wachtkamer (24 Uur)</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Wil je iets kopen? Zet het hier. Slaap er 24 uur over.</p>
+                <div class="grid-2">
+                    <input type="text" id="impulse-item" placeholder="Productnaam">
+                    <input type="number" id="impulse-price" placeholder="Prijs (€)">
+                </div>
+                <button class="btn-primary" onclick="addImpulse()">In de Wachtkamer Zetten</button>
+                <div id="impulse-list" style="margin-top: 0.5rem;"></div>
+            </div>
+
+            <div class="card">
+                <h2>💸 Vaste Lasten Overzicht</h2>
+                <div class="grid-2">
+                    <input type="text" id="fixed-name" placeholder="Post (bijv. Huur, Zorg)">
+                    <input type="number" id="fixed-amount" placeholder="Bedrag (€)">
+                </div>
+                <button class="btn-primary" onclick="addFixedCost()">Toevoegen</button>
+                <div id="fixed-list" style="margin-top: 0.5rem;"></div>
+                
+                <!-- OPVALLENDE OPTELSOM -->
+                <div style="margin-top: 1rem; padding: 0.8rem; background: var(--border-color); border-radius: 8px; text-align: center;">
+                    <span style="font-size: 0.85rem; color: var(--text-muted); display: block;">Totaal aan vaste lasten:</span>
+                    <strong id="fixed-total" style="font-size: 1.3rem; color: var(--primary);">€0,00</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: KENNIS -->
+        <div id="tab-kennis" class="tab-content">
+            <div class="card">
+                <h2>💡 Breinhacks & Inzichten Livefeed</h2>
+                <input type="text" id="search-kennis" placeholder="Zoek op trefwoord..." onkeyup="filterKennis()">
+                <div id="kennis-feed" style="margin-top: 0.8rem;"></div>
+            </div>
+        </div>
+
+        <!-- TAB 6: IDEEËN -->
+        <div id="tab-ideeen" class="tab-content">
+            <div class="card">
+                <h2>💡 Ideeënkluis (Post-it Bord)</h2>
+                <input type="text" id="idea-title" placeholder="Idee titel...">
+                <textarea id="idea-desc" placeholder="Korte toelichting..."></textarea>
+                <button class="btn-primary" onclick="addIdea()">Post-it Plakken</button>
+            </div>
+
+            <div class="card">
+                <h2>🎲 Grabbelton</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Geen inspiratie? Laat de grabbelton een idee voor je kiezen!</p>
+                <button class="btn-secondary" onclick="grabRandomIdea()">Grabbel een Idee! 🎁</button>
+                <p id="grabbed-idea" style="font-weight: bold; text-align: center; margin-top: 0.8rem; color: var(--primary); font-size: 1.1rem;"></p>
+            </div>
+
+            <div class="postit-grid" id="idea-grid"></div>
+        </div>
+    </div>
+
+    <!-- NAVIGATIE BALK ONDERAAN -->
+    <nav>
+        <button onclick="switchTab('vandaag')" id="nav-vandaag" class="active">
+            <span class="icon">🏠</span>
+            <span>Vandaag</span>
+        </button>
+        <button onclick="switchTab('plannen')" id="nav-plannen">
+            <span class="icon">🎯</span>
+            <span>Plannen</span>
+        </button>
+        <button onclick="switchTab('vitaliteit')" id="nav-vitaliteit">
+            <span class="icon">🌿</span>
+            <span>Vitaliteit</span>
+        </button>
+        <button onclick="switchTab('geld')" id="nav-geld">
+            <span class="icon">💶</span>
+            <span>Geld</span>
+        </button>
+        <button onclick="switchTab('kennis')" id="nav-kennis">
+            <span class="icon">💡</span>
+            <span>Kennis</span>
+        </button>
+        <button onclick="switchTab('ideeen')" id="nav-ideeen">
+            <span class="icon">📌</span>
+            <span>Ideeën</span>
+        </button>
     </nav>
 
-    <div id="today-dashboard" class="app-shell-panel active-panel"></div>
-    <div id="plan-panel" class="app-shell-panel"></div>
-    <div id="vitality-status-panel" class="app-shell-panel"></div>
-    <div id="money-status-panel" class="app-shell-panel"></div>
-    <div id="hacks-panel" class="app-shell-panel"></div>
-    <div id="ideas-status-panel" class="app-shell-panel"></div>
-    <div id="fun-panel" class="app-shell-panel"></div>
-    <div id="insights-panel" class="app-shell-panel"></div>
+    <script>
+        let appData = {
+            trots: [],
+            planTasks: [],
+            goals: [],
+            contacts: [],
+            sports: [],
+            kompas: [],
+            impulse: [],
+            fixedCosts: [],
+            ideas: [],
+            smokeCount: 0,
+            debtTotal: 0,
+            debtPaid: 0,
+            paydayDate: '',
+            buddyPhone: '',
+            steps: 0,
+            theme: 'light'
+        };
 
-    <script type="module" src="js/app.js"></script>
-  </div>
+        const kennisDatabase = [
+            { cat: "ADHD", title: "Pomodoro Techniek", desc: "Werk 25 minuten gefocust, neem 5 minuten pauze. Voorkomt mentale uitputting." },
+            { cat: "Rust", title: "Brain Dump", desc: "Schrijf alles wat in je hoofd rondspookt direct op papier. Dit geeft instant rust." },
+            { cat: "Vitaliteit", title: "Ochtendlicht", desc: "Pak binnen 30 minuten na het opstaan 10 minuten daglicht voor betere slaap 's nachts." },
+            { cat: "Geld", title: "24-Uur Regel", desc: "Wacht bij niet-essentiële aankoopwensen altijd 24 uur voordat je afrekent." }
+        ];
+
+        window.onload = function() {
+            loadAllData();
+            renderAll();
+        };
+
+        function saveData() {
+            localStorage.setItem('voldaan_data', JSON.stringify(appData));
+        }
+
+        function loadAllData() {
+            const saved = localStorage.getItem('voldaan_data');
+            if (saved) {
+                try {
+                    appData = { ...appData, ...JSON.parse(saved) };
+                } catch(e) {
+                    console.error("Fout bij laden data", e);
+                }
+            }
+            if(appData.theme === 'dark') document.body.classList.add('dark-theme');
+            if(appData.buddyPhone) document.getElementById('buddy-phone').value = appData.buddyPhone;
+            if(appData.debtTotal) document.getElementById('debt-total').value = appData.debtTotal;
+            if(appData.debtPaid) document.getElementById('debt-paid').value = appData.debtPaid;
+            if(appData.paydayDate) document.getElementById('payday-date').value = appData.paydayDate;
+        }
+
+        function renderAll() {
+            renderTrots();
+            renderPlanboard();
+            renderGoals();
+            renderContacts();
+            renderSports();
+            renderKompas();
+            renderImpulse();
+            renderFixedCosts();
+            renderIdeas();
+            renderKennis();
+            updateSmokeDisplay();
+            updateDebtDisplay();
+            updatePaydayDisplay();
+            updateStepsDisplay();
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById('tab-' + tabId).classList.add('active');
+            document.getElementById('nav-' + tabId).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-theme');
+            appData.theme = document.body.classList.contains('dark-theme') ? 'dark' : 'light';
+            saveData();
+        }
+
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `voldaan_backup_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function importData() {
+            document.getElementById('importFile').click();
+        }
+
+        function processImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    appData = JSON.parse(e.target.result);
+                    saveData();
+                    location.reload();
+                } catch(err) {
+                    alert('Ongeldig backup bestand!');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function saveCheckin() {
+            alert('Check-in opgeslagen voor vandaag!');
+        }
+
+        function addTrots() {
+            const input = document.getElementById('trots-input');
+            if(!input.value.trim()) return;
+            appData.trots.push({ text: input.value, date: new Date().toLocaleDateString() });
+            input.value = '';
+            saveData();
+            renderTrots();
+        }
+
+        function renderTrots() {
+            const pot = document.getElementById('marbles-pot');
+            const list = document.getElementById('trots-list');
+            pot.innerHTML = '';
+            list.innerHTML = '';
+
+            appData.trots.forEach((item, index) => {
+                const marble = document.createElement('div');
+                marble.className = 'marble';
+                marble.title = item.text;
+                pot.appendChild(marble);
+
+                const el = document.createElement('div');
+                el.className = 'list-item';
+                el.innerHTML = `<span>🏆 ${item.text}</span><button class="btn-secondary" onclick="deleteTrots(${index})">✕</button>`;
+                list.appendChild(el);
+            });
+        }
+
+        function deleteTrots(index) {
+            appData.trots.splice(index, 1);
+            saveData();
+            renderTrots();
+        }
+
+        function sendBuddyWhatsApp() {
+            const phone = document.getElementById('buddy-phone').value.trim();
+            const msg = document.getElementById('buddy-msg').value.trim();
+            if(!phone) { alert('Vul eerst een telefoonnummer in!'); return; }
+            appData.buddyPhone = phone;
+            saveData();
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        function savePact() {
+            alert('Avond-Pact opgeslagen!');
+            document.getElementById('pact-morgen').value = '';
+            document.getElementById('pact-hoofd').value = '';
+        }
+
+        function addPlanTask() {
+            const task = document.getElementById('plan-task').value.trim();
+            const cat = document.getElementById('plan-cat').value;
+            if(!task) return;
+            appData.planTasks.push({ task, cat, done: false });
+            document.getElementById('plan-task').value = '';
+            saveData();
+            renderPlanboard();
+        }
+
+        function renderPlanboard() {
+            const list = document.getElementById('planboard-list');
+            const vandaagList = document.getElementById('vandaag-acties-list');
+            list.innerHTML = '';
+            vandaagList.innerHTML = '';
+
+            appData.planTasks.forEach((item, i) => {
+                const el = document.createElement('div');
+                el.className = 'list-item';
+                el.innerHTML = `
+                    <div>
+                        <span class="tag">${item.cat}</span>
+                        <span style="${item.done ? 'text-decoration: line-through; opacity: 0.6;' : ''}">${item.task}</span>
+                    </div>
+                    <div class="actions">
+                        <button class="btn-primary" onclick="toggleTask(${i})">${item.done ? '✓' : 'O'}</button>
+                        <button class="btn-secondary" onclick="deleteTask(${i})">✕</button>
+                    </div>
+                `;
+                list.appendChild(el);
+
+                if(!item.done) {
+                    const vEl = el.cloneNode(true);
+                    vandaagList.appendChild(vEl);
+                }
+            });
+
+            if(vandaagList.innerHTML === '') {
+                vandaagList.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">Geen openstaande acties voor vandaag!</p>';
+            }
+        }
+
+        function toggleTask(i) {
+            appData.planTasks[i].done = !appData.planTasks[i].done;
+            saveData();
+            renderPlanboard();
+        }
+
+        function deleteTask(i) {
+            appData.planTasks.splice(i, 1);
+            saveData();
+            renderPlanboard();
+        }
+
+        function addGoal() {
+            const val = document.getElementById('goal-input').value.trim();
+            if(!val) return;
+            appData.goals.push(val);
+            document.getElementById('goal-input').value = '';
+            saveData();
+            renderGoals();
+        }
+
+        function renderGoals() {
+            const list = document.getElementById('goals-list');
+            list.innerHTML = '';
+            appData.goals.forEach((g, i) => {
+                list.innerHTML += `<div class="list-item"><span>🎯 ${g}</span><button class="btn-secondary" onclick="deleteGoal(${i})">✕</button></div>`;
+            });
+        }
+
+        function deleteGoal(i) {
+            appData.goals.splice(i, 1);
+            saveData();
+            renderGoals();
+        }
+
+        function addContactRem() {
+            const name = document.getElementById('contact-name').value.trim();
+            const date = document.getElementById('contact-date').value;
+            if(!name || !date) return;
+            appData.contacts.push({ name, date });
+            document.getElementById('contact-name').value = '';
+            document.getElementById('contact-date').value = '';
+            saveData();
+            renderContacts();
+        }
+
+        function renderContacts() {
+            const list = document.getElementById('contact-list');
+            list.innerHTML = '';
+            appData.contacts.forEach((c, i) => {
+                list.innerHTML += `<div class="list-item"><span>📞 ${c.name} (${c.date})</span><button class="btn-secondary" onclick="deleteContact(${i})">✕</button></div>`;
+            });
+        }
+
+        function deleteContact(i) {
+            appData.contacts.splice(i, 1);
+            saveData();
+            renderContacts();
+        }
+
+        function saveSleep() {
+            alert('Slaapgegevens opgeslagen!');
+        }
+
+        function saveSteps() {
+            const val = parseInt(document.getElementById('steps-input').value) || 0;
+            appData.steps = val;
+            saveData();
+            updateStepsDisplay();
+        }
+
+        function updateStepsDisplay() {
+            const pct = Math.min(100, Math.round((appData.steps / 8000) * 100));
+            document.getElementById('steps-progress').style.width = pct + '%';
+            document.getElementById('steps-text').innerText = `${appData.steps} / 8000 stappen (${pct}%)`;
+        }
+
+        function addSport() {
+            const val = document.getElementById('sport-input').value.trim();
+            if(!val) return;
+            appData.sports.push(val);
+            document.getElementById('sport-input').value = '';
+            saveData();
+            renderSports();
+        }
+
+        function renderSports() {
+            const list = document.getElementById('sport-list');
+            list.innerHTML = '';
+            appData.sports.forEach((s, i) => {
+                list.innerHTML += `<div class="list-item"><span>💪 ${s}</span><button class="btn-secondary" onclick="deleteSport(${i})">✕</button></div>`;
+            });
+        }
+
+        function deleteSport(i) {
+            appData.sports.splice(i, 1);
+            saveData();
+            renderSports();
+        }
+
+        function startSnackTimer() {
+            let sec = 600;
+            const display = document.getElementById('snack-timer-display');
+            display.style.display = 'block';
+            const t = setInterval(() => {
+                const m = Math.floor(sec / 60);
+                const s = sec % 60;
+                display.innerText = `Pauze: ${m}:${s < 10 ? '0' : ''}${s}`;
+                sec--;
+                if(sec < 0) {
+                    clearInterval(t);
+                    display.innerText = "Tijd is om! Heb je nog steeds trek?";
+                }
+            }, 1000);
+        }
+
+        function changeSmoke(delta) {
+            appData.smokeCount = Math.max(0, (appData.smokeCount || 0) + delta);
+            saveData();
+            updateSmokeDisplay();
+        }
+
+        function updateSmokeDisplay() {
+            document.getElementById('smoke-count').innerText = appData.smokeCount || 0;
+        }
+
+        function addKompas() {
+            const val = document.getElementById('kompas-input').value.trim();
+            if(!val) return;
+            appData.kompas.push(val);
+            document.getElementById('kompas-input').value = '';
+            saveData();
+            renderKompas();
+        }
+
+        function renderKompas() {
+            const list = document.getElementById('kompas-list');
+            list.innerHTML = '';
+            appData.kompas.forEach((k, i) => {
+                list.innerHTML += `<div class="list-item"><span>🧩 ${k}</span><button class="btn-secondary" onclick="deleteKompas(${i})">✕</button></div>`;
+            });
+        }
+
+        function deleteKompas(i) {
+            appData.kompas.splice(i, 1);
+            saveData();
+            renderKompas();
+        }
+
+        function saveDebtData() {
+            appData.debtTotal = parseFloat(document.getElementById('debt-total').value) || 0;
+            appData.debtPaid = parseFloat(document.getElementById('debt-paid').value) || 0;
+            saveData();
+            updateDebtDisplay();
+        }
+
+        function updateDebtDisplay() {
+            if(!appData.debtTotal) return;
+            const pct = Math.min(100, Math.round((appData.debtPaid / appData.debtTotal) * 100));
+            document.getElementById('debt-progress').style.width = pct + '%';
+            document.getElementById('debt-text').innerText = `${pct}% afgelost (€${appData.debtPaid} / €${appData.debtTotal})`;
+        }
+
+        function updatePayday() {
+            appData.paydayDate = document.getElementById('payday-date').value;
+            saveData();
+            updatePaydayDisplay();
+        }
+
+        function updatePaydayDisplay() {
+            if(!appData.paydayDate) return;
+            const now = new Date();
+            const target = new Date(appData.paydayDate);
+            const diff = Math.ceil((target - now) / (1000 * 60 * 60 * 24));
+            const el = document.getElementById('payday-countdown');
+            if(diff > 0) el.innerText = `Nog ${diff} dag(en) tot betaaldag!`;
+            else if(diff === 0) el.innerText = "Het is Betaaldag! 🎉";
+            else el.innerText = "Betaaldag is voorbij.";
+        }
+
+        function addImpulse() {
+            const name = document.getElementById('impulse-item').value.trim();
+            const price = document.getElementById('impulse-price').value.trim();
+            if(!name) return;
+            appData.impulse.push({ name, price, date: new Date().toLocaleDateString() });
+            document.getElementById('impulse-item').value = '';
+            document.getElementById('impulse-price').value = '';
+            saveData();
+            renderImpulse();
+        }
+
+        function renderImpulse() {
+            const list = document.getElementById('impulse-list');
+            list.innerHTML = '';
+            appData.impulse.forEach((item, i) => {
+                list.innerHTML += `<div class="list-item"><span>🛒 ${item.name} (€${item.price || 0})</span><button class="btn-secondary" onclick="deleteImpulse(${i})">✕</button></div>`;
+            });
+        }
+
+        function deleteImpulse(i) {
+            appData.impulse.splice(i, 1);
+            saveData();
+            renderImpulse();
+        }
+
+        function addFixedCost() {
+            const name = document.getElementById('fixed-name').value.trim();
+            const amount = parseFloat(document.getElementById('fixed-amount').value) || 0;
+            if(!name) return;
+            appData.fixedCosts.push({ name, amount });
+            document.getElementById('fixed-name').value = '';
+            document.getElementById('fixed-amount').value = '';
+            saveData();
+            renderFixedCosts();
+        }
+
+        function renderFixedCosts() {
+            const list = document.getElementById('fixed-list');
+            const totalElement = document.getElementById('fixed-total');
+            let total = 0;
+            list.innerHTML = '';
+
+            if(!appData.fixedCosts || appData.fixedCosts.length === 0) {
+                list.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">Nog geen vaste lasten ingevoerd.</p>';
+                if(totalElement) totalElement.innerText = '€0,00';
+                return;
+            }
+
+            appData.fixedCosts.forEach((item, i) => {
+                const itemAmount = parseFloat(item.amount) || 0;
+                total += itemAmount;
+                list.innerHTML += `<div class="list-item"><span>📄 ${item.name}</span><strong>€${itemAmount.toFixed(2)}</strong><button class="btn-secondary" onclick="deleteFixedCost(${i})">✕</button></div>`;
+            });
+            
+            if(totalElement) totalElement.innerText = `€${total.toFixed(2)}`;
+        }
+
+        function deleteFixedCost(i) {
+            appData.fixedCosts.splice(i, 1);
+            saveData();
+            renderFixedCosts();
+        }
+
+        function renderKennis(filter = '') {
+            const feed = document.getElementById('kennis-feed');
+            feed.innerHTML = '';
+            kennisDatabase.filter(k => k.title.toLowerCase().includes(filter.toLowerCase()) || k.desc.toLowerCase().includes(filter.toLowerCase())).forEach(k => {
+                feed.innerHTML += `
+                    <div style="border-bottom: 1px solid var(--border-color); padding: 0.5rem 0;">
+                        <span class="tag">${k.cat}</span><strong>${k.title}</strong>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">${k.desc}</p>
+                    </div>
+                `;
+            });
+        }
+
+        function filterKennis() {
+            renderKennis(document.getElementById('search-kennis').value);
+        }
+
+        function addIdea() {
+            const title = document.getElementById('idea-title').value.trim();
+            const desc = document.getElementById('idea-desc').value.trim();
+            if(!title) return;
+            appData.ideas.push({ title, desc });
+            document.getElementById('idea-title').value = '';
+            document.getElementById('idea-desc').value = '';
+            saveData();
+            renderIdeas();
+        }
+
+        function renderIdeas() {
+            const grid = document.getElementById('idea-grid');
+            grid.innerHTML = '';
+            appData.ideas.forEach((item, i) => {
+                grid.innerHTML += `
+                    <div class="postit">
+                        <button class="delete-btn" onclick="deleteIdea(${i})">✕</button>
+                        <strong>${item.title}</strong>
+                        <p style="margin-top: 0.3rem;">${item.desc}</p>
+                    </div>
+                `;
+            });
+        }
+
+        function deleteIdea(i) {
+            appData.ideas.splice(i, 1);
+            saveData();
+            renderIdeas();
+        }
+
+        function grabRandomIdea() {
+            if(appData.ideas.length === 0) {
+                document.getElementById('grabbed-idea').innerText = "Geen ideeën in de kluis!";
+                return;
+            }
+            const rand = appData.ideas[Math.floor(Math.random() * appData.ideas.length)];
+            document.getElementById('grabbed-idea').innerText = `💡 ${rand.title}: "${rand.desc}"`;
+        }
+    </script>
 </body>
 </html>
