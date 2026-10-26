@@ -3515,58 +3515,76 @@
   renderMoneyView();
 }
 
-function editFixedBill(id) {
-  let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
-  const b = bills.find(item => item.id === id);
-  if (!b) return;
-
-  document.getElementById('bill-edit-id').value = b.id;
-  document.getElementById('bill-name-input').value = b.name;
-  document.getElementById('bill-type-select').value = b.type || 'Automatische Incasso';
-  document.getElementById('bill-amount-input').value = b.amount || '';
-  if (document.getElementById('bill-date-input')) document.getElementById('bill-date-input').value = b.date || '';
-  if (document.getElementById('bill-repeat-select')) document.getElementById('bill-repeat-select').value = b.repeat || 'NONE';
-  
-  document.getElementById('bill-form-title').innerText = '✏️ Uitgave Bewerken';
-  document.getElementById('add-bill-form').classList.remove('hidden');
-}
-
-function saveFixedBill() {
-  const editId = document.getElementById('bill-edit-id').value;
-  const name = document.getElementById('bill-name-input').value.trim();
-  const amount = parseFloat(document.getElementById('bill-amount-input').value) || 0;
-  const type = document.getElementById('bill-type-select').value;
-  const dateVal = document.getElementById('bill-date-input').value || new Date().toISOString().slice(0,10);
-  const repeat = document.getElementById('bill-repeat-select').value;
-
-  if (!name) return;
-
-  let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
-
-  if (editId) {
-    const idx = bills.findIndex(b => b.id === parseInt(editId));
-    if (idx !== -1) {
-      bills[idx] = { ...bills[idx], name, amount, type, date: dateVal, repeat };
+function handleBillFilterChange() {
+      const mode = document.getElementById('bills-filter-period').value;
+      document.getElementById('bills-filter-date').classList.toggle('hidden', mode !== 'SPECIFIC_WEEK');
+      document.getElementById('bills-filter-month').classList.toggle('hidden', mode !== 'SPECIFIC_MONTH');
+      document.getElementById('bills-filter-year').classList.toggle('hidden', mode !== 'SPECIFIC_YEAR');
+      renderMoneyView();
     }
-  } else {
-    bills.push({
-      id: Date.now(),
-      name,
-      amount,
-      type,
-      date: dateVal,
-      repeat,
-      paid: false,
-      archived: false,
-      created: getNowDateTimeStr()
-    });
-  }
 
-  localStorage.setItem('voldaan_fixed_bills', JSON.stringify(bills));
-  document.getElementById('add-bill-form').classList.add('hidden');
-  renderMoneyView();
-}
-    
+    function toggleFixedBill(id) {
+      let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
+      const idx = bills.findIndex(b => b.id === id);
+      if (idx !== -1) {
+        bills[idx].paid = !bills[idx].paid; // Vinkt af of aan
+        localStorage.setItem('voldaan_fixed_bills', JSON.stringify(bills));
+        renderMoneyView(); // Herbereken het totaal direct
+      }
+    }
+
+    function editFixedBill(id) {
+      let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
+      const b = bills.find(item => item.id === id);
+      if (!b) return;
+
+      document.getElementById('bill-edit-id').value = b.id;
+      document.getElementById('bill-name-input').value = b.name;
+      document.getElementById('bill-type-select').value = b.type || 'Automatische Incasso';
+      document.getElementById('bill-amount-input').value = b.amount || '';
+      if (document.getElementById('bill-date-input')) document.getElementById('bill-date-input').value = b.date || '';
+      if (document.getElementById('bill-repeat-select')) document.getElementById('bill-repeat-select').value = b.repeat || 'NONE';
+      
+      document.getElementById('bill-form-title').innerText = '✏️ Verwachte Uitgave Bewerken';
+      document.getElementById('add-bill-form').classList.remove('hidden');
+    }
+
+    function saveFixedBill() {
+      const editId = document.getElementById('bill-edit-id').value;
+      const name = document.getElementById('bill-name-input').value.trim();
+      const amount = parseFloat(document.getElementById('bill-amount-input').value) || 0;
+      const type = document.getElementById('bill-type-select').value;
+      const dateVal = document.getElementById('bill-date-input').value || new Date().toISOString().slice(0,10);
+      const repeat = document.getElementById('bill-repeat-select').value;
+
+      if (!name) return;
+
+      let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
+
+      if (editId) {
+        const idx = bills.findIndex(b => b.id === parseInt(editId));
+        if (idx !== -1) {
+          bills[idx] = { ...bills[idx], name, amount, type, date: dateVal, repeat };
+        }
+      } else {
+        bills.push({
+          id: Date.now(),
+          name,
+          amount,
+          type,
+          date: dateVal,
+          repeat,
+          paid: false,
+          archived: false,
+          created: getNowDateTimeStr()
+        });
+      }
+
+      localStorage.setItem('voldaan_fixed_bills', JSON.stringify(bills));
+      document.getElementById('add-bill-form').classList.add('hidden');
+      renderMoneyView();
+    }
+        
     function archiveFixedBill(id) {
       let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
       const idx = bills.findIndex(b => b.id === id);
@@ -3585,7 +3603,7 @@ function saveFixedBill() {
 
       const archived = bills.filter(b => b.archived);
       if (archived.length === 0) {
-        container.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted);">Geen gearchiveerde vaste lasten.</span>';
+        container.innerHTML = '<span style="font-size:0.85rem; color:var(--text-muted);">Geen gearchiveerde uitgaven.</span>';
         return;
       }
 
