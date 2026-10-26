@@ -15,7 +15,7 @@ window.VoldaanApp = {
   setTheme,
 };
 
-function getTabList() {
+function getTabButtons() {
   return Array.from(document.querySelectorAll('.tab-btn'));
 }
 
@@ -33,7 +33,7 @@ function getModulePanelMap() {
 }
 
 function syncTabUi(activeTab = 'today') {
-  const tabs = getTabList();
+  const tabs = getTabButtons();
 
   tabs.forEach((tab) => {
     const tabName = tab.id.replace('tab-', '');
@@ -43,6 +43,7 @@ function syncTabUi(activeTab = 'today') {
   });
 
   const panels = getModulePanelMap();
+
   Object.entries(panels).forEach(([name, panel]) => {
     if (!panel) return;
     const isVisible = name === activeTab;
