@@ -68,6 +68,15 @@ export function addAnchor({ name, description, targetAmount, currentAmount, inte
   return money.anchors;
 }
 
+function escapeHtml(value = '') {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 export function renderMoneyState() {
   const state = window.VoldaanApp?.state;
   if (!state) return;
@@ -82,52 +91,57 @@ export function renderMoneyState() {
     const root = document.querySelector('.container') || document.body;
     container = document.createElement('section');
     container.id = 'money-status-panel';
-    container.style.background = 'var(--card-bg)';
-    container.style.border = '1.5px solid var(--input-border)';
-    container.style.borderRadius = '16px';
-    container.style.padding = '20px';
-    container.style.boxShadow = 'var(--shadow)';
-    container.style.marginTop = '12px';
+    container.className = 'app-shell-panel';
     root.appendChild(container);
   }
 
   const billsMarkup = money.bills.length
     ? money.bills.slice(-4).map((bill) => `
-      <li style="margin-top:8px; list-style:none; padding:8px 10px; border-radius:10px; background:rgba(90,103,216,0.06); border:1px solid rgba(90,103,216,0.1);">
-        <strong>${bill.name}</strong><br>
-        <span style="color:var(--text-muted); font-size:0.8rem;">€${Number(bill.amount).toFixed(2)} · elke ${bill.day}e</span>
-      </li>
-    `).join('')
+        <li style="margin-top:8px; list-style:none; padding:10px 12px; border-radius:10px; background:rgba(90,103,216,0.06); border:1px solid rgba(90,103,216,0.1);">
+          <div style="font-weight:600;">${escapeHtml(bill.name)}</div>
+          <div style="font-size:0.78rem; color:var(--text-muted); margin-top:4px;">€${Number(bill.amount).toFixed(2)} · elke ${bill.day}e</div>
+        </li>
+      `).join('')
     : '<li style="list-style:none; color:var(--text-muted);">Geen vaste lasten toegevoegd.</li>';
 
   const anchorsMarkup = money.anchors.length
     ? money.anchors.slice(-4).map((anchor) => `
-      <li style="margin-top:8px; list-style:none; padding:8px 10px; border-radius:10px; background:rgba(56,161,105,0.06); border:1px solid rgba(56,161,105,0.1);">
-        <strong>${anchor.name}</strong><br>
-        <span style="color:var(--text-muted); font-size:0.8rem;">€${Number(anchor.currentAmount).toFixed(2)} / €${Number(anchor.targetAmount).toFixed(2)}</span>
-      </li>
-    `).join('')
+        <li style="margin-top:8px; list-style:none; padding:10px 12px; border-radius:10px; background:rgba(56,161,105,0.06); border:1px solid rgba(56,161,105,0.1);">
+          <div style="font-weight:600;">${escapeHtml(anchor.name)}</div>
+          <div style="font-size:0.78rem; color:var(--text-muted); margin-top:4px;">€${Number(anchor.currentAmount).toFixed(2)} / €${Number(anchor.targetAmount).toFixed(2)}</div>
+        </li>
+      `).join('')
     : '<li style="list-style:none; color:var(--text-muted);">Geen spaardoelen toegevoegd.</li>';
 
   container.innerHTML = `
-    <h2 style="font-size:1.08rem; margin:0 0 12px; color:var(--text-main);">💶 Geld</h2>
-
-    <div style="display:grid; gap:12px; font-size:0.9rem; line-height:1.5;">
-      <div style="background:linear-gradient(135deg, rgba(90,103,216,0.12), rgba(90,103,216,0.03)); border:1.5px solid rgba(90,103,216,0.18); border-radius:14px; padding:16px;">
-        <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin-bottom:4px;">Vaste lasten totaal</div>
-        <div style="font-size:1.8rem; font-weight:700; color:var(--accent-primary);">€${Number(totalMonthly).toFixed(2)}</div>
-        <div style="color:var(--text-muted); font-size:0.8rem; margin-top:4px;">verwacht per maand</div>
+    <div style="display:grid; gap:12px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+        <div style="font-size:1.08rem; font-weight:700; color:var(--text-main);">💶 Geld</div>
+        <div style="font-size:0.76rem; color:var(--text-muted);">Stabiliteit, niet druk</div>
       </div>
 
-      <div style="background:var(--item-bg); border:1.5px solid var(--input-border); border-radius:12px; padding:12px;">
-        <strong>Vaste lasten</strong>
-        <ul style="margin:8px 0 0 0; padding:0;">${billsMarkup}</ul>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px;">
+        <div style="background:linear-gradient(135deg, rgba(90,103,216,0.12), rgba(90,103,216,0.03)); border:1.5px solid rgba(90,103,216,0.18); border-radius:14px; padding:16px;">
+          <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin-bottom:6px;">Vaste lasten</div>
+          <div style="font-size:1.6rem; font-weight:700; color:var(--accent-primary);">€${Number(totalMonthly).toFixed(2)}</div>
+        </div>
+
+        <div style="background:linear-gradient(135deg, rgba(56,189,248,0.12), rgba(56,189,248,0.04)); border:1.5px solid rgba(56,189,248,0.18); border-radius:14px; padding:16px;">
+          <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin-bottom:6px;">Spaardoel</div>
+          <div style="font-size:1.6rem; font-weight:700; color:var(--text-main);">€${Number(totalAnchorGoal).toFixed(2)}</div>
+        </div>
       </div>
 
-      <div style="background:var(--item-bg); border:1.5px solid var(--input-border); border-radius:12px; padding:12px;">
-        <strong>Spaardoelen</strong>
-        <div style="margin-top:8px; color:var(--text-muted); font-size:0.8rem;">Totaal doel: €${Number(totalAnchorGoal).toFixed(2)}</div>
-        <ul style="margin:8px 0 0 0; padding:0;">${anchorsMarkup}</ul>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px;">
+        <div style="background:var(--card-bg); border:1.5px solid var(--input-border); border-radius:14px; padding:16px; box-shadow:var(--shadow);">
+          <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin-bottom:8px;">Vaste lasten</div>
+          <ul style="padding:0; margin:0;">${billsMarkup}</ul>
+        </div>
+
+        <div style="background:var(--card-bg); border:1.5px solid var(--input-border); border-radius:14px; padding:16px; box-shadow:var(--shadow);">
+          <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); margin-bottom:8px;">Spaardoelen</div>
+          <ul style="padding:0; margin:0;">${anchorsMarkup}</ul>
+        </div>
       </div>
     </div>
   `;
@@ -160,12 +174,7 @@ export function initMoneyModule() {
 
       if (!name || !amount || !day) return;
 
-      addBill({
-        name,
-        type: billType.value,
-        amount,
-        day,
-      });
+      addBill({ name, type: billType.value, amount, day });
 
       billName.value = '';
       billType.value = 'Automatische Incasso';
