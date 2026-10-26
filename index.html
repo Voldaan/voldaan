@@ -126,11 +126,11 @@
     }
     .energy-btn.selected { border-color: var(--accent-primary); background-color: rgba(90, 103, 216, 0.15); font-weight: 600; }
 
-    textarea, input[type="text"], input[type="number"], input[type="date"], select {
+    textarea, input[type="text"], input[type="number"], input[type="date"], input[type="month"], select {
       width: 100%; background: var(--input-bg); color: var(--text-main); border: 1.5px solid var(--input-border);
       border-radius: 10px; padding: 10px 12px; font-size: 0.9rem; margin-bottom: 10px; outline: none;
     }
-    textarea:focus, input[type="text"]:focus, select:focus, input[type="date"]:focus { border-color: var(--accent-primary); }
+    textarea:focus, input[type="text"]:focus, select:focus, input[type="date"]:focus, input[type="month"]:focus { border-color: var(--accent-primary); }
 
     .item-list { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
     .item-card {
@@ -188,7 +188,7 @@
     .progress-bar-fill { background: linear-gradient(90deg, #38A169 0%, #319795 100%); height: 100%; transition: width 0.4s ease; }
 
     .hidden { display: none !important; }
-    /* 🔮 3D GLIMMENDE KNIKKERS */
+    
     .marble-3d {
       width: 26px;
       height: 26px;
@@ -245,9 +245,8 @@
       <button class="tab-btn" onclick="switchView('insights')" id="tab-insights">📊 Inzichten</button>
     </nav>
 
-    <!-- ==================== PAGINA 1: VANDAAG ==================== -->
+    <!-- PAGINA 1: VANDAAG -->
     <div id="view-today">
-
       <div class="card" id="start-card" style="margin-bottom: 18px;">
         <h2>
           <span id="mood-card-title">☀️ Mijn Dag Begint Nu</span>
@@ -307,19 +306,14 @@
           </select>
         </div>
 
-        <!-- GLAZEN POT -->
-<div style="display: flex; justify-content: center; margin: 1.2rem 0;">
-  <div style="position: relative; width: 180px; height: 210px;">
-    <!-- Deksel -->
-    <div style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 110px; height: 16px; background: linear-gradient(to right, #b2bec3, #dfe6e9, #b2bec3); border-radius: 8px 8px 3px 3px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 3;"></div>
-    
-    <!-- Glazen Buik -->
-    <div id="marble-jar-visual" style="position: absolute; top: 14px; width: 100%; height: 195px; background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(2px); border: 3px solid rgba(255, 255, 255, 0.6); border-radius: 20px 20px 45px 45px; box-shadow: inset 0 0 15px rgba(255,255,255,0.4), 0 8px 25px rgba(0,0,0,0.08); overflow-y: auto; display: flex; flex-wrap: wrap-reverse; align-content: flex-start; justify-content: center; gap: 6px; padding: 12px 14px 18px 14px;">
-      <!-- Glans op het glas -->
-      <div style="position: absolute; top: 10px; left: 12px; width: 12px; height: 140px; background: linear-gradient(to bottom, rgba(255,255,255,0.7), rgba(255,255,255,0.05)); border-radius: 6px; pointer-events: none; z-index: 2;"></div>
-    </div>
-  </div>
-</div>
+        <div style="display: flex; justify-content: center; margin: 1.2rem 0;">
+          <div style="position: relative; width: 180px; height: 210px;">
+            <div style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 110px; height: 16px; background: linear-gradient(to right, #b2bec3, #dfe6e9, #b2bec3); border-radius: 8px 8px 3px 3px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 3;"></div>
+            <div id="marble-jar-visual" style="position: absolute; top: 14px; width: 100%; height: 195px; background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(2px); border: 3px solid rgba(255, 255, 255, 0.6); border-radius: 20px 20px 45px 45px; box-shadow: inset 0 0 15px rgba(255,255,255,0.4), 0 8px 25px rgba(0,0,0,0.08); overflow-y: auto; display: flex; flex-wrap: wrap-reverse; align-content: flex-start; justify-content: center; gap: 6px; padding: 12px 14px 18px 14px;">
+              <div style="position: absolute; top: 10px; left: 12px; width: 12px; height: 140px; background: linear-gradient(to bottom, rgba(255,255,255,0.7), rgba(255,255,255,0.05)); border-radius: 6px; pointer-events: none; z-index: 2;"></div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="card" style="margin-bottom: 18px; border: 2px solid var(--accent-primary);">
@@ -409,12 +403,10 @@
           <input type="file" id="import-file-input" class="hidden" accept=".json" onchange="importBackupData(event)">
         </div>
       </div>
-
     </div>
 
-    <!-- ==================== PAGINA 2: PLANNEN & DOELEN ==================== -->
+    <!-- PAGINA 2: PLANNEN & DOELEN -->
     <div id="view-plan" class="hidden">
-      
       <div class="card" style="margin-bottom: 18px;">
         <h2>
           🌙 Het Avond-Pact
@@ -516,12 +508,10 @@
         <p class="subtitle">Geen schuldgevoel meer bij 'uit het oog, uit het hart'.</p>
         <div id="contacts-list" class="item-list"></div>
       </div>
-
     </div>
 
-    <!-- ==================== PAGINA 3: VITALITEIT ==================== -->
+    <!-- PAGINA 3: VITALITEIT -->
     <div id="view-vitality" class="hidden">
-
       <div class="card" style="margin-bottom: 18px;">
         <h2>🌙 Nachtrust & Herstel</h2>
         <p class="subtitle">Een goede dag begint bij een zachte nacht. Hoe voelt je herstel vanmorgen?</p>
@@ -631,18 +621,16 @@
           <div class="stat-box"><div class="stat-number" id="vitality-stat-balance">0</div><div class="stat-label">Balans Zeges 🍎</div></div>
         </div>
       </div>
-
     </div>
 
-    <!-- ==================== PAGINA 4: GELD-KOMPAS ==================== -->
+    <!-- PAGINA 4: GELD-KOMPAS -->
     <div id="view-money" class="hidden">
-      
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
         <span style="font-size: 0.85rem; color: var(--text-muted);">Houd rust & overzicht in je uitgaven</span>
         <button class="btn btn-secondary btn-small" onclick="openMoneyArchiveModal()">📜 Geld-Archief</button>
       </div>
 
-      <!-- SECTIE: RUIMTE-KOMPAS -->
+      <!-- RUIMTE-KOMPAS -->
       <div class="card" style="margin-bottom: 18px; border: 2px solid var(--accent-primary);">
         <h2>
           🌿 Het Ruimte-KomPAS
@@ -676,7 +664,7 @@
         </div>
       </div>
 
-      <!-- SECTIE: STUDIESCHULD KOMPAS (DIREKT ONDER RUIMTE-KOMPAS) -->
+      <!-- STUDIESCHULD KOMPAS -->
       <div class="card" style="margin-bottom: 18px; border: 1.5px solid #3182CE; background: linear-gradient(135deg, var(--card-bg) 0%, var(--soft-purple) 100%);">
         <h2>
           🎓 Studieschuld KomPAS
@@ -686,7 +674,7 @@
         <div id="study-debt-display-box" style="background: var(--card-bg); padding: 14px; border-radius: 12px; border: 1.5px solid var(--input-border);"></div>
       </div>
 
-      <!-- SECTIE: PAYDAY RADAR -->
+      <!-- PAYDAY RADAR -->
       <div class="card" style="margin-bottom: 18px; border: 1.5px solid #38A169; padding: 14px; background: linear-gradient(135deg, var(--card-bg) 0%, var(--soft-green) 100%);">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <div style="display: flex; align-items: center; gap: 8px;">
@@ -715,7 +703,7 @@
         <p id="money-tip-text" style="font-size: 0.88rem; line-height: 1.4;"></p>
       </div>
 
-      <!-- SECTIE: IMPULS WACHTKAMER -->
+      <!-- IMPULS WACHTKAMER -->
       <div class="card" style="margin-bottom: 18px;">
         <h2>🛑 Impuls-Wachtkamer</h2>
         <p class="subtitle">Zet aankoopwensen 24 uur in de wachtkamer.</p>
@@ -738,88 +726,84 @@
         <div id="impulse-list" class="item-list"></div>
       </div>
 
-      <!-- 🔮 VERWACHTE UITGAVEN KAART -->
-<div class="card" style="margin-bottom: 20px;">
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-    <h3 style="margin: 0;">🔮 Verwachte Uitgaven</h3>
-    <div style="display: flex; gap: 6px;">
-      <button class="btn btn-secondary btn-small" onclick="openBillArchiveModal()">📜 Archief</button>
-      <button class="btn btn-small" onclick="toggleAddBillForm()">+ Nieuw</button>
-    </div>
-  </div>
-  
-  <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; margin-bottom: 12px;">Overzicht van verwachte uitgaven in de gekozen periode.</p>
+      <!-- VERWACHTE UITGAVEN KAART -->
+      <div class="card" style="margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <h3 style="margin: 0;">🔮 Verwachte Uitgaven</h3>
+          <div style="display: flex; gap: 6px;">
+            <button class="btn btn-secondary btn-small" onclick="openBillArchiveModal()">📜 Archief</button>
+            <button class="btn btn-small" onclick="toggleAddBillForm()">+ Nieuw</button>
+          </div>
+        </div>
+        
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; margin-bottom: 12px;">Overzicht van verwachte uitgaven in de gekozen periode.</p>
 
-  <!-- FORMULIER VOOR NIEUWE/BEWERKTE UITGAVE -->
-  <div id="add-bill-form" class="hidden" style="background: var(--item-bg); padding: 14px; border-radius: 12px; margin-bottom: 14px; border: 1.5px solid var(--input-border);">
-    <strong style="display:block; font-size: 0.88rem; margin-bottom: 8px;" id="bill-form-title">Nieuwe Verwachte Uitgave Toevoegen</strong>
-    <input type="hidden" id="bill-edit-id" value="">
-    
-    <input type="text" id="bill-name-input" placeholder="Omschrijving (bijv. APK Keuring, Huur, Cadeau)..." style="margin-bottom: 8px; width: 100%;">
-    
-    <div style="display:flex; gap:8px;">
-      <input type="number" id="bill-amount-input" placeholder="Bedrag (€)" style="flex:1; margin-bottom: 8px;">
-      <select id="bill-type-select" style="margin-bottom: 8px; flex:1;">
-        <option value="Automatische Incasso">💳 Automatische Incasso</option>
-        <option value="Handmatige Overboeking">🏛️ Handmatige Overboeking</option>
-        <option value="Pin / Contant">💶 Pin / Contant</option>
-      </select>
-    </div>
+        <div id="add-bill-form" class="hidden" style="background: var(--item-bg); padding: 14px; border-radius: 12px; margin-bottom: 14px; border: 1.5px solid var(--input-border);">
+          <strong style="display:block; font-size: 0.88rem; margin-bottom: 8px;" id="bill-form-title">Nieuwe Verwachte Uitgave Toevoegen</strong>
+          <input type="hidden" id="bill-edit-id" value="">
+          
+          <input type="text" id="bill-name-input" placeholder="Omschrijving (bijv. APK Keuring, Huur, Cadeau)..." style="margin-bottom: 8px; width: 100%;">
+          
+          <div style="display:flex; gap:8px;">
+            <input type="number" id="bill-amount-input" placeholder="Bedrag (€)" style="flex:1; margin-bottom: 8px;">
+            <select id="bill-type-select" style="margin-bottom: 8px; flex:1;">
+              <option value="Automatische Incasso">💳 Automatische Incasso</option>
+              <option value="Handmatige Overboeking">🏛️ Handmatige Overboeking</option>
+              <option value="Pin / Contant">💶 Pin / Contant</option>
+            </select>
+          </div>
 
-    <div style="display:flex; gap:8px;">
-      <div style="flex:1;">
-        <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 2px;">Verwachte Datum:</label>
-        <input type="date" id="bill-date-input" style="margin-bottom:10px; width: 100%;">
+          <div style="display:flex; gap:8px;">
+            <div style="flex:1;">
+              <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 2px;">Verwachte Datum:</label>
+              <input type="date" id="bill-date-input" style="margin-bottom:10px; width: 100%;">
+            </div>
+            <div style="flex:1;">
+              <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 2px;">Herhaling:</label>
+              <select id="bill-repeat-select" style="margin-bottom:10px; width: 100%;">
+                <option value="NONE">❌ Eenmalig (Geen herhaling)</option>
+                <option value="WEEKLY">📅 Wekelijks</option>
+                <option value="MONTHLY">🗓️ Maandelijks</option>
+                <option value="YEARLY">🚀 Jaarlijks</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-small" onclick="saveFixedBill()">Opslaan</button>
+            <button class="btn btn-secondary btn-small" onclick="toggleAddBillForm()">Annuleren</button>
+          </div>
+        </div>
+
+        <div class="filter-bar" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; align-items: center;">
+          <select id="bills-filter-period" onchange="handleBillFilterChange()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 4px 8px;">
+            <option value="CURRENT_MONTH" selected>🗓️ Deze Maand (Standaard)</option>
+            <option value="SPECIFIC_WEEK">📆 Specifieke Week</option>
+            <option value="SPECIFIC_MONTH">📅 Specifieke Maand</option>
+            <option value="SPECIFIC_YEAR">🚀 Specifiek Jaar</option>
+            <option value="ALL">📂 Alle Verwachte Uitgaven</option>
+          </select>
+
+          <input type="date" id="bills-filter-date" onchange="renderMoneyView()" class="hidden" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 2px 6px;">
+          <input type="month" id="bills-filter-month" onchange="renderMoneyView()" class="hidden" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 2px 6px;">
+          <input type="number" id="bills-filter-year" placeholder="Jaar (2027)" onchange="renderMoneyView()" min="2024" max="2035" class="hidden" style="margin-bottom:0; width: 100px; font-size: 0.8rem; padding: 2px 6px;">
+
+          <select id="bills-filter-status" onchange="renderMoneyView()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 4px 8px;">
+            <option value="ALL">📂 Alles</option>
+            <option value="UNPAID">⚪ Nog te verwachten</option>
+            <option value="PAID">✅ Voldaan</option>
+          </select>
+        </div>
+
+        <div id="fixed-bills-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+
+        <div style="margin-top: 14px; padding: 12px; background: var(--item-bg); border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 0.88rem; font-weight: 600;">Totaal nog te verwachten uitgaven:</span>
+          <strong id="fixed-bills-total-display" style="font-size: 1.1rem; color: var(--accent-primary);">€0,00</strong>
+        </div>
       </div>
-      <div style="flex:1;">
-        <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 2px;">Herhaling:</label>
-        <select id="bill-repeat-select" style="margin-bottom:10px; width: 100%;">
-          <option value="NONE">❌ Eenmalig (Geen herhaling)</option>
-          <option value="WEEKLY">📅 Wekelijks</option>
-          <option value="MONTHLY">🗓️ Maandelijks</option>
-          <option value="YEARLY">🚀 Jaarlijks</option>
-        </select>
-      </div>
-    </div>
 
-    <div style="display:flex; gap:8px;">
-      <button class="btn btn-small" onclick="saveFixedBill()">Opslaan</button>
-      <button class="btn btn-secondary btn-small" onclick="toggleAddBillForm()">Annuleren</button>
-    </div>
-  </div>
-
-  <!-- FILTER BALK -->
-  <div class="filter-bar" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; align-items: center;">
-    <select id="bills-filter-period" onchange="handleBillFilterChange()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 4px 8px;">
-      <option value="CURRENT_MONTH" selected>🗓️ Deze Maand (Standaard)</option>
-      <option value="SPECIFIC_WEEK">📆 Specifieke Week</option>
-      <option value="SPECIFIC_MONTH">📅 Specifieke Maand</option>
-      <option value="SPECIFIC_YEAR">🚀 Specifiek Jaar</option>
-      <option value="ALL">📂 Alle Verwachte Uitgaven</option>
-    </select>
-
-    <input type="date" id="bills-filter-date" onchange="renderMoneyView()" class="hidden" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 2px 6px;">
-    <input type="month" id="bills-filter-month" onchange="renderMoneyView()" class="hidden" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 2px 6px;">
-    <input type="number" id="bills-filter-year" placeholder="Jaar (2027)" onchange="renderMoneyView()" min="2024" max="2035" class="hidden" style="margin-bottom:0; width: 100px; font-size: 0.8rem; padding: 2px 6px;">
-
-    <select id="bills-filter-status" onchange="renderMoneyView()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 4px 8px;">
-      <option value="ALL">📂 Alles</option>
-      <option value="UNPAID">⚪ Nog te verwachten</option>
-      <option value="PAID">✅ Voldaan</option>
-    </select>
-  </div>
-
-  <!-- LIJST MET ITEMS -->
-  <div id="fixed-bills-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
-
-  <!-- TOTAAL BALK ONDERAAN -->
-  <div style="margin-top: 14px; padding: 12px; background: var(--item-bg); border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
-    <span style="font-size: 0.88rem; font-weight: 600;">Totaal nog te verwachten uitgaven:</span>
-    <strong id="fixed-bills-total-display" style="font-size: 1.1rem; color: var(--primary);">€0,00</strong>
-  </div>
-</div>
-
-      <!-- SECTIE: TOEKOMST-ANKERS (SPAARPOTJES & PLANNEN UITGEBREID) -->
+      <!-- TOEKOMST-ANKERS -->
       <div class="card" style="margin-bottom: 18px;">
         <h2>
           🔮 Toekomst-Ankers
@@ -870,12 +854,10 @@
 
         <div id="future-anchors-list" class="item-list"></div>
       </div>
-
     </div>
 
-    <!-- ==================== PAGINA 5: KENNIS & HACKS ==================== -->
+    <!-- PAGINA 5: KENNIS & HACKS -->
     <div id="view-hacks" class="hidden">
-      
       <div class="card" style="margin-bottom: 18px; border: 2px solid var(--accent-primary);">
         <h2>
           💡 Kennis & Brein-Hacks Feed
@@ -902,12 +884,10 @@
         <strong style="font-size: 0.88rem; text-transform: uppercase; display: block; margin-bottom: 4px;">🎯 ADHD Brein-Weetje</strong>
         <p style="font-size: 0.85rem; line-height: 1.4;">Als je brein weerstand voelt om te starten, vraag jezelf niet af 'Hoe maak ik dit af?', maar 'Wat is de allerkleinste belachelijke stap die ik nu 30 seconden kan doen?'</p>
       </div>
-
     </div>
 
-    <!-- ==================== PAGINA 6: IDEEËNKLUIS & PROJECTEN ==================== -->
+    <!-- PAGINA 6: IDEEËNKLUIS & PROJECTEN -->
     <div id="view-ideas" class="hidden">
-      
       <div class="card" style="margin-bottom: 18px;">
         <h2>
           📌 Ideeënkluis
@@ -954,10 +934,9 @@
 
         <button id="show-all-projects-btn" class="btn btn-secondary hidden" style="margin-top: 12px;" onclick="openAllProjectsModal()">📂 Bekijk Alle Projecten Modal</button>
       </div>
-
     </div>
 
-    <!-- ==================== PAGINA 7: LUCHTIG ==================== -->
+    <!-- PAGINA 7: LUCHTIG -->
     <div id="view-fun" class="hidden">
       <div class="card">
         <h2>☕ Luchtig & Passies</h2>
@@ -970,7 +949,7 @@
       </div>
     </div>
 
-    <!-- ==================== PAGINA 8: INZICHTEN ==================== -->
+    <!-- PAGINA 8: INZICHTEN -->
     <div id="view-insights" class="hidden">
       <div class="card">
         <h2>📊 Visuele Inzichten & Trends</h2>
@@ -985,9 +964,7 @@
 
   </div>
 
-  <!-- ==================== MODALS ==================== -->
-
-  <!-- STUDIESCHULD MODAL -->
+  <!-- MODALS -->
   <div id="study-debt-modal" class="modal-overlay hidden" onclick="closeStudyDebtModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
@@ -1014,7 +991,6 @@
     </div>
   </div>
 
-  <!-- VASTE LASTEN ARCHIEF MODAL -->
   <div id="bill-archive-modal" class="modal-overlay hidden" onclick="closeBillArchiveModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
@@ -1026,7 +1002,6 @@
     </div>
   </div>
 
-  <!-- SPAARPOTJES ARCHIEF MODAL -->
   <div id="anchor-archive-modal" class="modal-overlay hidden" onclick="closeAnchorArchiveModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
@@ -1038,17 +1013,14 @@
     </div>
   </div>
 
-  <!-- CATEGORIEEN BEHEREN MODAL -->
   <div id="manage-categories-modal" class="modal-overlay hidden" onclick="closeManageCategoriesModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
         <h2>✏️ Categorieën Beheren</h2>
         <button class="btn btn-secondary btn-small" onclick="closeManageCategoriesModal()">✕ Sluiten</button>
       </div>
-      <p class="subtitle">Pas bestaande namen aan of voeg nieuwe toe. Hernoemde categorieën worden automatisch bij je bestaande Post-its bijgewerkt!</p>
-
+      <p class="subtitle">Pas bestaande namen aan of voeg nieuwe toe.</p>
       <div id="categories-manage-list" class="item-list" style="margin-bottom: 14px;"></div>
-
       <div style="display:flex; gap:8px;">
         <input type="text" id="new-category-input" placeholder="Nieuwe categorie naam..." style="margin-bottom:0; flex:1;">
         <button class="btn btn-small" style="width:auto;" onclick="saveCategoryFromModal()">Toevoegen</button>
@@ -1056,14 +1028,12 @@
     </div>
   </div>
 
-  <!-- BEWAARDE TIPS MODAL -->
   <div id="saved-tips-modal" class="modal-overlay hidden" onclick="closeSavedTipsModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
         <h2>❤️ Mijn Bewaarde Tips & Hacks</h2>
         <button class="btn btn-secondary btn-small" onclick="closeSavedTipsModal()">✕ Sluiten</button>
       </div>
-
       <div class="filter-bar">
         <input type="text" id="saved-tips-search" oninput="renderSavedTipsModal()" placeholder="🔍 Zoek in bewaarde tips..." style="margin-bottom:0; flex:1;">
         <select id="saved-tips-sort" onchange="renderSavedTipsModal()" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:4px 8px;">
@@ -1071,35 +1041,30 @@
           <option value="OLDEST">⏳ Oudste eerst</option>
         </select>
       </div>
-
       <div id="saved-tips-modal-list" class="item-list" style="max-height: 380px; overflow-y: auto; margin-top:10px;"></div>
     </div>
   </div>
 
-  <!-- ALLE TIPS MODAL (BIBLIOTHEEK) -->
   <div id="all-tips-modal" class="modal-overlay hidden" onclick="closeAllTipsModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
         <h2>📚 Alle Tips & Hacks Bibliotheek</h2>
         <button class="btn btn-secondary btn-small" onclick="closeAllTipsModal()">✕ Sluiten</button>
       </div>
-
       <div class="filter-bar">
         <input type="text" id="all-tips-search" oninput="renderAllTipsModal()" placeholder="🔍 Zoek in alle tips..." style="margin-bottom:0; flex:1;">
       </div>
-
       <div id="all-tips-modal-list" class="item-list" style="max-height: 380px; overflow-y: auto; margin-top:10px;"></div>
     </div>
   </div>
 
-  <!-- BUDDY SELECTIE & ACTIE MODAL -->
   <div id="buddy-action-modal" class="modal-overlay hidden" onclick="closeBuddyActionModal()">
     <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 480px;">
       <div class="modal-header">
         <h2 id="buddy-modal-title">💜 Signaal sturen naar...</h2>
         <button class="btn btn-secondary btn-small" onclick="closeBuddyActionModal()">✕ Sluiten</button>
       </div>
-      <p class="subtitle">Kies een subtiel signaal. WhatsApp opent direct met de tekst voor je uitgetypt.</p>
+      <p class="subtitle">Kies een subtiel signaal.</p>
 
       <div style="display: flex; flex-direction: column; gap: 10px;">
         <button class="btn" style="background-color: #ED8936; text-align: left; font-size: 0.88rem; padding: 12px;" onclick="sendBuddySignal('yellow')">
@@ -1120,48 +1085,40 @@
     </div>
   </div>
 
-  <!-- BUDDY INSTELLINGEN MODAL -->
   <div id="buddy-settings-modal" class="modal-overlay hidden" onclick="closeBuddySettingsModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
         <h2>⚙️ Beheer jouw 4 Buddy's</h2>
         <button class="btn btn-secondary btn-small" onclick="closeBuddySettingsModal()">✕ Sluiten</button>
       </div>
-      <p class="subtitle">Vul de namen en 06-nummers in van de 4 mensen die je vertrouwt.</p>
-
+      <p class="subtitle">Vul de namen en 06-nummers in.</p>
       <div id="buddy-inputs-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
-      
       <button class="btn" style="margin-top: 14px;" onclick="saveBuddySettings()">Opslaan</button>
     </div>
   </div>
 
-  <!-- TAKEN ARCHIEF MODAL -->
   <div id="task-archive-modal" class="modal-overlay hidden" onclick="closeTaskArchiveModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
         <h2>📜 Voltooide Taken Archief</h2>
         <button class="btn btn-secondary btn-small" onclick="closeTaskArchiveModal()">✕ Sluiten</button>
       </div>
-      <p class="subtitle">Hier staan alle afgevinkte taken. Herstel een taak als je deze opnieuw wilt oppakken.</p>
-      
+      <p class="subtitle">Hier staan alle afgevinkte taken.</p>
       <div id="task-archive-modal-list" class="item-list" style="max-height: 380px; overflow-y: auto;"></div>
     </div>
   </div>
 
-  <!-- IDEEËN ARCHIEF MODAL -->
   <div id="ideas-archive-modal" class="modal-overlay hidden" onclick="closeIdeasArchiveModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
         <h2>📜 Gearchiveerde Ideeën</h2>
         <button class="btn btn-secondary btn-small" onclick="closeIdeasArchiveModal()">✕ Sluiten</button>
       </div>
-      <p class="subtitle">Ideeën die als niet meer relevant zijn gemarkeerd. Zet ze eenvoudig terug in de actieve kluis!</p>
-      
+      <p class="subtitle">Ideeën die niet meer relevant zijn gemarkeerd.</p>
       <div id="ideas-archive-modal-grid" class="postit-grid" style="max-height: 400px; overflow-y: auto; padding: 4px;"></div>
     </div>
   </div>
 
-  <!-- MOOD HISTORIE MODAL -->
   <div id="mood-history-modal" class="modal-overlay hidden" onclick="closeMoodHistoryModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
@@ -1180,19 +1137,16 @@
         <input type="date" id="mood-history-filter-date" class="hidden" onchange="renderMoodHistory()" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:4px 8px;">
       </div>
 
-      <!-- Visuele Trend Grafiek -->
       <div class="chart-box" style="background:var(--item-bg); border:1.5px solid var(--input-border); border-radius:12px; padding:12px; margin-bottom:12px;">
         <strong style="font-size:0.82rem; color:var(--text-muted); display:block; margin-bottom:6px;">📈 Energie-Verloop Grafiek</strong>
         <div id="mood-chart-bars" class="chart-container" style="width:100%; height:130px; display:flex; align-items:flex-end; gap:6px; padding-top:18px; border-bottom:1px solid var(--input-border);"></div>
       </div>
 
       <div id="mood-trend-positive-text" style="font-size: 0.82rem; color: var(--accent-primary); font-weight: 600; margin-bottom: 10px;"></div>
-
       <div id="mood-history-list" class="item-list" style="max-height:220px; overflow-y:auto;"></div>
     </div>
   </div>
 
-  <!-- ALLE IDEEEN KLUIS MODAL -->
   <div id="all-ideas-modal" class="modal-overlay hidden" onclick="closeAllIdeasModal()">
     <div class="modal-content" onclick="event.stopPropagation()" style="max-width:750px;">
       <div class="modal-header">
@@ -1216,7 +1170,6 @@
     </div>
   </div>
 
-  <!-- GRABBELTON MODAL -->
   <div id="grabbelton-modal" class="modal-overlay hidden" onclick="closeGrabbeltonModal()">
     <div class="modal-content" onclick="event.stopPropagation()" style="text-align: center; border: 2px dashed #ED8936;">
       <div class="modal-header">
@@ -1240,7 +1193,6 @@
         <h2>🚀 Alle Projecten Overzicht</h2>
         <button class="btn btn-secondary btn-small" onclick="closeAllProjectsModal()">✕ Sluiten</button>
       </div>
-
       <div class="filter-bar">
         <select id="projects-modal-filter" onchange="renderAllProjectsModal()" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:4px 8px;">
           <option value="ACTIVE">🚀 Actieve Projecten</option>
@@ -1248,7 +1200,6 @@
           <option value="ALL">📂 Alles weergeven</option>
         </select>
       </div>
-
       <div id="all-projects-list" class="item-list" style="max-height:380px; overflow-y:auto; margin-top:10px;"></div>
     </div>
   </div>
@@ -1378,7 +1329,7 @@
       render();
     }
 
-    // --- 💡 KENNIS & BREIN-HACKS LOGICA ---
+    // --- KENNIS & BREIN-HACKS ---
     const knowledgeDatabase = [
       { id: 1, category: "🧠 ADHD & Brein", title: "De 5-Minuten 'Slechte Poging'", text: "Geef jezelf toestemming om de eerste 5 minuten een hele slechte poging te doen. De drempel om te beginnen zakt daarmee met 80%." },
       { id: 2, category: "🧠 ADHD & Brein", title: "Body Doubling", text: "Werken terwijl iemand anders simpelweg in de kamer zit of via een stil scherm aanwezig is, verlaagt startuitstel enorm." },
@@ -1711,7 +1662,7 @@
       reader.readAsText(file);
     }
 
-    // --- 🏺 DE TROTS-KLUIS ---
+    // --- DE TROTS-KLUIS ---
     const marbleColors = ['#5A67D8', '#38A169', '#ED8936', '#9F7AEA', '#E53E3E', '#319795', '#D69E2E', '#ED64A6'];
 
     function addMarble(reason, category = 'Algemeen') {
@@ -1780,24 +1731,24 @@
         return;
       }
 
-      const marbleColors = [
-        'radial-gradient(circle at 35% 35%, #ffeaa7, #fdcb6e, #d35400)', // Goud
-        'radial-gradient(circle at 35% 35%, #ff7675, #d63031, #801414)', // Robijn
-        'radial-gradient(circle at 35% 35%, #74b9ff, #0984e3, #093463)', // Saffier
-        'radial-gradient(circle at 35% 35%, #55efc4, #00b894, #004d3c)', // Smaragd
-        'radial-gradient(circle at 35% 35%, #a29bfe, #6c5ce7, #3b289a)'  // Amethist
+      const marbleStyles = [
+        'radial-gradient(circle at 35% 35%, #ffeaa7, #fdcb6e, #d35400)',
+        'radial-gradient(circle at 35% 35%, #ff7675, #d63031, #801414)',
+        'radial-gradient(circle at 35% 35%, #74b9ff, #0984e3, #093463)',
+        'radial-gradient(circle at 35% 35%, #55efc4, #00b894, #004d3c)',
+        'radial-gradient(circle at 35% 35%, #a29bfe, #6c5ce7, #3b289a)'
       ];
 
       filteredMarbles.forEach((m, index) => {
         const div = document.createElement('div');
         div.className = 'marble-3d';
-        div.style.background = marbleColors[index % marbleColors.length];
+        div.style.background = marbleStyles[index % marbleStyles.length];
         div.title = `[${m.category || 'Algemeen'}] ${m.reason} (${m.date})`;
         container.appendChild(div);
       });
     }
 
-    // --- 🌿 VITALITEIT LOGICA ---
+    // --- VITALITEIT ---
     function logSleep(statusText) {
       const todayStr = new Date().toLocaleDateString('nl-NL');
       let sleepLogs = JSON.parse(localStorage.getItem('voldaan_sleep_logs') || '{}');
@@ -1967,7 +1918,7 @@
       document.getElementById('vitality-stat-balance').innerText = fitnessLogs.length;
     }
 
-    // --- MOOD TRACKER LOGICA ---
+    // --- MOOD TRACKER ---
     let selectedEnergyState = '';
 
     function selectEnergy(el, energy) {
@@ -2119,7 +2070,7 @@
       });
     }
 
-    // --- OVERIGE CORE LOGICA ---
+    // --- ALGEMENE HELPERS ---
     function toggleTheme() {
       document.body.classList.toggle('dark-theme');
       const isDark = document.body.classList.contains('dark-theme');
@@ -2871,7 +2822,6 @@
       return `background-color: ${isDark ? '#4A5568' : '#EDF2F7'}; color: ${isDark ? '#FFFBEB' : '#1E293B'};`;
     }
 
-    // --- CATEGORIEEN & INITIALISATIE MET MIGRATIE ---
     function getCategories() {
       let cats = JSON.parse(localStorage.getItem('voldaan_categories') || 'null');
       if (!cats) {
@@ -3411,7 +3361,7 @@
       if (barEl) barEl.style.width = `${totalPct}%`;
     }
 
-    // --- 🎓 STUDIESCHULD KOMPAS LOGICA ---
+    // --- STUDIESCHULD KOMPAS ---
     function openStudyDebtModal() {
       let debt = JSON.parse(localStorage.getItem('voldaan_study_debt') || 'null');
       if (debt) {
@@ -3494,7 +3444,7 @@
       `;
     }
 
-    // --- 🛡️ VERWACHTE UITGAVEN LOGICA ---
+    // --- VERWACHTE UITGAVEN ---
     function toggleAddBillForm() {
       const form = document.getElementById('add-bill-form');
       if (form.classList.contains('hidden')) {
@@ -3519,14 +3469,16 @@
     }
 
     function toggleFixedBill(id) {
-  let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
-  const idx = bills.findIndex(b => b.id === id);
-  if (idx !== -1) {
-    bills[idx].paid = !bills[idx].paid;
-    localStorage.setItem('voldaan_fixed_bills', JSON.stringify(bills));
-    renderMoneyView(); // Herlaad het scherm en bereken het nieuwe totaal!
-  }
-}
+      let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
+      const idx = bills.findIndex(b => b.id === id);
+      if (idx !== -1) {
+        bills[idx].paid = !bills[idx].paid;
+        if (bills[idx].paid) { triggerConfetti(); addMarble(`Vaste last voldaan: ${bills[idx].name}`, 'Geld & Aflossingen'); }
+        localStorage.setItem('voldaan_fixed_bills', JSON.stringify(bills));
+        renderMoneyView();
+        updateStats();
+      }
+    }
 
     function editFixedBill(id) {
       let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
@@ -3579,7 +3531,7 @@
       document.getElementById('add-bill-form').classList.add('hidden');
       renderMoneyView();
     }
-        
+
     function archiveFixedBill(id) {
       let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
       const idx = bills.findIndex(b => b.id === id);
@@ -3613,10 +3565,10 @@
         `;
       });
     }
-    
+
     function closeBillArchiveModal() { document.getElementById('bill-archive-modal').classList.add('hidden'); }
 
-    // --- 🔮 TOEKOMST-ANKERS LOGICA (NIEUW) ---
+    // --- TOEKOMST-ANKERS ---
     function toggleAddAnchorForm() {
       const form = document.getElementById('add-anchor-form');
       if (form.classList.contains('hidden')) {
