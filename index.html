@@ -838,12 +838,19 @@
             <option value="SPECIFIC_WEEK">📆 Specifieke Week</option>
             <option value="SPECIFIC_MONTH">📅 Specifieke Maand</option>
             <option value="SPECIFIC_YEAR">🚀 Specifiek Jaar</option>
+            <option value="RANGE">📆 Van / Tot Datum</option>
             <option value="ALL">📂 Alle Verwachte Uitgaven</option>
           </select>
 
           <input type="date" id="bills-filter-date" onchange="renderMoneyView()" class="hidden" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 2px 6px;">
           <input type="month" id="bills-filter-month" onchange="renderMoneyView()" class="hidden" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 2px 6px;">
           <input type="number" id="bills-filter-year" placeholder="Jaar (2027)" onchange="renderMoneyView()" min="2024" max="2035" class="hidden" style="margin-bottom:0; width: 100px; font-size: 0.8rem; padding: 2px 6px;">
+
+          <div id="bills-filter-range-box" class="hidden" style="display:inline-flex; gap:4px; align-items:center;">
+            <input type="date" id="bills-filter-from" onchange="renderMoneyView()" style="margin-bottom:0; width:auto; font-size:0.78rem; padding:2px 4px;">
+            <span style="font-size:0.75rem;">t/m</span>
+            <input type="date" id="bills-filter-to" onchange="renderMoneyView()" style="margin-bottom:0; width:auto; font-size:0.78rem; padding:2px 4px;">
+          </div>
 
           <select id="bills-filter-status" onchange="renderMoneyView()" style="margin-bottom:0; width: auto; font-size: 0.8rem; padding: 4px 8px;">
             <option value="ALL">📂 Alles</option>
@@ -1131,10 +1138,16 @@
           <option value="WEEK">📅 Deze Week</option>
           <option value="MONTH">🗓️ Deze Maand</option>
           <option value="YEAR">🚀 Dit Jaar</option>
+          <option value="RANGE">📆 Van / Tot Datum</option>
         </select>
 
         <input type="date" id="trans-filter-date" onchange="renderAllTransactionsModal()" class="hidden" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:2px 6px;">
-
+        
+        <div id="trans-filter-range-box" class="hidden" style="display:inline-flex; gap:4px; align-items:center;">
+          <input type="date" id="trans-filter-from" onchange="renderAllTransactionsModal()" style="margin-bottom:0; width:auto; font-size:0.78rem; padding:2px 4px;">
+          <span style="font-size:0.75rem;">t/m</span>
+          <input type="date" id="trans-filter-to" onchange="renderAllTransactionsModal()" style="margin-bottom:0; width:auto; font-size:0.78rem; padding:2px 4px;">
+        </div>
         <select id="trans-filter-cat" onchange="renderAllTransactionsModal()" style="margin-bottom:0; width:auto; font-size:0.8rem; padding:4px 6px;"></select>
       </div>
 
@@ -1867,6 +1880,7 @@
     function handleTransPeriodChange() {
       const mode = document.getElementById('trans-filter-period').value;
       document.getElementById('trans-filter-date').classList.toggle('hidden', mode !== 'DAY');
+      document.getElementById('trans-filter-range-box').classList.toggle('hidden', mode !== 'RANGE');
       renderAllTransactionsModal();
     }
 
@@ -4173,6 +4187,7 @@
       document.getElementById('bills-filter-date').classList.toggle('hidden', mode !== 'SPECIFIC_WEEK');
       document.getElementById('bills-filter-month').classList.toggle('hidden', mode !== 'SPECIFIC_MONTH');
       document.getElementById('bills-filter-year').classList.toggle('hidden', mode !== 'SPECIFIC_YEAR');
+      document.getElementById('bills-filter-range-box').classList.toggle('hidden', mode !== 'RANGE');
       renderMoneyView();
     }
 
