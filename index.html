@@ -4671,17 +4671,16 @@
               </div>
               ${anchor.description ? `<div style="font-size:0.8rem; color:var(--text-muted);">${anchor.description}</div>` : ''}
               <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%;"></div></div>
-              <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
-                <span>Spaarstand: €${anchor.currentAmount || 0} / €${anchor.targetAmount || 0} (${pct}%)</span>
-                <span>Plan: €${anchor.rate || 0} per ${anchor.interval || 'maand'} ${anchor.targetDate ? `| Streefdatum: ${anchor.targetDate}` : ''}</span>
-              </div>
-              ${anchor.failSafety ? `<div style="font-size:0.75rem; color:var(--accent-primary);">🛡️ Veiligheidsnet: ${anchor.failSafety}</div>` : ''}
-            `;
-            anchorsContainer.appendChild(div);
-          });
-        }
-      }
-    }
+        <div style="display:flex; justify-content:space-between; font-size:0.75rem;">
+          <span>Spaarstand: €${anchor.currentAmount || 0} / €${anchor.targetAmount || 0} (${pct}%)</span>
+          <span>Plan: €${anchor.rate || 0} per ${anchor.interval || 'maand'} ${anchor.targetDate ? `| Streefdatum: ${anchor.targetDate}` : ''}</span>
+        </div>
+        ${anchor.failSafety ? `<div style="font-size:0.75rem; color:var(--accent-primary);">🛡️ Veiligheidsnet: ${anchor.failSafety}</div>` : ''}
+      `;
+      anchorsContainer.appendChild(div);
+    });
+  }
+}
 
     window.addEventListener('click', () => {
       if (openMenuId !== null) { openMenuId = null; renderIdeas(); }
