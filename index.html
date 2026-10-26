@@ -739,13 +739,14 @@
       </div>
 
       <!-- SECTIE: VASTE LASTEN CHECK (UITGEBREID) -->
-      <div class="card" style="margin-bottom: 18px;">
-        <h2>
-          🛡️ Vaste Lasten Check
-          <div style="display:flex; gap:6px;">
-            <button class="btn btn-secondary btn-small" onclick="openBillArchiveModal()">📜 Archief Pop-up</button>
-            <button class="btn btn-secondary btn-small" onclick="toggleAddBillForm()">+ Nieuw</button>
-          </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+  <h3 style="margin: 0;">🔮 Verwachte Uitgaven</h3>
+  <div style="display: flex; gap: 6px;">
+    <button class="btn btn-secondary btn-small" onclick="openBillArchiveModal()">📜 Archief Pop-up</button>
+    <button class="btn btn-small" onclick="toggleAddBillForm()">+ Nieuw</button>
+  </div>
+</div>
+<p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; margin-bottom: 12px;">Overzicht van verwachte uitgaven in de gekozen periode.</p>
         </h2>
         <p class="subtitle">Overzicht van je maandlasten, gesorteerd op verwachte afschrijfdag van de maand.</p>
 
@@ -812,7 +813,7 @@
         <div id="fixed-bills-list" class="item-list"></div>
         <!-- Totaaloverzicht Vaste Lasten -->
         <div style="margin-top: 14px; padding: 12px; background: var(--item-bg); border-radius: 12px; border: 1.5px solid var(--input-border); display: flex; justify-content: space-between; align-items: center;">
-          <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Totaal aan vaste lasten per maand:</span>
+          <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Totaal nog te verwachten uitgaven:</span>
           <strong id="fixed-bills-total-display" style="font-size: 1.15rem; color: var(--accent-primary);">€0,00</strong>
         </div>
       </div>
@@ -3492,15 +3493,16 @@
       `;
     }
 
-    // --- 🛡️ VASTE LASTEN LOGICA (NIEUW) ---
+    // --- 🛡️ VERWACHTE UITGAVEN LOGICA ---
     function toggleAddBillForm() {
       const form = document.getElementById('add-bill-form');
       if (form.classList.contains('hidden')) {
         document.getElementById('bill-edit-id').value = '';
         document.getElementById('bill-name-input').value = '';
         document.getElementById('bill-amount-input').value = '';
-        document.getElementById('bill-day-input').value = '';
-        document.getElementById('bill-form-title').innerText = 'Vaste Last Toevoegen';
+        if (document.getElementById('bill-date-input')) document.getElementById('bill-date-input').value = new Date().toISOString().slice(0,10);
+        if (document.getElementById('bill-repeat-select')) document.getElementById('bill-repeat-select').value = 'NONE';
+        document.getElementById('bill-form-title').innerText = 'Nieuwe Verwachte Uitgave Toevoegen';
         form.classList.remove('hidden');
       } else {
         form.classList.add('hidden');
@@ -3508,14 +3510,6 @@
     }
 
     function handleBillFilterChange() {
-  const mode = document.getElementById('bills-filter-period').value;
-  document.getElementById('bills-filter-date').classList.toggle('hidden', mode !== 'SPECIFIC_WEEK');
-  document.getElementById('bills-filter-month').classList.toggle('hidden', mode !== 'SPECIFIC_MONTH');
-  document.getElementById('bills-filter-year').classList.toggle('hidden', mode !== 'SPECIFIC_YEAR');
-  renderMoneyView();
-}
-
-function handleBillFilterChange() {
       const mode = document.getElementById('bills-filter-period').value;
       document.getElementById('bills-filter-date').classList.toggle('hidden', mode !== 'SPECIFIC_WEEK');
       document.getElementById('bills-filter-month').classList.toggle('hidden', mode !== 'SPECIFIC_MONTH');
@@ -3527,9 +3521,9 @@ function handleBillFilterChange() {
       let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
       const idx = bills.findIndex(b => b.id === id);
       if (idx !== -1) {
-        bills[idx].paid = !bills[idx].paid; // Vinkt af of aan
+        bills[idx].paid = !bills[idx].paid;
         localStorage.setItem('voldaan_fixed_bills', JSON.stringify(bills));
-        renderMoneyView(); // Herbereken het totaal direct
+        renderMoneyView();
       }
     }
 
@@ -3618,7 +3612,7 @@ function handleBillFilterChange() {
         `;
       });
     }
-
+    
     function closeBillArchiveModal() { document.getElementById('bill-archive-modal').classList.add('hidden'); }
 
     // --- 🔮 TOEKOMST-ANKERS LOGICA (NIEUW) ---
