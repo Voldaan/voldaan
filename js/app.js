@@ -4,6 +4,8 @@ import { initPlanModule } from './plan.js';
 import { initVitalityModule } from './vitality.js';
 import { initMoneyModule } from './money.js';
 import { initIdeasModule } from './ideas.js';
+import { initKnowledgeModule } from './knowledge.js';
+import { initInsightsModule } from './insights.js';
 
 window.VoldaanApp = {
   state: null,
@@ -111,6 +113,14 @@ function renderAllViews(state) {
     window.renderIdeasState();
   }
 
+  if (typeof window.renderKnowledgeState === 'function') {
+    window.renderKnowledgeState();
+  }
+
+  if (typeof window.renderInsightsState === 'function') {
+    window.renderInsightsState();
+  }
+
   syncTabUi(activeTab);
 }
 
@@ -158,8 +168,20 @@ function initializeApp() {
     initIdeasModule();
   }
 
+  if (typeof window.initKnowledgeModule === 'function') {
+    window.initKnowledgeModule();
+  } else {
+    initKnowledgeModule();
+  }
+
+  if (typeof window.initInsightsModule === 'function') {
+    window.initInsightsModule();
+  } else {
+    initInsightsModule();
+  }
+
   syncTabUi(state.settings.activeTab || 'today');
-  console.log('Voldaan modular scaffold geladen');
+  console.log('Voldaan modular dashboard geladen');
 }
 
 document.addEventListener('DOMContentLoaded', initializeApp);
@@ -168,6 +190,8 @@ window.initPlanModule = initPlanModule;
 window.initVitalityModule = initVitalityModule;
 window.initMoneyModule = initMoneyModule;
 window.initIdeasModule = initIdeasModule;
+window.initKnowledgeModule = initKnowledgeModule;
+window.initInsightsModule = initInsightsModule;
 window.switchView = switchView;
 window.renderAllViews = renderAllViews;
 window.syncTabUi = syncTabUi;
