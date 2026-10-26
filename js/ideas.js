@@ -30,6 +30,15 @@ export function addIdea({ title, text, color = 'yellow' }) {
   return ideas.items;
 }
 
+function escapeHtml(value = '') {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 export function renderIdeasState() {
   const state = window.VoldaanApp?.state;
   if (!state) return;
@@ -41,12 +50,7 @@ export function renderIdeasState() {
     const root = document.querySelector('.container') || document.body;
     container = document.createElement('section');
     container.id = 'ideas-status-panel';
-    container.style.background = 'var(--card-bg)';
-    container.style.border = '1.5px solid var(--input-border)';
-    container.style.borderRadius = '16px';
-    container.style.padding = '20px';
-    container.style.boxShadow = 'var(--shadow)';
-    container.style.marginTop = '12px';
+    container.className = 'app-shell-panel';
     root.appendChild(container);
   }
 
@@ -62,19 +66,25 @@ export function renderIdeasState() {
     ? ideas.items.slice().reverse().map((idea) => {
         const bg = colors[idea.color] || colors.yellow;
         return `
-          <div style="background:${bg}; border:1.5px solid rgba(0,0,0,0.08); border-radius:12px; padding:14px; min-height:120px; position:relative;">
+          <div style="background:${bg}; border:1.5px solid rgba(0,0,0,0.08); border-radius:12px; padding:14px; min-height:120px; position:relative; box-shadow:2px 4px 12px rgba(0,0,0,0.06);">
             <div style="position:absolute; top:-8px; left:50%; transform:translateX(-50%); font-size:1.1rem;">📌</div>
-            <div style="font-weight:700; margin-top:10px;">${(idea.title || 'Idee').replace(/</g, '&lt;')}</div>
-            <div style="margin-top:8px; font-size:0.86rem; line-height:1.4;">${(idea.text || '').replace(/</g, '&lt;').replace(/\n/g, '<br>')}</div>
+            <div style="font-weight:700; margin-top:12px;">${escapeHtml(idea.title || 'Idee')}</div>
+            <div style="margin-top:8px; font-size:0.86rem; line-height:1.4;">${escapeHtml(idea.text || '').replace(/\n/g, '<br>')}</div>
           </div>
         `;
       }).join('')
     : '<div style="color:var(--text-muted);">Nog geen ideeën opgeslagen.</div>';
 
   container.innerHTML = `
-    <h2 style="font-size:1.08rem; margin:0 0 12px; color:var(--text-main);">📌 Ideeënkluis</h2>
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px;">
-      ${itemsMarkup}
+    <div style="display:grid; gap:12px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+        <div style="font-size:1.08rem; font-weight:700; color:var(--text-main);">📌 Ideeënkluis</div>
+        <div style="font-size:0.76rem; color:var(--text-muted);">Grote ideeën, kleine stappen</div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px;">
+        ${itemsMarkup}
+      </div>
     </div>
   `;
 }
