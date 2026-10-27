@@ -4261,7 +4261,7 @@
 
     function editFixedBill(id) {
       let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
-      const b = bills.find(item => item.id === id);
+      const b = bills.find(item => Number(item.id) === Number(id));
       if (!b) return;
 
       document.getElementById('bill-edit-id').value = b.id;
@@ -4313,7 +4313,8 @@
 
     function archiveFixedBill(id) {
       let bills = JSON.parse(localStorage.getItem('voldaan_fixed_bills') || '[]');
-      const idx = bills.findIndex(b => b.id === id);
+      // Zorg dat we zoeken met Number() zodat tekst-IDs en getal-IDs nooit botsen
+      const idx = bills.findIndex(b => Number(b.id) === Number(id));
       if (idx !== -1) {
         bills[idx].archived = true;
         localStorage.setItem('voldaan_fixed_bills', JSON.stringify(bills));
