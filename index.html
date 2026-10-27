@@ -4606,7 +4606,7 @@
       const fromDate = document.getElementById('bills-filter-from')?.value;
       const toDate = document.getElementById('bills-filter-to')?.value;
 
-      let filteredBills = state.expectedBills.filter(b => {
+      let filteredBills = bills.filter(bill => {
       // 1. Status check (UNPAID / PAID / ALL)
       if (statusFilter === 'UNPAID' && b.Paid) return false;
       if (statusFilter === 'PAID' && !b.Paid) return false;
