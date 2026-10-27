@@ -4606,40 +4606,47 @@
       const fromDate = document.getElementById('bills-filter-from')?.value;
       const toDate = document.getElementById('bills-filter-to')?.value;
 
-      const filteredBills = state.expectedBills.filter(bill => {
-        // Status check (UNPAID / PAID / ALL)
-        if (statusFilter === 'UNPAID' && bill.isPaid) return false;
-        if (statusFilter === 'PAID' && !bill.isPaid) return false;
+      let filteredBills = state.expectedBills.filter(b => {
+      // 1. Status check (UNPAID / PAID / ALL)
+      if (statusFilter === 'UNPAID' && b.Paid) return false;
+      if (statusFilter === 'PAID' && !b.Paid) return false;
 
-        // Range check
-        if (period === 'RANGE') {
-          if (fromDate && bill.date < fromDate) return false;
-          if (toDate && bill.date > toDate) return false;
-        }
+      // 2. Datum voorbereiding
+      const rawDate = b.date ? new Date(b.date) : new Date();
+      const hasValidDate = !isNaN(rawDate.getTime());
+      const itemYearMonth = hasValidDate ? `${rawDate.getFullYear()}-${String(rawDate.getMonth() + 1).padStart(2, '0')}` : '';
 
+      // 3. Periode / Datumbereik check
+      if (period === 'RANGE') {
+        if (fromDate && b.date < fromDate) return false;
+        if (toDate && b.date > toDate) return false;
         return true;
-      });
-          if (periodMode === 'CURRENT_MONTH') {
-            return !b.date || itemYearMonth === currentYearMonth;
-          } 
-          else if (periodMode === 'SPECIFIC_MONTH') {
-            const selectedMonth = document.getElementById('bills-filter-month').value;
-            return selectedMonth ? itemYearMonth === selectedMonth : true;
-          } 
-          else if (periodMode === 'SPECIFIC_YEAR') {
-            const selectedYear = document.getElementById('bills-filter-year').value;
-            return selectedYear ? rawDate.getFullYear().toString() === selectedYear : true;
-          } 
-          else if (periodMode === 'SPECIFIC_WEEK') {
-            const selDateVal = document.getElementById('bills-filter-date').value;
-            if (!selDateVal) return true;
-            const selDate = new Date(selDateVal);
-            const startOfWeek = new Date(selDate); startOfWeek.setDate(selDate.getDate() - selDate.getDay() + 1);
-            const endOfWeek = new Date(startOfWeek); endOfWeek.setDate(startOfWeek.getDate() + 6);
-            return rawDate >= startOfWeek && rawDate <= endOfWeek;
-          }
-          return true;
-        });
+      }
+
+      if (periodMode === 'CURRENT_MONTH') {
+        return !b.date || itemYearMonth === currentYearMonth;
+      }
+      else if (periodMode === 'SPECIFIC_MONTH') {
+        const selectedMonth = document.getElementById('bills-filter-month')?.value;
+        return selectedMonth ? itemYearMonth === selectedMonth : true;
+      }
+      else if (periodMode === 'SPECIFIC_YEAR') {
+        const selectedYear = document.getElementById('bills-filter-year')?.value;
+        return selectedYear && hasValidDate ? rawDate.getFullYear().toString() === selectedYear : true;
+      }
+      else if (periodMode === 'SPECIFIC_WEEK') {
+        const selDateVal = document.getElementById('bills-filter-date')?.value;
+        if (!selDateVal || !hasValidDate) return true;
+        const selDate = new Date(selDateVal);
+        const startOfWeek = new Date(selDate);
+        startOfWeek.setDate(selDate.getDate() - selDate.getDay() + 1);
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+        return rawDate >= startOfWeek && rawDate <= endOfWeek;
+      }
+
+      return true;
+    });
 
         let totalUnpaidAmount = filteredBills
           .filter(b => !b.paid)
